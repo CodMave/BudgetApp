@@ -64,8 +64,18 @@ class _LoginPageState extends State<LoginPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
-          title: Text("Incorrect Creditentials"),
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: Colors.white),
+          ),
+          backgroundColor: Colors.grey[700],
+          title: Text(
+            "Incorrect Creditentials",
+            style: TextStyle(
+              color: Colors.grey[300],
+            ),
+          ),
         );
       },
     );
@@ -142,6 +152,7 @@ class _LoginPageState extends State<LoginPage> {
 
             MyButton(
               onTap: userSignIn,
+              text: "Sign In",
             ),
 
             const SizedBox(height: 18),

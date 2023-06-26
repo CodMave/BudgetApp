@@ -20,6 +20,8 @@ class _RegisterPage extends State<RegisterPage> {
 
   final passwordControll = TextEditingController();
 
+  final confirmPasswordControll = TextEditingController();
+
   //user signup method
   void userSignUp() async {
     //loading circle
@@ -34,10 +36,15 @@ class _RegisterPage extends State<RegisterPage> {
 
     //sign up
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: usernameControll.text,
-        password: passwordControll.text,
-      );
+      if (passwordControll.text == confirmPasswordControll.text) {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: usernameControll.text,
+          password: passwordControll.text,
+        );
+      } else {
+        // error
+        wrongInputlAlert();
+      }
     } on FirebaseAuthException catch (ex) {
       if (mounted) {
         Navigator.pop(context);
@@ -64,8 +71,18 @@ class _RegisterPage extends State<RegisterPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
-          title: Text("Incorrect Creditentials"),
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: Colors.white),
+          ),
+          backgroundColor: Colors.grey[700],
+          title: Text(
+            "Incorrect Creditentials",
+            style: TextStyle(
+              color: Colors.grey[700],
+            ),
+          ),
         );
       },
     );
@@ -82,7 +99,7 @@ class _RegisterPage extends State<RegisterPage> {
             //logo
             const Icon(
               Icons.lock,
-              size: 100,
+              size: 50,
             ),
 
             const SizedBox(height: 20),
@@ -97,7 +114,7 @@ class _RegisterPage extends State<RegisterPage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
 
             //username
 
@@ -107,7 +124,7 @@ class _RegisterPage extends State<RegisterPage> {
               obsecureText: false,
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
 
             //new password
 
@@ -117,41 +134,23 @@ class _RegisterPage extends State<RegisterPage> {
               obsecureText: true,
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
 
             //confirm password
 
             MyTextField(
-              controller: passwordControll,
+              controller: confirmPasswordControll,
               hintText: 'Confirm Password',
               obsecureText: true,
             ),
 
-            const SizedBox(height: 10),
-
-            //forgot password
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Forgot Password ?',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             //sign in
 
             MyButton(
               onTap: userSignUp,
+              text: "Sign Up",
             ),
 
             const SizedBox(height: 15),
@@ -185,7 +184,7 @@ class _RegisterPage extends State<RegisterPage> {
               ),
             ),
 
-            const SizedBox(height: 15),
+            const SizedBox(height: 20),
 
             //google and apple logo
 
