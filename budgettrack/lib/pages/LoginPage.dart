@@ -1,10 +1,11 @@
 import 'package:budgettrack/components/textfield.dart';
+import 'package:budgettrack/services/authService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../components/button.dart';
-import '../components/title.dart';
+import '../components/tile.dart';
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
@@ -69,11 +70,11 @@ class _LoginPageState extends State<LoginPage> {
             borderRadius: BorderRadius.circular(10),
             side: const BorderSide(color: Colors.white),
           ),
-          backgroundColor: Colors.grey[700],
+          backgroundColor: Colors.grey[800],
           title: Text(
             "Incorrect Creditentials",
             style: TextStyle(
-              color: Colors.grey[300],
+              color: Colors.grey[400],
             ),
           ),
         );
@@ -195,12 +196,18 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 //google
 
-                MyTitle(imagePath: 'lib/images/google.png'),
+                MyTitle(
+                  imagePath: 'lib/images/google.png',
+                  onTap: () => AuthService().signInWithGoodle(),
+                ),
 
                 const SizedBox(width: 25),
                 //apple
 
-                MyTitle(imagePath: 'lib/images/apple.png'),
+                MyTitle(
+                  imagePath: 'lib/images/apple.png',
+                  onTap: () => {},
+                ),
               ],
             ),
 

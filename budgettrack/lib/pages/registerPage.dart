@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../components/button.dart';
-import '../components/title.dart';
+import '../components/tile.dart';
+import '../services/authService.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -80,7 +81,7 @@ class _RegisterPage extends State<RegisterPage> {
           title: Text(
             "Incorrect Creditentials",
             style: TextStyle(
-              color: Colors.grey[700],
+              color: Colors.grey[400],
             ),
           ),
         );
@@ -95,7 +96,7 @@ class _RegisterPage extends State<RegisterPage> {
       body: Center(
         child: SingleChildScrollView(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const SizedBox(height: 5),
+            const SizedBox(height: 20),
             //logo
             const Icon(
               Icons.lock,
@@ -153,7 +154,7 @@ class _RegisterPage extends State<RegisterPage> {
               text: "Sign Up",
             ),
 
-            const SizedBox(height: 15),
+            const SizedBox(height: 30),
 
             //continue with
 
@@ -184,7 +185,7 @@ class _RegisterPage extends State<RegisterPage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             //google and apple logo
 
@@ -193,12 +194,18 @@ class _RegisterPage extends State<RegisterPage> {
               children: [
                 //google
 
-                MyTitle(imagePath: 'lib/images/google.png'),
+                MyTitle(
+                  imagePath: 'lib/images/google.png',
+                  onTap: () => AuthService().signInWithGoodle(),
+                ),
 
                 const SizedBox(width: 25),
                 //apple
 
-                MyTitle(imagePath: 'lib/images/apple.png'),
+                MyTitle(
+                  imagePath: 'lib/images/apple.png',
+                  onTap: () => {},
+                ),
               ],
             ),
 
