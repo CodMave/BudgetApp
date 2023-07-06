@@ -6,10 +6,11 @@ import 'package:flutter/widgets.dart';
 
 import '../components/button.dart';
 import '../components/tile.dart';
+import 'ForgotPasswordPage.dart';
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
-  LoginPage({super.key, required this.onTap});
+  const LoginPage({super.key, required this.onTap});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -39,16 +40,17 @@ class _LoginPageState extends State<LoginPage> {
         email: usernameControll.text,
         password: passwordControll.text,
       );
+      Navigator.pop(context);
     } on FirebaseAuthException catch (ex) {
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      Navigator.pop(context);
       // wrong mail
       if (ex.code == 'user-not-found') {
+        print(ex);
         wrongInputlAlert();
       }
       //wrong password
       else if (ex.code == 'wrong-password') {
+        print(ex);
         wrongInputlAlert();
       }
     }
@@ -59,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  //Wrong mail or password
+  //Wrong mail or password alert
 
   void wrongInputlAlert() {
     showDialog(
@@ -110,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
 
             const SizedBox(height: 40),
 
-            //username
+            //email
 
             MyTextField(
               controller: usernameControll,
@@ -137,10 +139,23 @@ class _LoginPageState extends State<LoginPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                    'Forgot Password ?',
-                    style: TextStyle(
-                      color: Colors.grey[600],
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const ForgotPassword();
+                          },
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Forgot Password ?',
+                      style: TextStyle(
+                        color: Colors.blue[600],
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
