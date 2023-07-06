@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'emailVrification.dart';
 import 'homePage.dart';
 import 'loginOrReg.dart';
 
@@ -17,11 +18,11 @@ class AuthPage extends StatelessWidget {
         builder: (context, snapshot) {
           //user logged in
           if (snapshot.hasData) {
-            return const HomePage();
+            return const EmailVerification();
           }
           //user not logged in
           else {
-            return LoginOrRegiter();
+            return const LoginOrRegiter();
           }
         },
       ),
