@@ -1,6 +1,7 @@
 # budgettrack
 
 A new Flutter project.
+This is a Budget Tracking app
 
 ## Getting Started
 
