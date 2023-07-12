@@ -33,6 +33,7 @@ dependencies:
   flutter_local_notifications: ^15.1.0+1
   firebase_messaging: ^14.6.4
   firebase_core: ^2.14.0
+  flutter_screenutil: ^5.8.4
   intl: ^0.18.1
   flutter:
     sdk: flutter

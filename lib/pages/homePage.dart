@@ -2,16 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:budgettrack/pages/Notification.dart';
 import 'package:budgettrack/pages/MyMenu.dart';
 
+class HomePage extends StatelessWidget{
+  const HomePage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return ScreenUtilInit(
+      builder: (context,child) => MaterialApp(
+
+        home:Controller(),
+      ),
+      designSize: Size(325,812),
+    );
+  }
+}
 double balance = 6920.73;
 
-class HomePage extends StatelessWidget {
+class Controller extends StatelessWidget {
   double percent = 0.85;
 
-  HomePage({Key? key}) : super(key: key);
+  Controller({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +331,7 @@ class HomePage extends StatelessWidget {
                         },
                         child: Container(
                           height: 120,
-                          width:100,
+                          width:140,
                           margin: const EdgeInsets.only(top: 5, left: 10,),
                           decoration: const BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -329,7 +342,7 @@ class HomePage extends StatelessWidget {
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Padding(
-                                  padding: EdgeInsets.only(top:0, left: 5),
+                                  padding: EdgeInsets.only(top:0, left: 5,),
                                   child: Text(
                                     'Savings',
                                     style: TextStyle(
@@ -363,9 +376,9 @@ class HomePage extends StatelessWidget {
                         print("Income");
                       },
                       child: Container(
-                        height: 80,
+                        height:80,
                         width: 80,
-                        margin: const EdgeInsets.only(top: 15,left:10),
+                        margin: const EdgeInsets.only(top: 15,left:5),
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           color: Color(0xff86D5FF),
@@ -395,8 +408,8 @@ class HomePage extends StatelessWidget {
                         child: const Align(
                           alignment: Alignment.center,
                           child: Image(
-                            width: 60,
-                            height: 60,
+                            width: 80,
+                            height: 80,
                             image: AssetImage('lib/images/Summery.png'),
                           ),
                         ),
@@ -408,7 +421,7 @@ class HomePage extends StatelessWidget {
                       },
                       child: Container(
                         height: 80,
-                        width: 80,
+                        width:80,
                         margin: const EdgeInsets.only(top: 15),
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
