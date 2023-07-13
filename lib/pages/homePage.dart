@@ -1,3 +1,4 @@
+import 'package:budgettrack/pages/expenceAndIncome.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -33,7 +34,7 @@ class Controller extends StatelessWidget {
 
         appBar: AppBar(
           title: const Text(
-            "Hello, Sehan!",
+            "Hello, Nilupa!",
             style: TextStyle(
               color: Colors.black,
               fontSize: 25,
@@ -265,7 +266,11 @@ class Controller extends StatelessWidget {
                                       onPressed: () {
                                         print("Transport");
                                       },
-                                    ),
+                                    )
+                                    onPressed: () {
+                                      print("Transport");
+                                      const Expence();
+                                    },
                                   ),
                                 ),
                                 Container(
@@ -317,6 +322,8 @@ class Controller extends StatelessWidget {
                                     ),
                                     onPressed: () {
                                       print("Amma");
+                                      print("Food and beverages");
+                                      const Expence();
                                     },
                                   ),
                                 ),
@@ -359,6 +366,16 @@ class Controller extends StatelessWidget {
                                   width: 80,
                                   height: 80,
                                   image: AssetImage('lib/images/Savings.png'),
+                                child: IconButton(
+                                  icon: const Icon(
+                                    FontAwesomeIcons.plus,
+                                    size: 30,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    print("Other");
+                                    const Expence();
+                                  },
                                 ),
                               ),
                             ],
@@ -454,6 +471,9 @@ class Controller extends StatelessWidget {
                   ],
                 ),
                // SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
               ],
             ),
           ),
