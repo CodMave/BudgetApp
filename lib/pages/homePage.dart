@@ -1,3 +1,4 @@
+import 'package:budgettrack/pages/expenceAndIncome.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -18,7 +19,7 @@ class HomePage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            "Hello, Sehan!",
+            "Hello, Nilupa!",
             style: TextStyle(
               color: Colors.black,
               fontSize: 25,
@@ -245,6 +246,7 @@ class HomePage extends StatelessWidget {
                                     ),
                                     onPressed: () {
                                       print("Transport");
+                                      const Expence();
                                     },
                                   ),
                                 ),
@@ -274,6 +276,7 @@ class HomePage extends StatelessWidget {
                                     ),
                                     onPressed: () {
                                       print("Food and beverages");
+                                      const Expence();
                                     },
                                   ),
                                 ),
@@ -297,7 +300,8 @@ class HomePage extends StatelessWidget {
                                     color: Colors.grey,
                                   ),
                                   onPressed: () {
-                                    print("Amma");
+                                    print("Other");
+                                    const Expence();
                                   },
                                 ),
                               ),
@@ -432,6 +436,9 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(
+                  height: 20,
                 ),
               ],
             ),

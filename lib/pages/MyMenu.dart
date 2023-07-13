@@ -38,7 +38,7 @@ class _MyMenuState extends State<MyMenu> {
               height: 170,
               width: 400,
               margin: EdgeInsets.only(left: 20, right: 15),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xff181EAA),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(10),
@@ -50,7 +50,7 @@ class _MyMenuState extends State<MyMenu> {
                 children: [
                   Container(
                     child: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         weight: 10,
                         Icons.arrow_back_ios_new,
                         size: 40,
@@ -66,7 +66,7 @@ class _MyMenuState extends State<MyMenu> {
                       },
                     ),
                   ),
-                  FractionallySizedBox(
+                  const FractionallySizedBox(
                     //UAbove the percentage value I have displayed the current date and time
                     widthFactor: 1.0,
                     child: Align(
@@ -91,8 +91,8 @@ class _MyMenuState extends State<MyMenu> {
               child: Container(
                 height: 600,
                 width: 400,
-                margin: EdgeInsets.only(left: 20, right: 15, top: 10),
-                decoration: BoxDecoration(
+                margin: const EdgeInsets.only(left: 20, right: 15, top: 10),
+                decoration: const BoxDecoration(
                   color: Color(0xffCED8DC),
                   borderRadius: BorderRadius.all(
                     Radius.circular(10),
@@ -101,7 +101,7 @@ class _MyMenuState extends State<MyMenu> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    FractionallySizedBox(
+                    const FractionallySizedBox(
                       //UAbove the percentage value I have displayed the current date and time
                       widthFactor: 1.0,
                       child: Align(
@@ -121,8 +121,9 @@ class _MyMenuState extends State<MyMenu> {
                     Container(
                       width: 400,
                       height: 100,
-                      margin: EdgeInsets.only(left: 20, top: 10, right: 20),
-                      decoration: BoxDecoration(
+                      margin:
+                          const EdgeInsets.only(left: 20, top: 10, right: 20),
+                      decoration: const BoxDecoration(
                         color: Color(0xffEDF2FB),
                         borderRadius: BorderRadius.all(
                           Radius.circular(10),
@@ -132,7 +133,7 @@ class _MyMenuState extends State<MyMenu> {
                         minLines: 2,
                         maxLines: 5,
                         keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Description...',
                           hintStyle: TextStyle(
@@ -147,12 +148,12 @@ class _MyMenuState extends State<MyMenu> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                             left: 20,
                           ),
                           child: Row(
                             children: [
-                              Text(
+                              const Text(
                                 'Settings          ',
                                 style: TextStyle(
                                   fontSize: 20,
@@ -160,7 +161,7 @@ class _MyMenuState extends State<MyMenu> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.settings,
+                                icon: const Icon(Icons.settings,
                                     color: Colors.black, size: 35),
                                 onPressed: () {
                                   print("Amma");
@@ -171,7 +172,7 @@ class _MyMenuState extends State<MyMenu> {
                         ),
                       ),
                     ),
-                    FractionallySizedBox(
+                    const FractionallySizedBox(
                       //UAbove the percentage value I have displayed the current date and time
                       widthFactor: 1.0,
                       child: Align(
@@ -188,7 +189,7 @@ class _MyMenuState extends State<MyMenu> {
                         ),
                       ),
                     ),
-                    FractionallySizedBox(
+                    const FractionallySizedBox(
                       //UAbove the percentage value I have displayed the current date and time
                       widthFactor: 1.0,
                       child: Align(
@@ -212,7 +213,7 @@ class _MyMenuState extends State<MyMenu> {
                             top: 10, bottom: 0, left: 150),
                         child: Text(
                           '$version',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
                             color: Colors.black,
@@ -220,7 +221,7 @@ class _MyMenuState extends State<MyMenu> {
                         ),
                       ),
                     ),
-                    FractionallySizedBox(
+                    const FractionallySizedBox(
                       //UAbove the percentage value I have displayed the current date and time
                       widthFactor: 1.0,
                       child: Align(
@@ -239,19 +240,19 @@ class _MyMenuState extends State<MyMenu> {
                     ),
                     Text(
                       'Rating:$rating',
-                      style: TextStyle(fontSize: 30, color: Colors.black),
+                      style: const TextStyle(fontSize: 30, color: Colors.black),
                     ),
                     Container(
                       child: RatingBar.builder(
                           itemBuilder: (context, _) =>
-                              Icon(Icons.star, color: Colors.amber),
+                              const Icon(Icons.star, color: Colors.amber),
                           minRating: 1,
                           itemSize: 46,
                           itemPadding: EdgeInsets.symmetric(horizontal: 4),
                           updateOnDrag: true,
                           onRatingUpdate: (newRating) {
                             setState(() {
-                              this.rating = newRating;
+                              rating = newRating;
                             });
                           }),
                     ),
