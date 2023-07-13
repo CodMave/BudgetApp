@@ -3,20 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:budgettrack/pages/Notification.dart';
+import 'package:budgettrack/pages/MyMenu.dart';
 
-import 'MyMenu.dart';
+class HomePage extends StatelessWidget{
+  const HomePage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return ScreenUtilInit(
+      builder: (context,child) => MaterialApp(
 
+        home:Controller(),
+      ),
+      designSize: Size(325,812),
+    );
+  }
+}
 double balance = 6920.73;
 
-class HomePage extends StatelessWidget {
+class Controller extends StatelessWidget {
   double percent = 0.85;
 
-  HomePage({Key? key}) : super(key: key);
+  Controller({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+
         appBar: AppBar(
           title: const Text(
             "Hello, Nilupa!",
@@ -41,22 +56,25 @@ class HomePage extends StatelessWidget {
           ),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyWork()),
+                );
+              },
               icon: const Icon(Icons.notifications_active_outlined),
             ),
           ],
-          bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(10.0),
-            child: SizedBox(),
-          ),
+
         ),
         body: SingleChildScrollView(
+
           child: Container(
             alignment: Alignment.topCenter,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(height: 10),
+                //const SizedBox(height: 10),
                 Container(
                   height: 270,
                   width: 450,
@@ -192,107 +210,162 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                Row(
-                  children: [
-                    Container(
-                      height: 120,
-                      width: 220,
-                      margin: const EdgeInsets.only(top: 5, left: 20),
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        color: Color(0xff86D5FF),
-                      ),
-                      child: Stack(
-                        children: [
-                          const Align(
-                            alignment: Alignment.topLeft,
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 5, left: 5),
-                              child: Text(
-                                'Recent',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                SingleChildScrollView(
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 120,
+                        width: 220,
+                        margin: const EdgeInsets.only(top: 5, left: 20),
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: Color(0xff86D5FF),
+                        ),
+                        child: Stack(
+                          children: [
+                            const Align(
+                              alignment: Alignment.topLeft,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 5, left: 5),
+                                child: Text(
+                                  'Recent',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 60.0,
-                                height: 60.0,
-                                margin:
-                                    const EdgeInsets.only(top: 35, left: 10),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(0xff181EAA),
-                                    width: 3.0,
-                                  ),
-                                ),
-                                child: Container(
-                                  decoration: const BoxDecoration(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 60.0,
+                                  height: 60.0,
+                                  margin:
+                                      const EdgeInsets.only(top: 35, left: 10),
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Colors.white,
-                                  ),
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      FontAwesomeIcons.car,
-                                      size: 40,
-                                      color: Colors.black,
+                                    border: Border.all(
+                                      color: const Color(0xff181EAA),
+                                      width: 3.0,
                                     ),
+                                  ),
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white,
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        FontAwesomeIcons.car,
+                                        size: 40,
+                                        color: Colors.black,
+                                      ),
+                                      onPressed: () {
+                                        print("Transport");
+                                      },
+                                    )
                                     onPressed: () {
                                       print("Transport");
                                       const Expence();
                                     },
                                   ),
                                 ),
-                              ),
-                              Container(
-                                width: 60.0,
-                                height: 60.0,
-                                margin:
-                                    const EdgeInsets.only(top: 35, left: 10),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(0xff181EAA),
-                                    width: 3.0,
+                                Container(
+                                  width: 60.0,
+                                  height: 60.0,
+                                  margin:
+                                      const EdgeInsets.only(top: 35, left: 10),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: const Color(0xff181EAA),
+                                      width: 3.0,
+                                    ),
+                                  ),
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white,
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        FontAwesomeIcons.burger,
+                                        size: 40,
+                                        color: Colors.black,
+                                      ),
+                                      onPressed: () {
+                                        print("Food and beverages");
+                                      },
+                                    ),
                                   ),
                                 ),
-                                child: Container(
-                                  decoration: const BoxDecoration(
+                                Container(
+                                  width: 50.0,
+                                  height: 50.0,
+                                  margin:
+                                      const EdgeInsets.only(top: 35, left: 20),
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Colors.white,
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 3.0,
+                                    ),
                                   ),
                                   child: IconButton(
                                     icon: const Icon(
-                                      FontAwesomeIcons.burger,
-                                      size: 40,
-                                      color: Colors.black,
+                                      FontAwesomeIcons.plus,
+                                      size: 30,
+                                      color: Colors.grey,
                                     ),
                                     onPressed: () {
+                                      print("Amma");
                                       print("Food and beverages");
                                       const Expence();
                                     },
                                   ),
                                 ),
-                              ),
-                              Container(
-                                width: 50.0,
-                                height: 50.0,
-                                margin:
-                                    const EdgeInsets.only(top: 35, left: 20),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.grey,
-                                    width: 3.0,
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          print("Savings");
+                        },
+                        child: Container(
+                          height: 120,
+                          width:140,
+                          margin: const EdgeInsets.only(top: 5, left: 10,),
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            color: Color(0xff86D5FF),
+                          ),
+                          child: const Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Padding(
+                                  padding: EdgeInsets.only(top:0, left: 5,),
+                                  child: Text(
+                                    'Savings',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
+                              ),
+                              Align(
+                                alignment: Alignment.center,
+                                child: Image(
+                                  width: 80,
+                                  height: 80,
+                                  image: AssetImage('lib/images/Savings.png'),
                                 child: IconButton(
                                   icon: const Icon(
                                     FontAwesomeIcons.plus,
@@ -307,50 +380,10 @@ class HomePage extends StatelessWidget {
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        print("Savings");
-                      },
-                      child: Container(
-                        height: 120,
-                        width: 140,
-                        margin: const EdgeInsets.only(top: 5, left: 10),
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          color: Color(0xff86D5FF),
-                        ),
-                        child: const Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 5, left: 5),
-                                child: Text(
-                                  'Savings',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Image(
-                                width: 80,
-                                height: 80,
-                                image: AssetImage('lib/images/Savings.png'),
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -360,9 +393,9 @@ class HomePage extends StatelessWidget {
                         print("Income");
                       },
                       child: Container(
-                        height: 80,
+                        height:80,
                         width: 80,
-                        margin: const EdgeInsets.only(top: 15),
+                        margin: const EdgeInsets.only(top: 15,left:5),
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           color: Color(0xff86D5FF),
@@ -392,8 +425,8 @@ class HomePage extends StatelessWidget {
                         child: const Align(
                           alignment: Alignment.center,
                           child: Image(
-                            width: 60,
-                            height: 60,
+                            width: 80,
+                            height: 80,
                             image: AssetImage('lib/images/Summery.png'),
                           ),
                         ),
@@ -405,7 +438,7 @@ class HomePage extends StatelessWidget {
                       },
                       child: Container(
                         height: 80,
-                        width: 80,
+                        width:80,
                         margin: const EdgeInsets.only(top: 15),
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -437,6 +470,7 @@ class HomePage extends StatelessWidget {
                     ),
                   ],
                 ),
+               // SizedBox(height: 20,),
                 const SizedBox(
                   height: 20,
                 ),
