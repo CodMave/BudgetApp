@@ -9,9 +9,11 @@ import 'MyMenu.dart';
 double balance = 6920.73;
 
 class HomePage extends StatelessWidget {
+  final Function()? onTap;
+
   double percent = 0.85;
 
-  HomePage({Key? key}) : super(key: key);
+  HomePage({Key? key, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -245,8 +247,13 @@ class HomePage extends StatelessWidget {
                                       color: Colors.black,
                                     ),
                                     onPressed: () {
-                                      print("Transport");
-                                      const Expence();
+                                      //print("Transport");
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const Expence()),
+                                      );
                                     },
                                   ),
                                 ),
@@ -275,8 +282,13 @@ class HomePage extends StatelessWidget {
                                       color: Colors.black,
                                     ),
                                     onPressed: () {
-                                      print("Food and beverages");
-                                      const Expence();
+                                      //print("Food and beverages");
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const Expence()),
+                                      );
                                     },
                                   ),
                                 ),
@@ -300,8 +312,13 @@ class HomePage extends StatelessWidget {
                                     color: Colors.grey,
                                   ),
                                   onPressed: () {
-                                    print("Other");
-                                    const Expence();
+                                    //print("Other");
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const Expence()),
+                                    );
                                   },
                                 ),
                               ),
