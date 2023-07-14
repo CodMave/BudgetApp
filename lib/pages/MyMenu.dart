@@ -3,7 +3,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:budgettrack/pages/homePage.dart';
 
 class Menu extends StatelessWidget {
-  const Menu({Key key}) : super(key: key);
+  const Menu({required Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -203,8 +203,8 @@ class _MyMenuState extends State<MyMenu> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
-                            padding: EdgeInsets.only(
-                                top: 10, bottom: 0, left: 150),
+                            padding:
+                                EdgeInsets.only(top: 10, bottom: 0, left: 150),
                             child: Text(
                               '$version',
                               style: TextStyle(
