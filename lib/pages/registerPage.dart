@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import '../components/button.dart';
 import '../components/tile.dart';
 import '../services/authService.dart';
+import '../pages/emailVerification.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -23,6 +24,22 @@ class _RegisterPage extends State<RegisterPage> {
 
   final confirmPasswordControll = TextEditingController();
 
+  final emailControll = TextEditingController();
+
+  //selectedCurrency;
+
+  String? selectedCurrency = "USD";
+  List currency = [
+    'USD',
+    'EUR',
+    'INR',
+    'SLR',
+    'GBP',
+    'AUD',
+    'CAD'
+    // ADD MORE
+  ];
+
   //user signup method
   void userSignUp() async {
     //loading circle
@@ -39,25 +56,18 @@ class _RegisterPage extends State<RegisterPage> {
     try {
       if (passwordControll.text == confirmPasswordControll.text) {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: usernameControll.text,
+          email: emailControll.text,
           password: passwordControll.text,
         );
       } else {
         // error
-        wrongInputlAlert();
+        wrongInputlAlert("Passwords don't match");
       }
+      //Navigator.pop(context);
     } on FirebaseAuthException catch (ex) {
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      Navigator.pop(context);
       // wrong mail
-      if (ex.code == 'user-not-found') {
-        wrongInputlAlert();
-      }
-      //wrong password
-      else if (ex.code == 'wrong-password') {
-        wrongInputlAlert();
-      }
+      wrongInputlAlert(ex.code);
     }
 
     //loading circle end
@@ -68,7 +78,7 @@ class _RegisterPage extends State<RegisterPage> {
 
   //Wrong mail or password
 
-  void wrongInputlAlert() {
+  void wrongInputlAlert(String message) {
     showDialog(
       context: context,
       builder: (context) {
@@ -79,9 +89,9 @@ class _RegisterPage extends State<RegisterPage> {
           ),
           backgroundColor: Colors.grey[700],
           title: Text(
-            "Incorrect Creditentials",
+            message,
             style: TextStyle(
-              color: Colors.grey[700],
+              color: Colors.grey[400],
             ),
           ),
         );
@@ -121,6 +131,16 @@ class _RegisterPage extends State<RegisterPage> {
 
             MyTextField(
               controller: usernameControll,
+              hintText: 'Name',
+              obsecureText: false,
+            ),
+
+            const SizedBox(height: 15),
+
+            //email
+
+            MyTextField(
+              controller: emailControll,
               hintText: 'Email',
               obsecureText: false,
             ),
@@ -145,73 +165,57 @@ class _RegisterPage extends State<RegisterPage> {
               obsecureText: true,
             ),
 
+            const SizedBox(height: 15),
+
+            //currency selection
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: DropdownButtonFormField(
+                value: selectedCurrency,
+                items: currency.map((listValue) {
+                  return DropdownMenuItem(
+                    value: listValue,
+                    child: Text(listValue),
+                  );
+                }).toList(),
+                onChanged: (valueSelected) {
+                  setState(() {
+                    selectedCurrency = valueSelected as String;
+                  });
+                },
+                icon: Icon(
+                  Icons.arrow_downward_outlined,
+                  color: Colors.grey[800],
+                ),
+                dropdownColor: Colors.grey[200],
+                decoration: InputDecoration(
+                  labelText: "Selet The Currency",
+                  labelStyle: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold),
+                  prefixIcon: Icon(
+                    Icons.attach_money_sharp,
+                    color: Colors.grey[700],
+                    size: 40,
+                  ),
+                ),
+              ),
+            ),
+
             const SizedBox(height: 30),
 
             //sign in
 
             MyButton(
               onTap: userSignUp,
-              text: "Sign Up",
-            ),
-
-            const SizedBox(height: 30),
-
-            //continue with
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Divider(
-                      thickness: 0.5,
-                      color: Colors.grey[400],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(
-                      "Or Continue With",
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      thickness: 0.5,
-                      color: Colors.grey[400],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            //google and apple logo
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //google
-
-                MyTitle(
-                  imagePath: 'lib/images/google.png',
-                  onTap: () => AuthService().signInWithGoodle(),
-                ),
-
-                const SizedBox(width: 25),
-                //apple
-
-                MyTitle(
-                  imagePath: 'lib/images/apple.png',
-                  onTap: () => {},
-                ),
-              ],
+              text: "Register",
             ),
 
             const SizedBox(height: 25),
 
-            //sign up
+            //signup
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -12,8 +12,8 @@ class PlusButton extends StatelessWidget {
       onTap: function,
       child: Container(
         //color: const Color(0xff90E0EF),
-        height: 75,
-        width: 75,
+        height: 60,
+        width: 60,
         decoration: BoxDecoration(
           color: const Color(0xff90E0EF),
           shape: BoxShape.circle,

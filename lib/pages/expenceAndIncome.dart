@@ -14,10 +14,10 @@ class Expence extends StatefulWidget {
 class _ExpenceState extends State<Expence> {
   //variables
 
-  late final String transactionName;
-  late final int amountEntered;
-  late final int balance;
+  final TextEditingController transactionName = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
   bool is_income = false;
+  final formKey = GlobalKey<FormState>();
 
   //new transaction dialog box
   void newTransaction() {
@@ -28,7 +28,7 @@ class _ExpenceState extends State<Expence> {
           return StatefulBuilder(
             builder: (BuildContext context, setState) {
               return AlertDialog(
-                title: Text("N E W   T R A N S A C T I O N"),
+                title: const Text("N E W   T R A N S A C T I O N"),
                 content: SingleChildScrollView(
                   child: Column(
                     children: [
@@ -36,7 +36,7 @@ class _ExpenceState extends State<Expence> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
-                            "Income",
+                            "Expensce",
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 18,
@@ -55,11 +55,43 @@ class _ExpenceState extends State<Expence> {
                           ),
 
                           Text(
-                            "Expence",
+                            "Income",
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 18,
                             ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Form(
+                              key: formKey,
+                              child: TextFormField(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: "Enter the Amount",
+                                ),
+                                validator: (text) {
+                                  if (text == null || text.isEmpty) {
+                                    return "Please enter the amount";
+                                  }
+                                  return null;
+                                },
+                                controller: amountController,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ,
                           ),
                         ],
                       ),
@@ -304,7 +336,8 @@ class _ExpenceState extends State<Expence> {
                     children: [
                       MyTransaction(
                         transactionName: "Name",
-                        transactionAmount: 200,
+                        transactionAmount:
+                            int.tryParse(amountController.text) ?? 0,
                         transactionType: "expence",
                       ),
                     ],
@@ -317,7 +350,7 @@ class _ExpenceState extends State<Expence> {
           // Button to add new transaction
 
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child: Align(
               alignment: Alignment.bottomRight,
               child: PlusButton(
