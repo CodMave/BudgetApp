@@ -1,4 +1,5 @@
 import 'package:budgettrack/components/textfield.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -59,6 +60,22 @@ class _RegisterPage extends State<RegisterPage> {
           email: emailControll.text,
           password: passwordControll.text,
         );
+
+        //save user details in firestore
+        saveUserDetails(
+          usernameControll.text.trim(),
+          emailControll.text.trim(),
+          passwordControll.text.trim(),
+          selectedCurrency!,
+        );
+
+        //navigate to email verification page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const EmailVerification(),
+          ),
+        );
       } else {
         // error
         wrongInputlAlert("Passwords don't match");
@@ -97,6 +114,18 @@ class _RegisterPage extends State<RegisterPage> {
         );
       },
     );
+  }
+
+  //save user details in firestore [database : userDetails]
+
+  Future saveUserDetails(
+      String name, String email, String password, String currency) async {
+    await FirebaseFirestore.instance.collection('userDetails').add({
+      'username': name,
+      'email': email,
+      'password': password,
+      'currency': currency,
+    });
   }
 
   @override
@@ -206,10 +235,12 @@ class _RegisterPage extends State<RegisterPage> {
 
             const SizedBox(height: 30),
 
-            //sign in
+            //register button
 
             MyButton(
-              onTap: userSignUp,
+              onTap: () {
+                userSignUp();
+              },
               text: "Register",
             ),
 

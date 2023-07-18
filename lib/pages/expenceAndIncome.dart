@@ -91,13 +91,20 @@ class _ExpenceState extends State<Expence> {
                       Row(
                         children: [
                           Expanded(
-                            child: ,
+                            child: TextField(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: "Enter the Transaction Name",
+                              ),
+                              controller: transactionName,
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
                 ),
+                actions: <Widget>[],
               );
             },
           );

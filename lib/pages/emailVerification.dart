@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class EmailVerification extends StatefulWidget {
-  const EmailVerification({super.key});
+  const EmailVerification({Key? key}) : super(key: key);
 
   @override
   State<EmailVerification> createState() => _EmailVerification();
@@ -25,7 +25,8 @@ class _EmailVerification extends State<EmailVerification> {
   void initState() {
     super.initState();
 
-    isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    final user = FirebaseAuth.instance.currentUser;
+    isEmailVerified = user?.emailVerified ?? false;
 
     if (!isEmailVerified) {
       sendVerificationEmail();
@@ -33,6 +34,15 @@ class _EmailVerification extends State<EmailVerification> {
       timer = Timer.periodic(
         const Duration(seconds: 3),
         (_) => checkIsEmailVerified(),
+      );
+    } else {
+      //navigate to home page
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
       );
     }
   }
@@ -53,7 +63,14 @@ class _EmailVerification extends State<EmailVerification> {
     });
 
     if (isEmailVerified) {
-      timer?.cancel();
+      //navigate to home page
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
     }
   }
 
