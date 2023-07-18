@@ -1,36 +1,10 @@
-<<<<<<< HEAD
-import 'package:flutter/cupertino.dart';
-=======
 import 'package:budgettrack/pages/expenceAndIncome.dart';
->>>>>>> d39a5ece5f4a22f9127160784adb4aad2fa15b4f
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-<<<<<<< HEAD
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:budgettrack/pages/Notification.dart';
-import 'package:budgettrack/pages/MyMenu.dart';
-import 'package:badges/badges.dart' as badges;
-import 'Notification.dart';
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: Size(325, 812),
-      builder: (context, child) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Controller(),
-      ),
-    );
-  }
-}
-=======
 
 import 'MyMenu.dart';
->>>>>>> d39a5ece5f4a22f9127160784adb4aad2fa15b4f
 
 double balance = 6920.73;
 
@@ -44,12 +18,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      
       child: Scaffold(
-<<<<<<< HEAD
-        
-=======
->>>>>>> d39a5ece5f4a22f9127160784adb4aad2fa15b4f
         appBar: AppBar(
           title: const Text(
             "Hello, Nilupa!",
@@ -73,23 +42,6 @@ class HomePage extends StatelessWidget {
             icon: const Icon(Icons.menu),
           ),
           actions: [
-<<<<<<< HEAD
-            badges.Badge(
-              badgeContent: Text('${
-               MyHomePage.Counter()
-              }'),
-              position:badges.BadgePosition.topEnd(top:2, end:0),
-               badgeAnimation: badges.BadgeAnimation.slide(
-
-               ),
-        badgeStyle: badges.BadgeStyle(
-
-          shape: badges.BadgeShape.circle,
-          padding: EdgeInsets.all(8.0),
-          badgeColor: Colors.red,
-
-
-=======
             IconButton(
               onPressed: () {},
               icon: const Icon(Icons.notifications_active_outlined),
@@ -99,22 +51,7 @@ class HomePage extends StatelessWidget {
             preferredSize: Size.fromHeight(10.0),
             child: SizedBox(),
           ),
->>>>>>> d39a5ece5f4a22f9127160784adb4aad2fa15b4f
         ),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyWork()),
-                  );
-                },
-                 icon:Icon(Icons.notifications_active_outlined, size:40,),
-
-              ),
-              ),
-            ],
-            ),
-
         body: SingleChildScrollView(
           child: Container(
             alignment: Alignment.topCenter,
