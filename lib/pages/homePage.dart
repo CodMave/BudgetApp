@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -5,20 +6,23 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:budgettrack/pages/Notification.dart';
 import 'package:budgettrack/pages/MyMenu.dart';
+import 'package:badges/badges.dart' as badges;
+import 'Notification.dart';
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key});
 
-class HomePage extends StatelessWidget{
-  const HomePage({super.key});
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      builder: (context,child) => MaterialApp(
-
-        home:Controller(),
+      designSize: Size(325, 812),
+      builder: (context, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Controller(),
       ),
-      designSize: Size(325,812),
     );
   }
 }
+
 double balance = 6920.73;
 
 class Controller extends StatelessWidget {
@@ -29,8 +33,9 @@ class Controller extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      
       child: Scaffold(
-
+        
         appBar: AppBar(
           title: const Text(
             "Hello, Sehan!",
@@ -54,18 +59,36 @@ class Controller extends StatelessWidget {
             icon: const Icon(Icons.menu),
           ),
           actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyWork()),
-                );
-              },
-              icon: const Icon(Icons.notifications_active_outlined),
-            ),
-          ],
+            badges.Badge(
+              badgeContent: Text('${
+               MyHomePage.Counter()
+              }'),
+              position:badges.BadgePosition.topEnd(top:2, end:0),
+               badgeAnimation: badges.BadgeAnimation.slide(
+
+               ),
+        badgeStyle: badges.BadgeStyle(
+
+          shape: badges.BadgeShape.circle,
+          padding: EdgeInsets.all(8.0),
+          badgeColor: Colors.red,
+
 
         ),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyWork()),
+                  );
+                },
+                 icon:Icon(Icons.notifications_active_outlined, size:40,),
+
+              ),
+              ),
+            ],
+            ),
+
         body: SingleChildScrollView(
 
           child: Container(

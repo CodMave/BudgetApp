@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:budgettrack/pages/homePage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class Menu extends StatelessWidget {
+class Menu extends StatelessWidget{
   const Menu({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MyMenu(),
+    return ScreenUtilInit(
+      builder: (context,child) => MaterialApp(
+
+        home:MyMenu(),
+      ),
+      designSize: Size(325,812),
     );
   }
 }
+
+
 
 class MyMenu extends StatefulWidget {
   _MyMenuState createState() => _MyMenuState();
@@ -62,7 +69,7 @@ class _MyMenuState extends State<MyMenu> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => HomePage(),
+                              builder: (context) => Controller(),
                             ),
                           );
                         },

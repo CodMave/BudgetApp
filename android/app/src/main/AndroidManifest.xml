@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.budgettrack">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="budgettrack"
         android:name="${applicationName}"
@@ -30,5 +31,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+       <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="high_important_channel" />
     </application>
 </manifest>
