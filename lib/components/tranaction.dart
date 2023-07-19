@@ -16,13 +16,13 @@ class MyTransaction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
       child: Container(
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              offset: Offset(4.0, 4.0),
+              color: Colors.grey.withOpacity(0.4),
+              offset: const Offset(4.0, 4.0),
               blurRadius: 10.0,
               spreadRadius: 1,
             ),
@@ -31,7 +31,7 @@ class MyTransaction extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Container(
-            color: Colors.grey[200],
+            color: Colors.grey[300],
             height: 65,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -49,10 +49,10 @@ class MyTransaction extends StatelessWidget {
 
                   // Amount
                   Text(
-                    (transactionType == "expence" ? "- " : "+ ") +
+                    (transactionType == "Expence" ? "- " : "+ ") +
                         "\$ $transactionAmount",
                     style: TextStyle(
-                      color: transactionType == "expence"
+                      color: transactionType == "Expence"
                           ? Colors.red
                           : Colors.green,
                       fontSize: 20,

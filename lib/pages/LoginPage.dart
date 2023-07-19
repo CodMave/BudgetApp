@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 
 import '../components/button.dart';
 import '../components/tile.dart';
+import 'forgotPassword.dart';
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
@@ -132,18 +133,23 @@ class _LoginPageState extends State<LoginPage> {
 
             //forgot password
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Forgot Password ?',
-                    style: TextStyle(
-                      color: Colors.grey[600],
+            GestureDetector(
+              onTap: () {
+                const ForgotPassword();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Forgot Password ?',
+                      style: TextStyle(
+                        color: Colors.blue[700],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 

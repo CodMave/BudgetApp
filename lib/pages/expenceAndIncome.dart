@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+//import '../components/transaction.dart';
 
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
@@ -14,10 +16,38 @@ class Expence extends StatefulWidget {
 class _ExpenceState extends State<Expence> {
   //variables
 
+  List<MyTransaction> transactions = [];
+
   final TextEditingController transactionName = TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool is_income = false;
   final formKey = GlobalKey<FormState>();
+
+  //Fetching user selected currency from firebase
+  Future<String> fetchUserCurrency(String userId) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final CollectionReference userDetailsCollection =
+          firestore.collection('userDetails');
+
+      final DocumentReference userDocument = userDetailsCollection.doc(userId);
+
+      final DocumentSnapshot snapShot = await userDocument.get();
+
+      if (snapShot.exists && snapShot.data() != null) {
+        final Map<String, dynamic> data =
+            snapShot.data() as Map<String, dynamic>;
+
+        return data['currency'];
+      } else {
+        return 'USD';
+      }
+    } catch (e) {
+      return 'USD';
+      print('db connection failed');
+    }
+  }
 
   //new transaction dialog box
   void newTransaction() {
@@ -35,10 +65,10 @@ class _ExpenceState extends State<Expence> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text(
-                            "Expensce",
+                          const Text(
+                            "Expence",
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: Colors.blueGrey,
                               fontSize: 18,
                             ),
                           ),
@@ -54,10 +84,10 @@ class _ExpenceState extends State<Expence> {
                             },
                           ),
 
-                          Text(
+                          const Text(
                             "Income",
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: Colors.blueGrey,
                               fontSize: 18,
                             ),
                           ),
@@ -104,7 +134,52 @@ class _ExpenceState extends State<Expence> {
                     ],
                   ),
                 ),
-                actions: <Widget>[],
+                actions: <Widget>[
+                  MaterialButton(
+                    color: Colors.grey[600],
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  MaterialButton(
+                    color: Colors.grey[600],
+                    child: Text(
+                      'Enter',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        String transactionType =
+                            is_income ? "Income" : "Expence";
+                        int transactionAmount =
+                            int.parse(amountController.text) ?? 0;
+
+                        //add transaction to the list
+                        setState(() {
+                          transactions.add(
+                            MyTransaction(
+                              transactionName: transactionName.text,
+                              transactionAmount: transactionAmount,
+                              transactionType: transactionType,
+                            ),
+                          );
+                        });
+
+                        transactionName.clear();
+                        amountController.clear();
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                ],
               );
             },
           );
@@ -332,24 +407,28 @@ class _ExpenceState extends State<Expence> {
             ),
           ),
 
-          const SizedBox(height: 40),
+          const SizedBox(height: 15),
           // Show recent transactions
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Container(
-                child: Center(
-                  child: Column(
-                    children: [
-                      MyTransaction(
-                        transactionName: "Name",
-                        transactionAmount:
-                            int.tryParse(amountController.text) ?? 0,
-                        transactionType: "expence",
-                      ),
-                    ],
+            child: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: transactions.length,
+                        itemBuilder: (context, Index) {
+                          return MyTransaction(
+                            transactionName:
+                                transactions[Index].transactionName,
+                            transactionAmount:
+                                transactions[Index].transactionAmount,
+                            transactionType:
+                                transactions[Index].transactionType,
+                          );
+                        }),
                   ),
-                ),
+                ],
               ),
             ),
           ),

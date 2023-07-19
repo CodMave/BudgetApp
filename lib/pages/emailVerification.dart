@@ -16,7 +16,7 @@ class EmailVerification extends StatefulWidget {
 }
 
 class _EmailVerification extends State<EmailVerification> {
-  //void Function()? onTap;
+  void Function()? onTap;
   bool isEmailVerified = false;
   bool canResendEmail = false;
   Timer? timer;
