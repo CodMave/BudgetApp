@@ -8,6 +8,8 @@ import 'package:budgettrack/pages/Notification.dart';
 import 'package:budgettrack/pages/MyMenu.dart';
 import 'package:badges/badges.dart' as badges;
 import 'Notification.dart';
+import 'expenceAndIncome.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({Key? key});
 
@@ -33,9 +35,7 @@ class Controller extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-
       child: Scaffold(
-
         appBar: AppBar(
           title: const Text(
             "Hello, Sehan!",
@@ -60,20 +60,13 @@ class Controller extends StatelessWidget {
           ),
           actions: [
             badges.Badge(
-              badgeContent: Text('${
-                  1
-              }'),
-              position:badges.BadgePosition.topEnd(top:2, end:0),
-              badgeAnimation: badges.BadgeAnimation.slide(
-
-              ),
+              badgeContent: Text('${1}'),
+              position: badges.BadgePosition.topEnd(top: 2, end: 0),
+              badgeAnimation: badges.BadgeAnimation.slide(),
               badgeStyle: badges.BadgeStyle(
-
                 shape: badges.BadgeShape.circle,
                 padding: EdgeInsets.all(8.0),
                 badgeColor: Colors.red,
-
-
               ),
               child: IconButton(
                 onPressed: () {
@@ -82,15 +75,15 @@ class Controller extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => MyWork()),
                   );
                 },
-                icon:Icon(Icons.notifications_active_outlined, size:40,),
-
+                icon: Icon(
+                  Icons.notifications_active_outlined,
+                  size: 40,
+                ),
               ),
             ),
           ],
         ),
-
         body: SingleChildScrollView(
-
           child: Container(
             alignment: Alignment.topCenter,
             child: Column(
@@ -105,7 +98,7 @@ class Controller extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   margin:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -266,7 +259,7 @@ class Controller extends StatelessWidget {
                                   width: 60.0,
                                   height: 60.0,
                                   margin:
-                                  const EdgeInsets.only(top: 35, left: 10),
+                                      const EdgeInsets.only(top: 35, left: 10),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -286,7 +279,13 @@ class Controller extends StatelessWidget {
                                         color: Colors.black,
                                       ),
                                       onPressed: () {
-                                        print("Transport");
+                                        print('clicked');
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Expence()),
+                                        );
                                       },
                                     ),
                                   ),
@@ -295,7 +294,7 @@ class Controller extends StatelessWidget {
                                   width: 60.0,
                                   height: 60.0,
                                   margin:
-                                  const EdgeInsets.only(top: 35, left: 10),
+                                      const EdgeInsets.only(top: 35, left: 10),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -315,7 +314,13 @@ class Controller extends StatelessWidget {
                                         color: Colors.black,
                                       ),
                                       onPressed: () {
-                                        print("Food and beverages");
+                                        print('clicked');
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Expence()),
+                                        );
                                       },
                                     ),
                                   ),
@@ -324,7 +329,7 @@ class Controller extends StatelessWidget {
                                   width: 50.0,
                                   height: 50.0,
                                   margin:
-                                  const EdgeInsets.only(top: 35, left: 20),
+                                      const EdgeInsets.only(top: 35, left: 20),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -339,7 +344,12 @@ class Controller extends StatelessWidget {
                                       color: Colors.grey,
                                     ),
                                     onPressed: () {
-                                      print("Amma");
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const Expence()),
+                                      );
                                     },
                                   ),
                                 ),
@@ -354,8 +364,11 @@ class Controller extends StatelessWidget {
                         },
                         child: Container(
                           height: 120,
-                          width:140,
-                          margin: const EdgeInsets.only(top: 5, left: 10,),
+                          width: 140,
+                          margin: const EdgeInsets.only(
+                            top: 5,
+                            left: 10,
+                          ),
                           decoration: const BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             color: Color(0xff86D5FF),
@@ -365,7 +378,10 @@ class Controller extends StatelessWidget {
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Padding(
-                                  padding: EdgeInsets.only(top:0, left: 5,),
+                                  padding: EdgeInsets.only(
+                                    top: 0,
+                                    left: 5,
+                                  ),
                                   child: Text(
                                     'Savings',
                                     style: TextStyle(
@@ -399,9 +415,9 @@ class Controller extends StatelessWidget {
                         print("Income");
                       },
                       child: Container(
-                        height:80,
+                        height: 80,
                         width: 80,
-                        margin: const EdgeInsets.only(top: 15,left:5),
+                        margin: const EdgeInsets.only(top: 15, left: 5),
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           color: Color(0xff86D5FF),
@@ -444,7 +460,7 @@ class Controller extends StatelessWidget {
                       },
                       child: Container(
                         height: 80,
-                        width:80,
+                        width: 80,
                         margin: const EdgeInsets.only(top: 15),
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -476,7 +492,9 @@ class Controller extends StatelessWidget {
                     ),
                   ],
                 ),
-                // SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
               ],
             ),
           ),
