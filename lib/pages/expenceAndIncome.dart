@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 //import '../components/transaction.dart';
@@ -24,29 +25,112 @@ class _ExpenceState extends State<Expence> {
   final formKey = GlobalKey<FormState>();
 
   //Fetching user selected currency from firebase
-  Future<String> fetchUserCurrency(String userId) async {
+
+  //variable to store user selected currency
+  late String userSelecterCurrency = 'USD';
+
+  //symbol user selected currency
+  late String currencySymbol = '\$';
+
+  //get document Ids
+  Future getDocIds() async {
+    await FirebaseFirestore.instance
+        .collection('userDatails')
+        .get()
+        .then((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        setState(() {
+          userSelecterCurrency = snapshot.docs[0].get('currency');
+        });
+        currencySymbolAssign();
+      }
+    });
+  }
+
+  void currencySymbolAssign() {
+    if (userSelecterCurrency == 'USD') {
+      currencySymbol = '\$';
+    } else if (userSelecterCurrency == 'EUR') {
+      currencySymbol = '€';
+    } else if (userSelecterCurrency == 'INR') {
+      currencySymbol = '₹';
+    } else if (userSelecterCurrency == 'SLR') {
+      currencySymbol = 'Rs';
+    } else if (userSelecterCurrency == 'GBP') {
+      currencySymbol = '£';
+    } else if (userSelecterCurrency == 'AUD') {
+      currencySymbol = 'A\$';
+    } else if (userSelecterCurrency == 'CAD') {
+      currencySymbol = 'C\$';
+    }
+  }
+
+  //method to get currently signed in user's uid
+  Future<String> getCurrentUserId() async {
+    try {
+      final User? user = FirebaseAuth.instance.currentUser;
+
+      return user!.uid;
+    } catch (ex) {
+      print('current user fetchimg failed');
+      return '';
+    }
+  }
+
+  //method to add new expence to the expenceID collection
+  Future<void> addExpenceToFireStore(
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      final CollectionReference userDetailsCollection =
-          firestore.collection('userDetails');
+      final CollectionReference expenceCollection = firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('expenceID');
+      ;
 
-      final DocumentReference userDocument = userDetailsCollection.doc(userId);
-
-      final DocumentSnapshot snapShot = await userDocument.get();
-
-      if (snapShot.exists && snapShot.data() != null) {
-        final Map<String, dynamic> data =
-            snapShot.data() as Map<String, dynamic>;
-
-        return data['currency'];
-      } else {
-        return 'USD';
-      }
-    } catch (e) {
-      return 'USD';
-      print('db connection failed');
+      await expenceCollection.add({
+        'transactionName': transactionName,
+        'transactionAmount': transactionAmount,
+        'timestamp': DateTime.now(),
+      });
+    } catch (ex) {
+      print('expence adding failed');
     }
+  }
+
+  //method to add new income to the incomeID collection
+  Future<void> addIncomeToFireStore(
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final CollectionReference incomeCollection = firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('incomeID');
+      ;
+
+      await incomeCollection.add({
+        'transactionName': transactionName,
+        'transactionAmount': transactionAmount,
+        'timestamp': DateTime.now(),
+      });
+    } catch (ex) {
+      print('income adding failed');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDocIds();
   }
 
   //new transaction dialog box
@@ -137,7 +221,7 @@ class _ExpenceState extends State<Expence> {
                 actions: <Widget>[
                   MaterialButton(
                     color: Colors.grey[600],
-                    child: Text(
+                    child: const Text(
                       'Cancel',
                       style: TextStyle(
                         color: Colors.white,
@@ -149,7 +233,7 @@ class _ExpenceState extends State<Expence> {
                   ),
                   MaterialButton(
                     color: Colors.grey[600],
-                    child: Text(
+                    child: const Text(
                       'Enter',
                       style: TextStyle(
                         color: Colors.white,
@@ -161,6 +245,9 @@ class _ExpenceState extends State<Expence> {
                             is_income ? "Income" : "Expence";
                         int transactionAmount =
                             int.parse(amountController.text) ?? 0;
+
+                        //get the user id
+                        String? userId = getCurrentUserId() as String?;
 
                         //add transaction to the list
                         setState(() {
@@ -176,6 +263,20 @@ class _ExpenceState extends State<Expence> {
                         transactionName.clear();
                         amountController.clear();
                         Navigator.of(context).pop();
+
+                        if (is_income) {
+                          addIncomeToFireStore(
+                            userId!,
+                            transactionName.text,
+                            transactionAmount,
+                          );
+                        } else {
+                          addExpenceToFireStore(
+                            userId!,
+                            transactionName.text,
+                            transactionAmount,
+                          );
+                        }
                       }
                     },
                   ),
@@ -220,6 +321,7 @@ class _ExpenceState extends State<Expence> {
             child: Container(
               //color: Colors.grey[100],
               height: 190,
+              // ignore: sort_child_properties_last
               child: Column(
                 children: [
                   // Balance text
@@ -238,25 +340,25 @@ class _ExpenceState extends State<Expence> {
 
                   // Balance amount
 
-                  const Row(
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // currency symbol
                       Text(
-                        "\$",
-                        style: TextStyle(
+                        currencySymbol,
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 34,
                         ),
                       ),
 
-                      SizedBox(width: 3),
+                      const SizedBox(width: 3),
 
                       // amount
 
                       Text(
-                        "10,000",
+                        "10,000", //TODO: get balance from firebase
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 34,
@@ -279,7 +381,7 @@ class _ExpenceState extends State<Expence> {
                         Row(
                           children: [
                             // up icon
-                            Icon(
+                            const Icon(
                               Icons.arrow_upward,
                               color: Colors.green,
                               size: 28,
@@ -304,8 +406,8 @@ class _ExpenceState extends State<Expence> {
                                   children: [
                                     //currency symbol
                                     Text(
-                                      "\$",
-                                      style: TextStyle(
+                                      currencySymbol,
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 18,
                                       ),
@@ -331,7 +433,7 @@ class _ExpenceState extends State<Expence> {
                         Row(
                           children: [
                             // down icon
-                            Icon(
+                            const Icon(
                               Icons.arrow_downward,
                               color: Colors.red,
                               size: 28,
@@ -354,8 +456,8 @@ class _ExpenceState extends State<Expence> {
                                   children: [
                                     //currency symbol
                                     Text(
-                                      "\$",
-                                      style: TextStyle(
+                                      currencySymbol,
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 18,
                                       ),
