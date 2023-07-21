@@ -32,6 +32,10 @@ class _ExpenceState extends State<Expence> {
   //symbol user selected currency
   late String currencySymbol = '\$';
 
+  //two variables to fetch the latest expence and income
+  MyTransaction? lastIncomeTransaction;
+  MyTransaction? lastExpenseTransaction;
+
   //get document Ids
   Future getDocIds() async {
     await FirebaseFirestore.instance
@@ -127,10 +131,64 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
+  //fettching latest exoence and income from firestore
+  Future<void> fetchLatestTransactions(String userId) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      //fetch the latest income
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('incomeID')
+          .orderBy('timestamp', descending: true)
+          .limit(1)
+          .get();
+
+      if (incomeSnapshot.docs.isNotEmpty) {
+        final income = incomeSnapshot.docs[0];
+        setState(() {
+          lastIncomeTransaction = MyTransaction(
+            transactionName: income.get('transactionName'),
+            transactionAmount: income.get('transactionAmount'),
+            transactionType: 'Income',
+          );
+        });
+      }
+
+      //fetch the latest expence
+      final expenceSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('expenceID')
+          .orderBy('timestamp', descending: true)
+          .limit(1)
+          .get();
+
+      if (expenceSnapshot.docs.isNotEmpty) {
+        final expence = expenceSnapshot.docs[0];
+        setState(() {
+          lastExpenseTransaction = MyTransaction(
+            transactionName: expence.get('transactionName'),
+            transactionAmount: expence.get('transactionAmount'),
+            transactionType: 'Expence',
+          );
+        });
+      }
+    } catch (ex) {
+      print('fetching latest transactions failed');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     getDocIds();
+
+    //fetch latest transactions
+    getCurrentUserId().then((userId) {
+      fetchLatestTransactions(userId);
+    });
   }
 
   //new transaction dialog box
@@ -415,8 +473,8 @@ class _ExpenceState extends State<Expence> {
 
                                     // amount
                                     Text(
-                                      "200",
-                                      style: TextStyle(
+                                      "${lastIncomeTransaction?.transactionAmount ?? '0'}",
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 18,
                                       ),
@@ -465,8 +523,8 @@ class _ExpenceState extends State<Expence> {
 
                                     // amount
                                     Text(
-                                      "200",
-                                      style: TextStyle(
+                                      "${lastExpenseTransaction?.transactionAmount ?? '0'}",
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 18,
                                       ),
