@@ -19,7 +19,8 @@ class _ExpenceState extends State<Expence> {
 
   List<MyTransaction> transactions = [];
 
-  final TextEditingController transactionName = TextEditingController();
+  final TextEditingController transactionNameController =
+      TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool is_income = false;
   final formKey = GlobalKey<FormState>();
@@ -32,7 +33,19 @@ class _ExpenceState extends State<Expence> {
   //symbol user selected currency
   late String currencySymbol = '\$';
 
+  //two variables to fetch the latest expence and income
+  MyTransaction? lastIncomeTransaction;
+  MyTransaction? lastExpenseTransaction;
+
+  //total balance variable
+  int totalBalance = 0;
+
+  //variable to store the stream
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> balanceStream;
+  bool isBalanceStreamInitialized = false;
+
   //get document Ids
+
   Future getDocIds() async {
     await FirebaseFirestore.instance
         .collection('userDatails')
@@ -66,6 +79,7 @@ class _ExpenceState extends State<Expence> {
   }
 
   //method to get currently signed in user's uid
+
   Future<String> getCurrentUserId() async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
@@ -78,6 +92,7 @@ class _ExpenceState extends State<Expence> {
   }
 
   //method to add new expence to the expenceID collection
+
   Future<void> addExpenceToFireStore(
     String userId,
     String transactionName,
@@ -90,7 +105,6 @@ class _ExpenceState extends State<Expence> {
           .collection('userDetails')
           .doc(userId)
           .collection('expenceID');
-      ;
 
       await expenceCollection.add({
         'transactionName': transactionName,
@@ -103,6 +117,7 @@ class _ExpenceState extends State<Expence> {
   }
 
   //method to add new income to the incomeID collection
+
   Future<void> addIncomeToFireStore(
     String userId,
     String transactionName,
@@ -127,13 +142,180 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
+  //fettching latest exoence and income from firestore
+
+  Future<void> fetchLatestTransactions(String userId) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      //fetch the latest income
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('incomeID')
+          .orderBy('timestamp', descending: true)
+          .limit(1)
+          .get();
+
+      if (incomeSnapshot.docs.isNotEmpty) {
+        final income = incomeSnapshot.docs[0];
+        setState(() {
+          lastIncomeTransaction = MyTransaction(
+            transactionName: income.get('transactionName'),
+            transactionAmount: income.get('transactionAmount'),
+            transactionType: 'Income',
+          );
+        });
+      }
+
+      //fetch the latest expence
+      final expenceSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('expenceID')
+          .orderBy('timestamp', descending: true)
+          .limit(1)
+          .get();
+
+      if (expenceSnapshot.docs.isNotEmpty) {
+        final expence = expenceSnapshot.docs[0];
+        setState(() {
+          lastExpenseTransaction = MyTransaction(
+            transactionName: expence.get('transactionName'),
+            transactionAmount: expence.get('transactionAmount'),
+            transactionType: 'Expence',
+          );
+        });
+      }
+
+      //update the total balance
+      getTotalBalance(userId);
+    } catch (ex) {
+      print('fetching latest transactions failed');
+    }
+  }
+
+  //method to calculate total income from firestore
+
+  Future<int> calculateTotalIncome(String userId) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('incomeID')
+          .get();
+
+      int totalIncome = 0;
+      incomeSnapshot.docs.forEach((incomeDoc) {
+        totalIncome += (incomeDoc.get('transactionAmount') as num).toInt();
+      });
+
+      return totalIncome;
+    } catch (ex) {
+      print('calculating total income failed');
+      return 0;
+    }
+  }
+
+  //method to calculate total expence from firestore
+
+  Future<int> getTotalExpence(String userId) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final expenceSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('expenceID')
+          .get();
+
+      int totalExpence = 0;
+      expenceSnapshot.docs.forEach((expenceDoc) {
+        totalExpence += (expenceDoc.get('transactionAmount') as num).toInt();
+      });
+
+      return totalExpence;
+    } catch (ex) {
+      print('calculating total expence failed');
+      return 0;
+    }
+  }
+
+  //method to calculate the total balance
+
+  Future<int> getTotalBalance(String userId) async {
+    int totalIncome = await calculateTotalIncome(userId);
+    int totalExpence = await getTotalExpence(userId);
+
+    int balance = totalIncome - totalExpence;
+
+    setState(() {
+      totalBalance = balance;
+    });
+
+    return balance;
+  }
+
+  //method to get the updates in realtime
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getBalanceStream(
+      String userID) {
+    return FirebaseFirestore.instance
+        .collection('userDetails')
+        .doc(userID)
+        .snapshots();
+  }
+
+  // fetch expence in real time
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getExpenceStream(String userID) {
+    return FirebaseFirestore.instance
+        .collection('userDetails')
+        .doc(userID)
+        .collection('expenceID')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+  }
+
+  // fetch income in real time
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getIncomeStream(String userID) {
+    return FirebaseFirestore.instance
+        .collection('userDetails')
+        .doc(userID)
+        .collection('incomeID')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+  }
+
   @override
   void initState() {
     super.initState();
     getDocIds();
+
+    //fetch and set the total balance
+    getCurrentUserId().then((userId) {
+      getTotalBalance(userId).then((Balance) {
+        setState(() {
+          totalBalance = Balance;
+        });
+      });
+
+      // Fetch and set the latest transactions
+      fetchLatestTransactions(userId);
+
+      // Listen for real-time changes to balance, income, and expense
+      balanceStream = getBalanceStream(userId);
+      balanceStream?.listen((snapshot) {
+        setState(() {
+          isBalanceStreamInitialized = true;
+        });
+      });
+    });
   }
 
   //new transaction dialog box
+
   void newTransaction() {
     showDialog(
         barrierDismissible: false,
@@ -144,45 +326,45 @@ class _ExpenceState extends State<Expence> {
               return AlertDialog(
                 title: const Text("N E W   T R A N S A C T I O N"),
                 content: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          const Text(
-                            "Expence",
-                            style: TextStyle(
-                              color: Colors.blueGrey,
-                              fontSize: 18,
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Text(
+                              "Expence",
+                              style: TextStyle(
+                                color: Colors.blueGrey,
+                                fontSize: 18,
+                              ),
                             ),
-                          ),
 
-                          //toggle button
+                            //toggle button
 
-                          Switch(
-                            value: is_income,
-                            onChanged: (newValue) {
-                              setState(() {
-                                is_income = newValue;
-                              });
-                            },
-                          ),
-
-                          const Text(
-                            "Income",
-                            style: TextStyle(
-                              color: Colors.blueGrey,
-                              fontSize: 18,
+                            Switch(
+                              value: is_income,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  is_income = newValue;
+                                });
+                              },
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Form(
-                              key: formKey,
+
+                            const Text(
+                              "Income",
+                              style: TextStyle(
+                                color: Colors.blueGrey,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
                               child: TextFormField(
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
@@ -198,24 +380,24 @@ class _ExpenceState extends State<Expence> {
                                 keyboardType: TextInputType.number,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: "Enter the Transaction Name",
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: "Enter the Transaction Name",
+                                ),
+                                controller: transactionNameController,
                               ),
-                              controller: transactionName,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 actions: <Widget>[
@@ -239,41 +421,44 @@ class _ExpenceState extends State<Expence> {
                         color: Colors.white,
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         String transactionType =
                             is_income ? "Income" : "Expence";
                         int transactionAmount =
                             int.parse(amountController.text) ?? 0;
 
+                        String transactionName = transactionNameController.text;
+                        print(transactionName);
+
                         //get the user id
-                        String? userId = getCurrentUserId() as String?;
+                        String? userId = await getCurrentUserId();
 
                         //add transaction to the list
                         setState(() {
                           transactions.add(
                             MyTransaction(
-                              transactionName: transactionName.text,
+                              transactionName: transactionName,
                               transactionAmount: transactionAmount,
                               transactionType: transactionType,
                             ),
                           );
                         });
 
-                        transactionName.clear();
+                        transactionNameController.clear();
                         amountController.clear();
                         Navigator.of(context).pop();
 
                         if (is_income) {
                           addIncomeToFireStore(
-                            userId!,
-                            transactionName.text,
+                            userId,
+                            transactionName,
                             transactionAmount,
                           );
                         } else {
                           addExpenceToFireStore(
-                            userId!,
-                            transactionName.text,
+                            userId,
+                            transactionName,
                             transactionAmount,
                           );
                         }
@@ -358,8 +543,8 @@ class _ExpenceState extends State<Expence> {
                       // amount
 
                       Text(
-                        "10,000", //TODO: get balance from firebase
-                        style: TextStyle(
+                        totalBalance.toString(),
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 34,
                         ),
@@ -415,8 +600,8 @@ class _ExpenceState extends State<Expence> {
 
                                     // amount
                                     Text(
-                                      "200",
-                                      style: TextStyle(
+                                      "${lastIncomeTransaction?.transactionAmount ?? '0'}",
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 18,
                                       ),
@@ -465,8 +650,8 @@ class _ExpenceState extends State<Expence> {
 
                                     // amount
                                     Text(
-                                      "200",
-                                      style: TextStyle(
+                                      "${lastExpenseTransaction?.transactionAmount ?? '0'}",
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 18,
                                       ),
@@ -509,7 +694,7 @@ class _ExpenceState extends State<Expence> {
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 5),
           // Show recent transactions
           Expanded(
             child: Center(
