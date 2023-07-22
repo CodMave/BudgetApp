@@ -133,23 +133,26 @@ class _LoginPageState extends State<LoginPage> {
 
             //forgot password
 
-            GestureDetector(
-              onTap: () {
-                const ForgotPassword();
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPassword(),
+                      ),
+                    ),
+                    child: Text(
                       'Forgot Password ?',
                       style: TextStyle(
                         color: Colors.blue[700],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
