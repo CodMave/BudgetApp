@@ -9,6 +9,7 @@ import 'package:budgettrack/pages/MyMenu.dart';
 import 'package:badges/badges.dart' as badges;
 import 'Notification.dart';
 import 'expenceAndIncome.dart';
+import 'goals.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key});
@@ -456,7 +457,12 @@ class Controller extends StatelessWidget {
                     ),
                     InkWell(
                       onTap: () {
-                        print("Profile");
+                        // on click to goals
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Goals()),
+                        );
                       },
                       child: Container(
                         height: 80,

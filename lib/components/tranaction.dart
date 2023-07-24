@@ -6,11 +6,13 @@ class MyTransaction extends StatelessWidget {
   final String transactionName;
   final int transactionAmount;
   final String transactionType;
+  final DateTime timestamp;
 
   MyTransaction({
     required this.transactionName,
     required this.transactionAmount,
     required this.transactionType,
+    required this.timestamp,
   });
 
   @override
