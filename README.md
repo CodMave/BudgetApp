@@ -1,10 +1,15 @@
-<<<<<<< HEAD
+This is a Budget Tracker app for software group project module
 
-# BudgetApp
+tecnologies used
+-flutter
+-dart
+-firebase
 
-=======
-<<<<<<< HEAD
+Group members
 
-# BudgetApp
-
-=======
+-Muhammed Fais
+-Shehan
+-Pasindu Nimesh
+-Nilupa Fernando
+-Ama Prabuthikka
+-Chaturi Ranasinghe

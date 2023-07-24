@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-//import '../components/transaction.dart';
-
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
 
@@ -111,6 +109,8 @@ class _ExpenceState extends State<Expence> {
         'transactionAmount': transactionAmount,
         'timestamp': DateTime.now(),
       });
+
+      fetchLatestTransactions(userId);
     } catch (ex) {
       print('expence adding failed');
     }
@@ -137,6 +137,8 @@ class _ExpenceState extends State<Expence> {
         'transactionAmount': transactionAmount,
         'timestamp': DateTime.now(),
       });
+
+      fetchLatestTransactions(userId);
     } catch (ex) {
       print('income adding failed');
     }
@@ -164,6 +166,7 @@ class _ExpenceState extends State<Expence> {
             transactionName: income.get('transactionName'),
             transactionAmount: income.get('transactionAmount'),
             transactionType: 'Income',
+            timestamp: income.get('timestamp').toDate(),
           );
         });
       }
@@ -184,12 +187,17 @@ class _ExpenceState extends State<Expence> {
             transactionName: expence.get('transactionName'),
             transactionAmount: expence.get('transactionAmount'),
             transactionType: 'Expence',
+            timestamp: expence.get('timestamp').toDate(),
           );
         });
       }
 
       //update the total balance
-      getTotalBalance(userId);
+      getTotalBalance(userId).then((balance) {
+        setState(() {
+          totalBalance = balance;
+        });
+      });
     } catch (ex) {
       print('fetching latest transactions failed');
     }
@@ -288,6 +296,70 @@ class _ExpenceState extends State<Expence> {
         .snapshots();
   }
 
+  //Feth transactions for the current day
+  Future<List<MyTransaction>> fetchTransactionsForCurrentDay(
+      String userId) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      DateTime now = DateTime.now();
+      DateTime startOfDay = DateTime(now.year, now.month, now.day);
+      DateTime endOfDay = startOfDay.add(const Duration(days: 1));
+
+      final QuerySnapshot expenceSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('expenceID')
+          .where('timestamp',
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      final QuerySnapshot incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('incomeID')
+          .where('timestamp',
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      List<MyTransaction> transactions = [];
+
+      //Add expence transactions
+      expenceSnapshot.docs.forEach((expenceDoc) {
+        transactions.add(
+          MyTransaction(
+            transactionName: expenceDoc.get('transactionName'),
+            transactionAmount: expenceDoc.get('transactionAmount'),
+            transactionType: 'Expence',
+            timestamp: expenceDoc.get('timestamp').toDate(),
+          ),
+        );
+      });
+
+      //Add income transactions
+      incomeSnapshot.docs.forEach((incomeDoc) {
+        transactions.add(
+          MyTransaction(
+            transactionName: incomeDoc.get('transactionName'),
+            transactionAmount: incomeDoc.get('transactionAmount'),
+            transactionType: 'Income',
+            timestamp: incomeDoc.get('timestamp').toDate(),
+          ),
+        );
+      });
+
+      //Sort the transactions
+      transactions.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+      return transactions;
+    } catch (ex) {
+      print('fetching transactions for current day failed');
+      return [];
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -304,12 +376,45 @@ class _ExpenceState extends State<Expence> {
       // Fetch and set the latest transactions
       fetchLatestTransactions(userId);
 
+      //Fetch and set the transactions for the current day
+      fetchTransactionsForCurrentDay(userId).then((currentDayTransactions) {
+        setState(() {
+          transactions = currentDayTransactions;
+        });
+      });
+
       // Listen for real-time changes to balance, income, and expense
       balanceStream = getBalanceStream(userId);
-      balanceStream?.listen((snapshot) {
-        setState(() {
-          isBalanceStreamInitialized = true;
-        });
+      balanceStream?.listen((sanpshot) {
+        if (isBalanceStreamInitialized) {
+          getTotalBalance(userId).then((balance) {
+            setState(() {
+              totalBalance = balance;
+            });
+          });
+        } else {
+          setState(() {
+            isBalanceStreamInitialized = true;
+          });
+        }
+      });
+
+      getExpenceStream(userId).listen((snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          final expence = snapshot.docs[0];
+          setState(() {
+            lastExpenseTransaction = MyTransaction(
+              transactionName: expence.get('transactionName'),
+              transactionAmount: expence.get('transactionAmount'),
+              transactionType: 'Expence',
+              timestamp: expence.get('timestamp').toDate(),
+            );
+          });
+        } else {
+          setState(() {
+            lastExpenseTransaction = null;
+          });
+        }
       });
     });
   }
@@ -441,6 +546,7 @@ class _ExpenceState extends State<Expence> {
                               transactionName: transactionName,
                               transactionAmount: transactionAmount,
                               transactionType: transactionType,
+                              timestamp: DateTime.now(),
                             ),
                           );
                         });
@@ -487,7 +593,7 @@ class _ExpenceState extends State<Expence> {
           },
         ),
         title: const Text(
-          'Transactions',
+          'T R A N S A C T I O N S',
           style: TextStyle(
             color: Colors.blue,
           ),
@@ -695,43 +801,40 @@ class _ExpenceState extends State<Expence> {
           ),
 
           const SizedBox(height: 5),
+
           // Show recent transactions
+
           Expanded(
-            child: Center(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: ListView.builder(
-                        itemCount: transactions.length,
-                        itemBuilder: (context, Index) {
-                          return MyTransaction(
-                            transactionName:
-                                transactions[Index].transactionName,
-                            transactionAmount:
-                                transactions[Index].transactionAmount,
-                            transactionType:
-                                transactions[Index].transactionType,
-                          );
-                        }),
+            // to show the list and button to overlay the list
+            child: Stack(
+              children: [
+                ListView.builder(
+                  itemCount: transactions.length,
+                  itemBuilder: (context, index) {
+                    int reverseIndex = transactions.length - 1 - index;
+                    return MyTransaction(
+                      transactionName:
+                          transactions[reverseIndex].transactionName,
+                      transactionAmount:
+                          transactions[reverseIndex].transactionAmount,
+                      transactionType:
+                          transactions[reverseIndex].transactionType,
+                      timestamp: transactions[reverseIndex].timestamp,
+                    );
+                  },
+                  reverse: true,
+                ),
+                // Positioned widget for the button
+                Positioned(
+                  bottom: 20.0,
+                  right: 20.0,
+                  child: PlusButton(
+                    function: newTransaction,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-
-          // Button to add new transaction
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: PlusButton(
-                function: newTransaction,
-              ),
-            ),
-          ),
-          const SizedBox(height: 15.0),
         ],
       ),
     );
