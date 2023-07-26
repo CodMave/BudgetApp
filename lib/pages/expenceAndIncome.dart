@@ -42,8 +42,6 @@ class _ExpenceState extends State<Expence> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> balanceStream;
   bool isBalanceStreamInitialized = false;
 
-  //get document Ids
-
   Future getDocIds() async {
     await FirebaseFirestore.instance
         .collection('userDatails')

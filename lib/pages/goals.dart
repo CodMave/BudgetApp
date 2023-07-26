@@ -59,7 +59,11 @@ class _GoalsState extends State<Goals> {
                 ),
               ],
             ),
-          )
+          ),
+
+          const SizedBox(height: 5),
+
+          //user adding plan button and the plans tiles
         ],
       ),
     );
