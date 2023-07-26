@@ -8,6 +8,7 @@ import 'package:budgettrack/pages/Notification.dart';
 import 'package:budgettrack/pages/MyMenu.dart';
 import 'package:badges/badges.dart' as badges;
 import 'Notification.dart';
+import 'Profile.dart';
 import 'expenceAndIncome.dart';
 import 'goals.dart';
 
@@ -20,7 +21,7 @@ class HomePage extends StatelessWidget {
       designSize: Size(325, 812),
       builder: (context, child) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Controller(),
+        home: MyWork(),
       ),
     );
   }
@@ -29,9 +30,13 @@ class HomePage extends StatelessWidget {
 double balance = 6920.73;
 
 class Controller extends StatelessWidget {
+  final List<NotificationData> notificationList;
+  final int num;
+  final void Function(int index) onDeleteNotification;
   double percent = 0.85;
 
-  Controller({Key? key}) : super(key: key);
+
+  Controller({Key? key, required this.notificationList,required this.num, required this.onDeleteNotification,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,35 +59,58 @@ class Controller extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MyMenu()),
+                MaterialPageRoute(builder: (context) => Check()),
               );
             },
             icon: const Icon(Icons.menu),
           ),
           actions: [
-            badges.Badge(
-              badgeContent: Text('${1}'),
-              position: badges.BadgePosition.topEnd(top: 2, end: 0),
-              badgeAnimation: badges.BadgeAnimation.slide(),
+            num==0?IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>Holder( notificationList: notificationList, onDeleteNotification:onDeleteNotification,)),
+                );
+              },
+              icon:Icon(Icons.notifications_active_outlined, size:40,),
+
+            )
+                : badges.Badge(
+
+
+              badgeContent:
+              Text('${
+
+
+                  num
+
+              }'),
+
+              position:badges.BadgePosition.topEnd(top:2, end:0),
+              badgeAnimation: badges.BadgeAnimation.slide(
+
+              ),
               badgeStyle: badges.BadgeStyle(
+
                 shape: badges.BadgeShape.circle,
                 padding: EdgeInsets.all(8.0),
                 badgeColor: Colors.red,
+
+
               ),
               child: IconButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => MyWork()),
+                    MaterialPageRoute(builder: (context) =>Holder( notificationList: notificationList, onDeleteNotification:onDeleteNotification)),
                   );
                 },
-                icon: Icon(
-                  Icons.notifications_active_outlined,
-                  size: 40,
-                ),
+                icon:Icon(Icons.notifications_active_outlined, size:40,),
+
               ),
             ),
           ],
+
         ),
         body: SingleChildScrollView(
           child: Container(

@@ -6,32 +6,34 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+
 import 'homePage.dart';
+
 
 Future<void>_FirebaseMessagingBackgroundHandler(RemoteMessage message)async{
   await Firebase.initializeApp();
   print('Handling background message:${
-  message.messageId
+      message.messageId
   }');
 }
 const AndroidNotificationChannel channel=AndroidNotificationChannel('high_importance_channel','High Importance Notifications',
 
-importance: Importance.high,);
+  importance: Importance.high,);
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin=FlutterLocalNotificationsPlugin();
 
 void main() async {
-
-
-WidgetsFlutterBinding.ensureInitialized();
-await Firebase.initializeApp();
-FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
-var initializationsettingsAndroid=AndroidInitializationSettings('@mipmap/ic_launcher');
-var initializationsettings=InitializationSettings(android: initializationsettingsAndroid);
-flutterLocalNotificationsPlugin.initialize( initializationsettings);
-await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
+  var initializationsettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationsettings = InitializationSettings(android: initializationsettingsAndroid);
+  flutterLocalNotificationsPlugin.initialize(initializationsettings);
+  await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
   runApp(MyWork());
 }
+
+
 class NotificationData {
   final String message;
   final DateTime receivedDateTime;
@@ -52,12 +54,7 @@ class MyWork extends StatelessWidget {
     );
   }
 }
-int times=0;
 class MyHomePage extends StatefulWidget {
-  static int Counter(){
-    return _MyHomePageState().NumberOfNotification();
-  }
-
 
   MyHomePage({Key? key, this.title}) : super(key: key);
 
@@ -66,126 +63,164 @@ class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 
+
+
 }
 
+
 class _MyHomePageState extends State<MyHomePage> {
-    late int size1;
-    late int size2;
+  int flag=0;
   FirebaseMessaging msg = FirebaseMessaging.instance;
   List<NotificationData> notificationList = [];
   List<DateTime> time = [];
   SharedPreferences? _prefs;
 
- void initState(){
-   super.initState();
+  void initState(){
 
-   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-     RemoteNotification? notification = message.notification;
-     AndroidNotification? android = message.notification?.android;
-     if (notification != null && android != null) {
-       // Show in-app notification banner
-       Fluttertoast.showToast(
-         msg: notification.body!,
-         gravity: ToastGravity.BOTTOM,
-         timeInSecForIosWeb: 2,
-         backgroundColor: Colors.blue,
-         textColor: Colors.white,
-       );
+    super.initState();
 
-       // Show local notification
-       flutterLocalNotificationsPlugin.show(
-         notification.hashCode,
-         notification.title,
-         notification.body,
-         NotificationDetails(
-           android: AndroidNotificationDetails(
-             channel.id,
-             channel.name,
-             channelDescription: channel.description,
-             color: Colors.blue,
-             playSound: true,
-             icon: '@mipmap/ic_launcher',
-           ),
-         ),
-       );
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        // Show in-app notification banner
+        Fluttertoast.showToast(
+          msg: notification.body!,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.blue,
+          textColor: Colors.white,
+        );
 
-       // Add notification to the list
-       addNotificationToList(notification.body ?? '');
-     }
-   });
-   getToken();
-   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-     print('A new onMessageOpenedApp event was published!');
-     RemoteNotification? notification = message.notification;
-     AndroidNotification? android = message.notification?.android;
-     if (notification != null && android != null) {
-       showDialog(
-         context: context,
-         builder: (_) {
-           return AlertDialog(
-             title: Text(notification.title!),
-             content: SingleChildScrollView(
-               child: Column(
-                 crossAxisAlignment: CrossAxisAlignment.start,
-                 children: [
-                   Text(notification.body!),
-                   SizedBox(height: 8),
-                   Align(
-                     alignment: Alignment.bottomRight,
-                     child: Text(
-                       'Received on: ${DateTime.now()}',
-                       style: TextStyle(
-                         fontSize: 12,
-                         color: Colors.grey,
-                       ),
-                     ),
-                   ),
-                 ],
-               ),
-             ),
-           );
-         },
-       );
-       addNotificationToList(notification.body ?? '');
-     }
-   });
-   loadSavedMessages();
+        // Show local notification
 
- }
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+              color: Colors.blue,
+              playSound: true,
+              icon: '@mipmap/ic_launcher',
+            ),
+          ),
+        );
+
+        counter();
+
+
+        addNotificationToList(notification.body ?? '');
+      }
+    });
+    getToken();
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageOpenedApp event was published!');
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: Text(notification.title!),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(notification.body!),
+                    SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Text(
+                        'Received on: ${
+                            DateTime.now()
+                        }',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+
+
+      }
+    });
+
+    loadSavedMessages();
+    getNewMessagesCount().then((value) {
+      setState(() {
+        flag = value;
+      });
+    });
+  }
+  void reset() async {
+
+    setState(() {
+      flag =0;
+    });
+  }
+  Future<int> getNewMessagesCount() async {
+    _prefs = await SharedPreferences.getInstance();
+    return _prefs?.getInt('newMessagesCount') ?? 0;
+  }
 
 
   void addNotificationToList(String message) {
-    NumberOfNotification();
-   setState(() {
 
-    DateTime now=DateTime.now();
+    setState(() {
 
-     final notificationData = NotificationData(
-       message: message,
-       receivedDateTime:now,
-     );
-     notificationList.insert(0, notificationData);
-     saveMessage(notificationData);
+      DateTime now=DateTime.now();
 
-   });
- }
+      final notificationData = NotificationData(
+        message: message,
+        receivedDateTime:now,
+      );
 
+      notificationList.insert(0, notificationData);
 
-  Future<void> saveMessage(NotificationData notificationData) async {
+      saveMessage();
+
+    });
+
+  }
+  void _onDeleteNotification(int index) {
+    setState(() {
+      notificationList.removeAt(index);
+      saveMessage();
+    });
+  }
+
+  Future<void> saveMessage() async {
     if (_prefs == null) {
       _prefs = await SharedPreferences.getInstance();
     }
-    final messages =
-    notificationList.map((notification) => notification.message).toList();
-    final times = notificationList
-        .map((notification) => notification.receivedDateTime.toString())
-        .toList();
-    _prefs!.setStringList('messages', messages);
-    _prefs!.setStringList('times', times);
+
+    if (notificationList.isEmpty) {
+      // If the notificationList is empty, clear the stored messages from SharedPreferences
+      _prefs!.remove('messages');
+      _prefs!.remove('times');
+    } else {
+      final messages = notificationList.map((notification) => notification.message).toList();
+      final times = notificationList.map((notification) => notification.receivedDateTime.toString()).toList();
+      _prefs!.setStringList('messages', messages);
+      _prefs!.setStringList('times', times);
+    }
   }
 
   Future<void> loadSavedMessages() async {
     _prefs = await SharedPreferences.getInstance();
+
     final savedMessages = _prefs!.getStringList('messages');
     final savedTimes = _prefs!.getStringList('times');
 
@@ -201,152 +236,204 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         })
             .toList();
-        if (_prefs != null) {
-          if (savedMessages != null) {
-            times = notificationList.length - savedMessages.length;
-          }
-        }
       });
     }
   }
 
-  int NumberOfNotification(){
-   return times;
-  }
-    getToken()async{
-      String? token=await FirebaseMessaging.instance.getToken();
 
-    }
+
+
+  Future<void> counter() async {
+    final newCount = flag + 1;
+    _prefs = await SharedPreferences.getInstance();
+    _prefs?.setInt('newMessagesCount', newCount);
+    setState(() {
+      flag = newCount;
+    });
+  }
+
+
+
+
+  getToken()async{
+    String? token=await FirebaseMessaging.instance.getToken();
+
+  }
+
   @override
   Widget build(BuildContext context) {
+    return MaterialApp(
+
+      home: Controller(notificationList:notificationList, num:flag,onDeleteNotification: (int index) => _onDeleteNotification(index)),
+    );
+  }
+
+
+
+}
+class Holder extends StatelessWidget{
+
+
+  final List<NotificationData> notificationList;
+
+  final Function(int) onDeleteNotification;
+
+
+  Holder({required this.notificationList, required this.onDeleteNotification,});
+
+
+
+  Widget build(BuildContext context) {
+
+
+
     return Scaffold(
+
       body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 170,
-                        width: 400,
-                        margin: EdgeInsets.only(left: 20, right: 15),
-                        decoration: BoxDecoration(
-                          color: Color(0xff181EAA),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10),
-                          ),
-                        ),
-                        child: Stack(
-                          alignment: Alignment.topLeft,
-                          children: [
-                            Container(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.arrow_back_ios_new,
-                                  size: 40,
-                                  color: Colors.white,
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomePage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            FractionallySizedBox(
-                              //UAbove the percentage value I have displayed the current date and time
-                              widthFactor: 1.0,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 0),
-                                  child: Text(
-                                    'Notifications',
-                                    style: TextStyle(
-                                      fontSize: 35,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 170,
+                      width: 400,
+                      margin: EdgeInsets.only(left: 20, right: 15),
+                      decoration: BoxDecoration(
+                        color: Color(0xff181EAA),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
                         ),
                       ),
-
-                      ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: notificationList.length,
-                          itemBuilder: (context, index){
-                            final notificationData = notificationList[index];
-
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-
-                              Container(
-                              decoration: BoxDecoration(
-                                color: Color(0xffADE8F4),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
-                              ), // Background color for the notification
-                              padding: EdgeInsets.all(
-                                  10), // Padding around the notification
-                              margin: EdgeInsets.all(
-                                  20), // Margin between notifications
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    notificationData.message,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Color(0xff181EAA),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 5),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          DateFormat('dd/MM/yyyy   h:mm a').format(notificationData.receivedDateTime),
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.grey,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                      child: Stack(
+                        alignment: Alignment.topLeft,
+                        children: [
+                          Container(
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios_new,
+                                size: 40,
+                                color: Colors.white,
                               ),
-
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomePage(),
+                                  ),
+                                );
+                              },
                             ),
-                            ],
-                            );
+                          ),
+                          FractionallySizedBox(
+                            //UAbove the percentage value I have displayed the current date and time
+                            widthFactor: 1.0,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 0),
+                                child: Text(
+                                  'Notifications',
+                                  style: TextStyle(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    ListView(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      children: List.generate(notificationList.length, (index) {
+                        final notificationData = notificationList[index];
+
+                        return Dismissible(
+                          key: UniqueKey(),
+                          background: Container(
+                            color: Colors.blue,
+                          ),
+                          onDismissed: (direction) {
+                            if (direction == DismissDirection.startToEnd) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(content: Text('$index item deleted')));
+
+                              onDeleteNotification(index);
+
+                            }
                           },
-                        ),
-                    ],
-                  ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xffADE8F4),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10),
+                                  ),
+                                ), // Background color for the notification
+                                padding: EdgeInsets.all(
+                                    10), // Padding around the notification
+                                margin: EdgeInsets.all(
+                                    20), // Margin between notifications
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      notificationData.message,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Color(0xff181EAA),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            DateFormat('dd/MM/yyyy   h:mm a').format(
+                                                notificationData.receivedDateTime),
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    )
+
+                  ],
                 ),
-              ],
-            ),
+
+              ),
+            ],
           ),
         ),
+
+      ),
+
     );
+
   }
 }
