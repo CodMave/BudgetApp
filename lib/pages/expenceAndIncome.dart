@@ -144,7 +144,7 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
-  //fettching latest exoence and income from firestore
+  //fettching latest expence and income from firestore
 
   Future<void> fetchLatestTransactions(String userId) async {
     try {
@@ -811,18 +811,15 @@ class _ExpenceState extends State<Expence> {
                 ListView.builder(
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
-                    int reverseIndex = transactions.length - 1 - index;
+                    //int reverseIndex = transactions.length - 1 - index;
                     return MyTransaction(
-                      transactionName:
-                          transactions[reverseIndex].transactionName,
-                      transactionAmount:
-                          transactions[reverseIndex].transactionAmount,
-                      transactionType:
-                          transactions[reverseIndex].transactionType,
-                      timestamp: transactions[reverseIndex].timestamp,
+                      transactionName: transactions[index].transactionName,
+                      transactionAmount: transactions[index].transactionAmount,
+                      transactionType: transactions[index].transactionType,
+                      timestamp: transactions[index].timestamp,
                     );
                   },
-                  reverse: true,
+                  //reverse: true,
                 ),
                 // Positioned widget for the button
                 Positioned(

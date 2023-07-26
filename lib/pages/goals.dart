@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../components/plansTile.dart';
+
 class Goals extends StatefulWidget {
   const Goals({super.key});
 
@@ -23,7 +25,7 @@ class _GoalsState extends State<Goals> {
           color: Colors.black,
         ),
         title: const Text(
-          'G O A L S',
+          'P L A N S',
           style: TextStyle(
             color: Colors.blue,
             fontSize: 20,
@@ -31,6 +33,34 @@ class _GoalsState extends State<Goals> {
         ),
         centerTitle: true,
         elevation: 0.0,
+      ),
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            child: Row(
+              children: [
+                // start date container
+
+                PlanTile(
+                  firstText: 'Your current plan',
+                  secondText: 'Stranting Date',
+                  date: '01/01/2021',
+                ),
+
+                const SizedBox(width: 20),
+
+                // end date container
+                PlanTile(
+                  firstText: 'Your current plan',
+                  secondText: 'Ending Date',
+                  date: '31/01/2021',
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
