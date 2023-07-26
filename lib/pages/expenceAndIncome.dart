@@ -539,7 +539,8 @@ class _ExpenceState extends State<Expence> {
 
                         //add transaction to the list
                         setState(() {
-                          transactions.add(
+                          transactions.insert(
+                            0,
                             MyTransaction(
                               transactionName: transactionName,
                               transactionAmount: transactionAmount,
