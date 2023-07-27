@@ -47,13 +47,15 @@ class _GoalsState extends State<Goals> {
                 children: [
                   // Date
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // date
-                      Text(
-                        DateFormat.MMMd().format(DateTime.now()),
+
+                      const Text(
+                        'Today',
                         style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 18,
+                          color: Colors.black,
+                          fontSize: 22,
                           //fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -62,11 +64,11 @@ class _GoalsState extends State<Goals> {
 
                       // Today text
 
-                      const Text(
-                        'Today',
+                      Text(
+                        DateFormat.yMMMMd().format(DateTime.now()),
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 22,
+                          color: Colors.grey[700],
+                          fontSize: 20,
                           //fontWeight: FontWeight.bold,
                         ),
                       ),
