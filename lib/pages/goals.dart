@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../components/plansTile.dart';
+import 'package:intl/intl.dart';
 
 class Goals extends StatefulWidget {
   const Goals({super.key});
@@ -34,33 +35,84 @@ class _GoalsState extends State<Goals> {
         centerTitle: true,
         elevation: 0.0,
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Row(
-              children: [
-                // start date container
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 5),
+            //showing today date
 
-                PlanTile(
-                  firstText: 'Your current plan',
-                  secondText: 'Stranting Date',
-                  date: '01/01/2021',
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                children: [
+                  // Date
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // date
 
-                const SizedBox(width: 20),
+                      const Text(
+                        'Today',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 22,
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
 
-                // end date container
-                PlanTile(
-                  firstText: 'Your current plan',
-                  secondText: 'Ending Date',
-                  date: '31/01/2021',
-                ),
-              ],
+                      const SizedBox(height: 5),
+
+                      // Today text
+
+                      Text(
+                        DateFormat.yMMMMd().format(DateTime.now()),
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 20,
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Add plan button
+                ],
+              ),
             ),
-          )
-        ],
+
+            const SizedBox(height: 20),
+
+            // paln starting date and ending date
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                children: [
+                  // start date container
+
+                  PlanTile(
+                    firstText: 'Your current plan',
+                    secondText: 'Stranting Date',
+                    date: '01/01/2021',
+                  ),
+
+                  const SizedBox(width: 20),
+
+                  // end date container
+                  PlanTile(
+                    firstText: 'Your current plan',
+                    secondText: 'Ending Date',
+                    date: '31/01/2021',
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 5),
+
+            //user adding plan button and the plans tiles
+          ],
+        ),
       ),
     );
   }

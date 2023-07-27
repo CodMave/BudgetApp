@@ -42,8 +42,6 @@ class _ExpenceState extends State<Expence> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> balanceStream;
   bool isBalanceStreamInitialized = false;
 
-  //get document Ids
-
   Future getDocIds() async {
     await FirebaseFirestore.instance
         .collection('userDatails')
@@ -541,7 +539,8 @@ class _ExpenceState extends State<Expence> {
 
                         //add transaction to the list
                         setState(() {
-                          transactions.add(
+                          transactions.insert(
+                            0,
                             MyTransaction(
                               transactionName: transactionName,
                               transactionAmount: transactionAmount,
