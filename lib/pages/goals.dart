@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../components/plansTile.dart';
 import 'package:intl/intl.dart';
 
 class Goals extends StatefulWidget {
-  const Goals({super.key});
+  final Function()? onTap;
+  const Goals({super.key, this.onTap});
 
   @override
   _GoalsState createState() => _GoalsState();
@@ -76,16 +75,47 @@ class _GoalsState extends State<Goals> {
                   ),
 
                   // Add plan button
+
+                  const SizedBox(width: 130),
+
+                  GestureDetector(
+                    onTap: () => {},
+                    child: Container(
+                      height: 50,
+                      width: 110,
+                      decoration: BoxDecoration(
+                        color: Colors.blue[300],
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Add Plan',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // paln starting date and ending date
+            // plan starting date and ending date tiles
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
               child: Row(
                 children: [
                   // start date container
@@ -93,16 +123,16 @@ class _GoalsState extends State<Goals> {
                   PlanTile(
                     firstText: 'Your current plan',
                     secondText: 'Stranting Date',
-                    date: '01/01/2021',
+                    date: '01/01/2021', //SHOULD BE USER INPUT
                   ),
 
-                  const SizedBox(width: 20),
+                  SizedBox(width: 20),
 
                   // end date container
                   PlanTile(
                     firstText: 'Your current plan',
                     secondText: 'Ending Date',
-                    date: '31/01/2021',
+                    date: '31/01/2021', //SHOULD BE USER INPUT
                   ),
                 ],
               ),
@@ -110,7 +140,7 @@ class _GoalsState extends State<Goals> {
 
             const SizedBox(height: 5),
 
-            //user adding plan button and the plans tiles
+            //user plans tiles
           ],
         ),
       ),

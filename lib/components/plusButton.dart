@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PlusButton extends StatelessWidget {
   final function;
 
-  PlusButton({required this.function});
+  const PlusButton({super.key, required this.function});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +21,7 @@ class PlusButton extends StatelessWidget {
               color: Colors.grey.withOpacity(0.7),
               spreadRadius: 2,
               blurRadius: 4,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),

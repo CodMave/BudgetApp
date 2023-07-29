@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class MyTitle extends StatelessWidget {
   final String imagePath;
   final Function()? onTap;
 
-  MyTitle({
+  const MyTitle({
     super.key,
     required this.imagePath,
     required this.onTap,

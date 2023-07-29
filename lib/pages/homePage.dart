@@ -35,8 +35,12 @@ class Controller extends StatelessWidget {
   final void Function(int index) onDeleteNotification;
   double percent = 0.85;
 
-
-  Controller({Key? key, required this.notificationList,required this.num, required this.onDeleteNotification,}) : super(key: key);
+  Controller({
+    Key? key,
+    required this.notificationList,
+    required this.num,
+    required this.onDeleteNotification,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -65,52 +69,49 @@ class Controller extends StatelessWidget {
             icon: const Icon(Icons.menu),
           ),
           actions: [
-            num==0?IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>Holder( notificationList: notificationList, onDeleteNotification:onDeleteNotification,)),
-                );
-              },
-              icon:Icon(Icons.notifications_active_outlined, size:40,),
-
-            )
+            num == 0
+                ? IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Holder(
+                                  notificationList: notificationList,
+                                  onDeleteNotification: onDeleteNotification,
+                                )),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.notifications_active_outlined,
+                      size: 40,
+                    ),
+                  )
                 : badges.Badge(
-
-
-              badgeContent:
-              Text('${
-
-
-                  num
-
-              }'),
-
-              position:badges.BadgePosition.topEnd(top:2, end:0),
-              badgeAnimation: badges.BadgeAnimation.slide(
-
-              ),
-              badgeStyle: badges.BadgeStyle(
-
-                shape: badges.BadgeShape.circle,
-                padding: EdgeInsets.all(8.0),
-                badgeColor: Colors.red,
-
-
-              ),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>Holder( notificationList: notificationList, onDeleteNotification:onDeleteNotification)),
-                  );
-                },
-                icon:Icon(Icons.notifications_active_outlined, size:40,),
-
-              ),
-            ),
+                    badgeContent: Text('${num}'),
+                    position: badges.BadgePosition.topEnd(top: 2, end: 0),
+                    badgeAnimation: badges.BadgeAnimation.slide(),
+                    badgeStyle: badges.BadgeStyle(
+                      shape: badges.BadgeShape.circle,
+                      padding: EdgeInsets.all(8.0),
+                      badgeColor: Colors.red,
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Holder(
+                                  notificationList: notificationList,
+                                  onDeleteNotification: onDeleteNotification)),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.notifications_active_outlined,
+                        size: 40,
+                      ),
+                    ),
+                  ),
           ],
-
         ),
         body: SingleChildScrollView(
           child: Container(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:budgettrack/pages/homePage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'Profile.dart';
@@ -10,8 +9,8 @@ class Menu extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(300, 812),
-      builder: (context, child) => MaterialApp(
+      designSize: const Size(300, 812),
+      builder: (context, child) => const MaterialApp(
         debugShowCheckedModeBanner: false,
         home:MyMenu(),
       ),
@@ -21,6 +20,9 @@ class Menu extends StatelessWidget{
 
 
 class MyMenu extends StatefulWidget{
+  const MyMenu({super.key});
+
+  @override
   _MyMenuState createState()=>_MyMenuState();
 }
 class _MyMenuState extends State<MyMenu> {
@@ -46,9 +48,9 @@ class _MyMenuState extends State<MyMenu> {
                 Container(
                   height: 100,
                   width: 400,
-                  margin: EdgeInsets.only(left:20,
+                  margin: const EdgeInsets.only(left:20,
                       right:15),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color:Color(0xff181EAA),
 
                     borderRadius:BorderRadius.only(bottomLeft:Radius.circular(10),
@@ -61,7 +63,7 @@ class _MyMenuState extends State<MyMenu> {
                       Container(
 
                         child: IconButton(
-                          icon:  Icon(
+                          icon:  const Icon(
                             weight:10,
                             Icons.arrow_back_ios_new,
                             size:40,
@@ -70,7 +72,7 @@ class _MyMenuState extends State<MyMenu> {
                           onPressed: (){
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder:(context)=>Check(),
+                              MaterialPageRoute(builder:(context)=>const Check(),
                               ),
                             );
                           },
@@ -78,7 +80,7 @@ class _MyMenuState extends State<MyMenu> {
                         ),
                       ),
 
-                      FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                      const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                         widthFactor:1.0,
                         child:Align(
                           alignment: Alignment.center,
@@ -119,8 +121,8 @@ class _MyMenuState extends State<MyMenu> {
                               Container(
                                 width:400,
                                 height:140,
-                                margin: EdgeInsets.only(left:20,top:10,right:20 ),
-                                decoration: BoxDecoration(
+                                margin: const EdgeInsets.only(left:20,top:10,right:20 ),
+                                decoration: const BoxDecoration(
                                   color: Color(0xff90E0EF),
 
                                   borderRadius:BorderRadius.all(Radius.circular(10),
@@ -129,7 +131,7 @@ class _MyMenuState extends State<MyMenu> {
                                 ),
                                 child: Column(
                                   children: [
-                                    FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                                    const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                                       widthFactor:1.0,
                                       child:Align(
                                         alignment: Alignment.centerLeft,
@@ -151,7 +153,7 @@ class _MyMenuState extends State<MyMenu> {
                                     ),
 
                                     Padding(
-                                     padding: EdgeInsets.only(top:0),
+                                     padding: const EdgeInsets.only(top:0),
                                       child: ListView.builder(
                                         shrinkWrap: true,
                                         itemCount: options.length,
@@ -160,9 +162,9 @@ class _MyMenuState extends State<MyMenu> {
                                           return Container(
                                             // Adjust vertical spacing between radio buttons
                                             child: RadioListTile(
-                                              contentPadding: EdgeInsets.symmetric(horizontal:120), // Adjust padding around the text
+                                              contentPadding: const EdgeInsets.symmetric(horizontal:120), // Adjust padding around the text
                                               title: Text(option,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   color:Colors.black,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
@@ -187,15 +189,15 @@ class _MyMenuState extends State<MyMenu> {
                               Container(
                                 width:400,
                                 height:60,
-                                margin: EdgeInsets.only(left:20,top:10,right:20 ),
-                                decoration: BoxDecoration(
+                                margin: const EdgeInsets.only(left:20,top:10,right:20 ),
+                                decoration: const BoxDecoration(
                                   color: Color(0xff90E0EF),
 
                                   borderRadius:BorderRadius.all(Radius.circular(10),
 
                                   ),
                                 ),
-                                child: Column(
+                                child: const Column(
                                   children: [
                                     FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                                       widthFactor:1.0,
@@ -225,15 +227,15 @@ class _MyMenuState extends State<MyMenu> {
                         Container(
                           width:400,
                           height:80,
-                          margin: EdgeInsets.only(left:20,top:10,right:20 ),
-                          decoration: BoxDecoration(
+                          margin: const EdgeInsets.only(left:20,top:10,right:20 ),
+                          decoration: const BoxDecoration(
                             color: Color(0xff90E0EF),
 
                             borderRadius:BorderRadius.all(Radius.circular(10),
 
                             ),
                           ),
-                          child: Column(
+                          child: const Column(
                             children: [
                               FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                                 widthFactor:1.0,
@@ -262,8 +264,8 @@ class _MyMenuState extends State<MyMenu> {
                               Container(
                                 width:400,
                                 height:100,
-                                margin: EdgeInsets.only(left:20,top:10,right:20 ),
-                                decoration: BoxDecoration(
+                                margin: const EdgeInsets.only(left:20,top:10,right:20 ),
+                                decoration: const BoxDecoration(
                                   color: Color(0xff90E0EF),
 
                                   borderRadius:BorderRadius.all(Radius.circular(10),
@@ -272,7 +274,7 @@ class _MyMenuState extends State<MyMenu> {
                                 ),
                                 child: Column(
                                   children: [
-                                    FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                                    const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                                       widthFactor:1.0,
                                       child:Align(
                                         alignment: Alignment.centerLeft,
@@ -299,8 +301,8 @@ class _MyMenuState extends State<MyMenu> {
                                         padding: const EdgeInsets.only(top:10,bottom:0,left:150),
                                         child: Text(
 
-                                          '$version',
-                                          style: TextStyle(
+                                          version,
+                                          style: const TextStyle(
                                             fontWeight:FontWeight.bold,
                                             fontSize:20,
 
@@ -316,8 +318,8 @@ class _MyMenuState extends State<MyMenu> {
                           width:400,
                           height:120,
 
-                          margin: EdgeInsets.only(left:20,top:10,right:20 ),
-                          decoration: BoxDecoration(
+                          margin: const EdgeInsets.only(left:20,top:10,right:20 ),
+                          decoration: const BoxDecoration(
                             color: Color(0xff90E0EF),
 
                             borderRadius:BorderRadius.all(Radius.circular(10),
@@ -326,7 +328,7 @@ class _MyMenuState extends State<MyMenu> {
                           ),
                           child: Column(
                             children: [
-                              FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                              const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                                 widthFactor:1.0,
                                 child:Align(
                                   alignment: Alignment.centerLeft,
@@ -351,8 +353,8 @@ class _MyMenuState extends State<MyMenu> {
                                 width:400,
                                 height:60,
 
-                                margin: EdgeInsets.only(left:20,top:10,right:20 ),
-                                decoration: BoxDecoration(
+                                margin: const EdgeInsets.only(left:20,top:10,right:20 ),
+                                decoration: const BoxDecoration(
                                   color: Color(0xff90E0EF),
 
                                   borderRadius:BorderRadius.all(Radius.circular(10),
@@ -364,7 +366,7 @@ class _MyMenuState extends State<MyMenu> {
                                   minLines: 2,
                                   maxLines:5,
                                   keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     hintText:'Description...',
                                     hintStyle: TextStyle(
@@ -386,8 +388,8 @@ class _MyMenuState extends State<MyMenu> {
                             Container(
                             width:400,
                             height:100,
-                            margin: EdgeInsets.only(left:20,top:10,right:20 ),
-                            decoration: BoxDecoration(
+                            margin: const EdgeInsets.only(left:20,top:10,right:20 ),
+                            decoration: const BoxDecoration(
                               color: Color(0xff90E0EF),
 
                               borderRadius:BorderRadius.all(Radius.circular(10),
@@ -396,7 +398,7 @@ class _MyMenuState extends State<MyMenu> {
                             ),
                             child: Column(
                                 children: [
-    FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+    const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
     widthFactor:1.0,
     child:Align(
     alignment: Alignment.centerLeft,
@@ -418,20 +420,20 @@ class _MyMenuState extends State<MyMenu> {
     ),
     Text(
     'Rating:$rating',
-    style: TextStyle(fontSize:15,color:Colors.black),
+    style: const TextStyle(fontSize:15,color:Colors.black),
     ),
     Container(
 
     child: RatingBar.builder(
-    itemBuilder:(context,_)=>Icon(Icons.star,
+    itemBuilder:(context,_)=>const Icon(Icons.star,
     color:Colors.amber),
     minRating: 1,
     itemSize:40,
-    itemPadding: EdgeInsets.symmetric(horizontal: 4),
+    itemPadding: const EdgeInsets.symmetric(horizontal: 4),
     updateOnDrag: true,
     onRatingUpdate:(newRating){
     setState(() {
-    this.rating=newRating;
+    rating=newRating;
     });
 
     }

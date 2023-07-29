@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
@@ -44,7 +43,7 @@ class _ExpenceState extends State<Expence> {
 
   Future getDocIds() async {
     await FirebaseFirestore.instance
-        .collection('userDatails')
+        .collection('userDetails')
         .get()
         .then((snapshot) {
       if (snapshot.docs.isNotEmpty) {
@@ -128,7 +127,6 @@ class _ExpenceState extends State<Expence> {
           .collection('userDetails')
           .doc(userId)
           .collection('incomeID');
-      ;
 
       await incomeCollection.add({
         'transactionName': transactionName,
@@ -213,9 +211,9 @@ class _ExpenceState extends State<Expence> {
           .get();
 
       int totalIncome = 0;
-      incomeSnapshot.docs.forEach((incomeDoc) {
+      for (var incomeDoc in incomeSnapshot.docs) {
         totalIncome += (incomeDoc.get('transactionAmount') as num).toInt();
-      });
+      }
 
       return totalIncome;
     } catch (ex) {
@@ -236,9 +234,9 @@ class _ExpenceState extends State<Expence> {
           .get();
 
       int totalExpence = 0;
-      expenceSnapshot.docs.forEach((expenceDoc) {
+      for (var expenceDoc in expenceSnapshot.docs) {
         totalExpence += (expenceDoc.get('transactionAmount') as num).toInt();
-      });
+      }
 
       return totalExpence;
     } catch (ex) {
@@ -325,7 +323,7 @@ class _ExpenceState extends State<Expence> {
       List<MyTransaction> transactions = [];
 
       //Add expence transactions
-      expenceSnapshot.docs.forEach((expenceDoc) {
+      for (var expenceDoc in expenceSnapshot.docs) {
         transactions.add(
           MyTransaction(
             transactionName: expenceDoc.get('transactionName'),
@@ -334,10 +332,10 @@ class _ExpenceState extends State<Expence> {
             timestamp: expenceDoc.get('timestamp').toDate(),
           ),
         );
-      });
+      }
 
       //Add income transactions
-      incomeSnapshot.docs.forEach((incomeDoc) {
+      for (var incomeDoc in incomeSnapshot.docs) {
         transactions.add(
           MyTransaction(
             transactionName: incomeDoc.get('transactionName'),
@@ -346,7 +344,7 @@ class _ExpenceState extends State<Expence> {
             timestamp: incomeDoc.get('timestamp').toDate(),
           ),
         );
-      });
+      }
 
       //Sort the transactions
       transactions.sort((a, b) => b.timestamp.compareTo(a.timestamp));
@@ -383,7 +381,7 @@ class _ExpenceState extends State<Expence> {
 
       // Listen for real-time changes to balance, income, and expense
       balanceStream = getBalanceStream(userId);
-      balanceStream?.listen((sanpshot) {
+      balanceStream.listen((sanpshot) {
         if (isBalanceStreamInitialized) {
           getTotalBalance(userId).then((balance) {
             setState(() {

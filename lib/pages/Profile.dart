@@ -2,22 +2,21 @@
 import 'dart:typed_data';
 
 import 'package:budgettrack/pages/MyMenu.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'homePage.dart';
 
 class Check extends StatelessWidget {
+  const Check({super.key});
+
 
 
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(300, 812),
-      builder: (context, child) => MaterialApp(
+      designSize: const Size(300, 812),
+      builder: (context, child) => const MaterialApp(
         debugShowCheckedModeBanner: false,
         home:Profile(),
       ),
@@ -26,7 +25,7 @@ class Check extends StatelessWidget {
 }
 class Profile extends StatefulWidget {
 
-  Profile({Key? key, this.title}) : super(key: key);
+  const Profile({Key? key, this.title}) : super(key: key);
 
   final String? title;
 
@@ -43,10 +42,10 @@ class _Profile extends State<Profile>{
   String selectedValue = 'SL Rupees';
   // Default selected value
    PickImage(ImageSource source)async{
-    final ImagePicker _imagepicker=ImagePicker();
-    XFile? _file=await _imagepicker.pickImage(source: source);
-    if(_file!=null){
-      return await _file.readAsBytes();
+    final ImagePicker imagepicker=ImagePicker();
+    XFile? file=await imagepicker.pickImage(source: source);
+    if(file!=null){
+      return await file.readAsBytes();
     }
 
   }
@@ -69,13 +68,13 @@ class _Profile extends State<Profile>{
     return Container(
       height:100,
       width:MediaQuery.of(context).size.width,
-      margin: EdgeInsets.symmetric(
+      margin: const EdgeInsets.symmetric(
         horizontal: 20,
         vertical: 20
       ),
       child: Column(
         children: [
-          Text("Choose profile picture",
+          const Text("Choose profile picture",
             style: TextStyle(
               fontSize: 20.0
             ),
@@ -86,14 +85,14 @@ class _Profile extends State<Profile>{
               TextButton.icon(onPressed: (){
                 TakePhoto();
               },
-                icon: Icon(Icons.camera),
-                label: Text('camera'),
+                icon: const Icon(Icons.camera),
+                label: const Text('camera'),
               ),
               TextButton.icon(onPressed: (){
                 SelectImageFromGalery();
               },
-                icon: Icon(Icons.image),
-                label: Text('Galery'),
+                icon: const Icon(Icons.image),
+                label: const Text('Galery'),
               )
             ],
           )
@@ -103,6 +102,7 @@ class _Profile extends State<Profile>{
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -117,8 +117,8 @@ class _Profile extends State<Profile>{
               Container(
                 height: 100,
                 width: 400,
-                margin: EdgeInsets.only(left: 20, right: 15,),
-                decoration: BoxDecoration(
+                margin: const EdgeInsets.only(left: 20, right: 15,),
+                decoration: const BoxDecoration(
                   color: Color(0xff181EAA),
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(10),
@@ -130,7 +130,7 @@ class _Profile extends State<Profile>{
                   children: [
                     Container(
                       child: IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.arrow_back_ios_new,
                           size: 40,
                           color: Colors.white,
@@ -139,13 +139,13 @@ class _Profile extends State<Profile>{
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => HomePage(),
+                              builder: (context) => const HomePage(),
                             ),
                           );
                         },
                       ),
                     ),
-                    FractionallySizedBox(
+                    const FractionallySizedBox(
                       //UAbove the percentage value I have displayed the current date and time
                       widthFactor: 1.0,
                       child: Align(
@@ -173,7 +173,7 @@ class _Profile extends State<Profile>{
           ),
               Container(
                 alignment: Alignment.topCenter,
-                margin: EdgeInsets.only(left:40, right:40,top:20),
+                margin: const EdgeInsets.only(left:40, right:40,top:20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -195,7 +195,7 @@ class _Profile extends State<Profile>{
                               Container(
                                 height: 200,
                                 width: 200,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Colors.white,
                                 ),
@@ -208,7 +208,7 @@ class _Profile extends State<Profile>{
                                        backgroundImage:
                                        MemoryImage(_image!)
                                    )
-                                       :CircleAvatar(
+                                       :const CircleAvatar(
                                       radius: 80.0,
                                       backgroundImage:
                                          AssetImage('lib/images/Profileimage.png')
@@ -223,7 +223,7 @@ class _Profile extends State<Profile>{
                                             builder: (context) => buttonsheet(context),
                                           );
                                         },
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.camera_alt,
                                           color: Colors.teal,
                                           size: 28.0,
@@ -250,7 +250,7 @@ class _Profile extends State<Profile>{
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                  const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                     widthFactor:1.0,
                     child:Align(
                       alignment: Alignment.centerLeft,
@@ -269,7 +269,7 @@ class _Profile extends State<Profile>{
 
 
                   ),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(top:10,left:60,right:60),
                     child: TextField(
                       decoration: InputDecoration(
@@ -284,7 +284,7 @@ class _Profile extends State<Profile>{
                       ),
                     ),
                   ),
-                  FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                  const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                     widthFactor:1.0,
                     child:Align(
                       alignment: Alignment.centerLeft,
@@ -304,14 +304,14 @@ class _Profile extends State<Profile>{
 
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top:10,),
+                    padding: const EdgeInsets.only(top:10,),
                     child: Align(
                       alignment: Alignment.centerLeft,
 
                       child: Container(
                         width: 300,
-                        margin: EdgeInsets.only(left:60,right: 60),
-                        padding: EdgeInsets.only(top:10.0,left:10,right:10),
+                        margin: const EdgeInsets.only(left:60,right: 60),
+                        padding: const EdgeInsets.only(top:10.0,left:10,right:10),
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: Colors.black,
@@ -326,11 +326,11 @@ class _Profile extends State<Profile>{
                              },
 
                             icon: Container(
-                              margin: EdgeInsets.only(left:100),
-                                child: Icon(Icons.arrow_drop_down)), // Default arrow icon
+                              margin: const EdgeInsets.only(left:100),
+                                child: const Icon(Icons.arrow_drop_down)), // Default arrow icon
                             iconSize:45,
                             elevation: 16,
-                            style: TextStyle(color: Colors.black, fontSize: 18),
+                            style: const TextStyle(color: Colors.black, fontSize: 18),
                             underline: Container(
                               height: 0,
                               color: Colors.transparent,
@@ -349,46 +349,44 @@ class _Profile extends State<Profile>{
                   Column(
                     children: [
                       Container(
-                        margin: EdgeInsets.only(top:30),
+                        margin: const EdgeInsets.only(top:30),
                         child:ElevatedButton(
                             onPressed:(){
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => MyMenu()),
+                                MaterialPageRoute(builder: (context) => const MyMenu()),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              primary: Color(0xff181EAA),
-                              onPrimary: Colors.white,
+                              foregroundColor: Colors.white, backgroundColor: const Color(0xff181EAA),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              padding: EdgeInsets.symmetric(horizontal:40,vertical: 12),
-                              textStyle: TextStyle(fontSize:20),
+                              padding: const EdgeInsets.symmetric(horizontal:40,vertical: 12),
+                              textStyle: const TextStyle(fontSize:20),
                               elevation: 3,
                             ),
 
-                            child:Text('Settings')),
+                            child:const Text('Settings')),
                       ),
                       Container(
-                        margin: EdgeInsets.only(top:10),
+                        margin: const EdgeInsets.only(top:10),
                         child:ElevatedButton(
                             onPressed:(){
                               print('Hello World');
 
                             },
                             style: ElevatedButton.styleFrom(
-                              primary: Color(0xff181EAA),
-                              onPrimary: Colors.white,
+                              foregroundColor: Colors.white, backgroundColor: const Color(0xff181EAA),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              padding: EdgeInsets.symmetric(horizontal:40,vertical: 12),
-                              textStyle: TextStyle(fontSize:20),
+                              padding: const EdgeInsets.symmetric(horizontal:40,vertical: 12),
+                              textStyle: const TextStyle(fontSize:20),
                               elevation: 3,
                             ),
 
-                            child:Text('Log Out')),
+                            child:const Text('Log Out')),
                       )
                     ],
 
