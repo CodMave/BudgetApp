@@ -8,7 +8,7 @@ tecnologies used
 Group members
 
 -Muhammed Fais
--Shehan
+-Shehan Yasaruvan
 -Pasindu Nimesh
 -Nilupa Fernando
 -Ama Prabuthikka
