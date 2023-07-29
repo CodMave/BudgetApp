@@ -26,11 +26,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
-  var initializationsettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationsettingsAndroid = const AndroidInitializationSettings('@mipmap/ic_launcher');
   var initializationsettings = InitializationSettings(android: initializationsettingsAndroid);
   flutterLocalNotificationsPlugin.initialize(initializationsettings);
   await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-  runApp(MyWork());
+  runApp(const MyWork());
 }
 
 
@@ -45,10 +45,12 @@ class NotificationData {
   });
 }
 class MyWork extends StatelessWidget {
+  const MyWork({super.key});
+
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
 
       home: MyHomePage(),
     );
@@ -56,7 +58,7 @@ class MyWork extends StatelessWidget {
 }
 class MyHomePage extends StatefulWidget {
 
-  MyHomePage({Key? key, this.title}) : super(key: key);
+  const MyHomePage({Key? key, this.title}) : super(key: key);
 
   final String? title;
 
@@ -75,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<DateTime> time = [];
   SharedPreferences? _prefs;
 
+  @override
   void initState(){
 
     super.initState();
@@ -133,14 +136,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(notification.body!),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Text(
                         'Received on: ${
                             DateTime.now()
                         }',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -202,9 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> saveMessage() async {
-    if (_prefs == null) {
-      _prefs = await SharedPreferences.getInstance();
-    }
+    _prefs ??= await SharedPreferences.getInstance();
 
     if (notificationList.isEmpty) {
       // If the notificationList is empty, clear the stored messages from SharedPreferences
@@ -279,10 +280,11 @@ class Holder extends StatelessWidget{
   final Function(int) onDeleteNotification;
 
 
-  Holder({required this.notificationList, required this.onDeleteNotification,});
+  const Holder({super.key, required this.notificationList, required this.onDeleteNotification,});
 
 
 
+  @override
   Widget build(BuildContext context) {
 
 
@@ -301,8 +303,8 @@ class Holder extends StatelessWidget{
                     Container(
                       height: 170,
                       width: 400,
-                      margin: EdgeInsets.only(left: 20, right: 15),
-                      decoration: BoxDecoration(
+                      margin: const EdgeInsets.only(left: 20, right: 15),
+                      decoration: const BoxDecoration(
                         color: Color(0xff181EAA),
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(10),
@@ -314,7 +316,7 @@ class Holder extends StatelessWidget{
                         children: [
                           Container(
                             child: IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.arrow_back_ios_new,
                                 size: 40,
                                 color: Colors.white,
@@ -323,13 +325,13 @@ class Holder extends StatelessWidget{
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => HomePage(),
+                                    builder: (context) => const HomePage(),
                                   ),
                                 );
                               },
                             ),
                           ),
-                          FractionallySizedBox(
+                          const FractionallySizedBox(
                             //UAbove the percentage value I have displayed the current date and time
                             widthFactor: 1.0,
                             child: Align(
@@ -353,7 +355,7 @@ class Holder extends StatelessWidget{
 
                     ListView(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       children: List.generate(notificationList.length, (index) {
                         final notificationData = notificationList[index];
 
@@ -375,28 +377,28 @@ class Holder extends StatelessWidget{
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Color(0xffADE8F4),
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(10),
                                   ),
                                 ), // Background color for the notification
-                                padding: EdgeInsets.all(
+                                padding: const EdgeInsets.all(
                                     10), // Padding around the notification
-                                margin: EdgeInsets.all(
+                                margin: const EdgeInsets.all(
                                     20), // Margin between notifications
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       notificationData.message,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         color: Color(0xff181EAA),
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    SizedBox(height: 5),
+                                    const SizedBox(height: 5),
                                     Align(
                                       alignment: Alignment.bottomRight,
                                       child: Column(
@@ -405,7 +407,7 @@ class Holder extends StatelessWidget{
                                           Text(
                                             DateFormat('dd/MM/yyyy   h:mm a').format(
                                                 notificationData.receivedDateTime),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 16,
                                               color: Colors.grey,
                                               fontWeight: FontWeight.bold,

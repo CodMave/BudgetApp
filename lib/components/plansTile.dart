@@ -7,7 +7,7 @@ class PlanTile extends StatelessWidget {
   final String secondText;
   final String date;
 
-  PlanTile({
+  const PlanTile({super.key, 
     required this.firstText,
     required this.secondText,
     required this.date,

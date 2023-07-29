@@ -1,12 +1,9 @@
 import 'dart:async';
 
 import 'package:budgettrack/components/button.dart';
-import 'package:budgettrack/pages/LoginPage.dart';
 import 'package:budgettrack/pages/homePage.dart';
-import 'package:budgettrack/pages/loginOrReg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({Key? key}) : super(key: key);
@@ -41,7 +38,7 @@ class _EmailVerification extends State<EmailVerification> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => const HomePage(),
         ),
       );
     }
@@ -68,7 +65,7 @@ class _EmailVerification extends State<EmailVerification> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => const HomePage(),
         ),
       );
     }
@@ -83,7 +80,7 @@ class _EmailVerification extends State<EmailVerification> {
         canResendEmail = false;
       });
 
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 5));
 
       setState(() {
         canResendEmail = true;
@@ -96,7 +93,7 @@ class _EmailVerification extends State<EmailVerification> {
   @override
   Widget build(BuildContext context) {
     if (isEmailVerified) {
-      return HomePage();
+      return const HomePage();
     } else {
       return Scaffold(
         appBar: AppBar(
