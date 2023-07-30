@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../components/plansTile.dart';
 import 'package:intl/intl.dart';
 
+import 'addPlanPage.dart';
+
 class Goals extends StatefulWidget {
   final Function()? onTap;
   const Goals({super.key, this.onTap});
@@ -79,7 +81,14 @@ class _GoalsState extends State<Goals> {
                   const SizedBox(width: 130),
 
                   GestureDetector(
-                    onTap: () => {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddPlan(),
+                        ),
+                      );
+                    },
                     child: Container(
                       height: 50,
                       width: 110,
