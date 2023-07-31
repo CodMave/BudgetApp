@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-
-import '../components/textfield.dart';
+//import 'package:flutter/material.dart';
+import '../components/datePicker.dart';
+import '../components/planTextField.dart';
+import 'package:intl/intl.dart';
 
 class AddPlan extends StatefulWidget {
   const AddPlan({Key? key}) : super(key: key);
@@ -11,6 +13,41 @@ class AddPlan extends StatefulWidget {
 
 class _AddPlanState extends State<AddPlan> {
   final planTitleController = TextEditingController();
+  final planAmountController = TextEditingController();
+  DateTime? selectedStartDate;
+  DateTime? selectedEndDate;
+
+  //Function to show the date picker for start date
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != selectedStartDate) {
+      setState(() {
+        selectedStartDate = picked;
+      });
+    }
+  }
+
+  //Function to show the date picker for end date
+  Future<void> _selectEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != selectedEndDate) {
+      setState(() {
+        selectedEndDate = picked;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,51 +72,115 @@ class _AddPlanState extends State<AddPlan> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
 
-            // Add plan text
+              // Add plan text
 
-            const Text(
-              'Add Plan',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+              const Text(
+                'Add Plan',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
 
-            // paln title
+              // paln title
 
-            const SizedBox(height: 15),
+              const SizedBox(height: 25),
 
-            const Text(
-              'Title',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                //fontWeight: FontWeight.bold,
+              const Text(
+                'Title',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  //fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
 
-            // plan text field
+              const SizedBox(height: 10),
 
-            // plan amount title
+              // plan text field
+              PlanTextField(
+                controller: planTitleController,
+                hintText: 'Enter plan title',
+              ),
 
-            // plan anount text field
+              const SizedBox(height: 20),
 
-            // start date title
+              // plan amount title
+              const Text(
+                'Amount',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  //fontWeight: FontWeight.bold,
+                ),
+              ),
 
-            // start date text field
+              const SizedBox(height: 10),
 
-            // end date title
+              // plan anount text field
+              PlanTextField(
+                controller: planAmountController,
+                hintText: 'Enter plan amount',
+              ),
 
-            // end date text field
-          ],
+              const SizedBox(height: 20),
+
+              // start date title
+              const Text(
+                'Start Date',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  //fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              // start date text field
+              InkWell(
+                onTap: () => _selectStartDate(context),
+                child: DatePick(
+                  selectedDate: selectedStartDate,
+                  hintText: 'Select start date',
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // end date title
+
+              const Text(
+                'End Date',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  //fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              // end date text field
+
+              InkWell(
+                onTap: () => _selectEndDate(context),
+                child: DatePick(
+                  selectedDate: selectedEndDate,
+                  hintText: 'Select end date',
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
