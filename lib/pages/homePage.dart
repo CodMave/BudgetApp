@@ -1,3 +1,6 @@
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -5,14 +8,19 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:budgettrack/pages/Notification.dart';
-import 'package:budgettrack/pages/MyMenu.dart';
 import 'package:badges/badges.dart' as badges;
-import 'Notification.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Profile.dart';
 import 'expenceAndIncome.dart';
 import 'goals.dart';
 
+
+double expensevalue=0.0;
+double incomevalue=0.0;
+
+
 class HomePage extends StatelessWidget {
+
   const HomePage({Key? key});
 
   @override
@@ -20,39 +28,214 @@ class HomePage extends StatelessWidget {
     return ScreenUtilInit(
       designSize: Size(325, 812),
       builder: (context, child) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: MyWork(),
+        debugShowCheckedModeBanner: false,//remove the debug label
+        home: MyWork(),//call to the class work
       ),
     );
   }
 }
 
-double balance = 6920.73;
 
-class Controller extends StatelessWidget {
+String username='';
+String email='';
+int count=0;
+double percent = 0.0;
+List<NotificationData> Listn=[];
+
+class Controller extends StatefulWidget {
+  int newbalance=0;
+
   final List<NotificationData> notificationList;
   final int num;
   final void Function(int index) onDeleteNotification;
-  double percent = 0.85;
 
-  Controller({
-    Key? key,
-    required this.notificationList,
-    required this.num,
-    required this.onDeleteNotification,
-  }) : super(key: key);
+  Controller({Key? key,required int balance, required double expense,required double income, required this.notificationList,required this.num, required this.onDeleteNotification,}) : super(key: key)//one of the constructor to get the following values from Menu,Notification files
+  {
+
+    newbalance=balance;
+    expensevalue=expense;
+    incomevalue=income;
+    count=num;
+    Listn=notificationList;
+  }
+
+
+  @override
+  _ControllerState createState() => _ControllerState(
+    newbalance:newbalance,
+    onDeleteNotification:onDeleteNotification,//pass the values to the _ControllerState private class
+
+  );
+
+}
+
+class _ControllerState extends State<Controller> {
+  final void Function(int index) onDeleteNotification;
+  int newbalance=0;
+  _ControllerState({required this.newbalance,required this.onDeleteNotification});
+
+  static final  FirebaseAuth _auth=FirebaseAuth.instance;
+
+
+  SharedPreferences? _prefs;//initialized the sharedpreferances
+  static Future <String> getUserName()async {
+
+    //get the username from Profile file
+    User? user = _auth.currentUser;//created an instance to the User of Firebase authorized
+    email = user!.email!;//get the user's email
+    if (user != null) {
+      QuerySnapshot qs = await FirebaseFirestore.instance.collection(
+          'userDetails').where('email', isEqualTo:email).limit(1).get();//need to filter the current user's name by matching with the users male at the authentication and the username
+
+      if (qs.docs.isNotEmpty) {
+        // Loop through the documents to find the one with the matching email
+        for (QueryDocumentSnapshot doc in qs.docs) {
+          if (doc.get('email') == email) {
+            // Get the 'username' field from the matching document
+            String username = doc.get('username');
+            return username;
+          }
+        }
+      }
+      // Handle the case when no matching documents are found for the current user
+      print('No matching document found for the current user.');
+      return ''; // Return an empty string or null based on your requirements
+    } else {
+      // Handle the case when the user is not authenticated
+      print('User not authenticated.');
+      return ''; // Return an empty string or null based on your requirements
+
+    }
+  }
+  void initState() {
+    super.initState();
+    saveBalance();
+    countPercenntage();//call to the countpercentage method
+    savePercent();//call to the savethe percentage method
+    saveExpenses();//call to the save the expense method
+    saveIncome();//call to the countIncome method
+
+
+    loadPercent().then((pqr){//excutes when load the app and keep same percent value otherwise it set to 0.0
+      setState(() {
+        percent=pqr.toDouble() ;
+      });
+    });
+    loadexpence().then((qwe){//excutes when load the app and keep same expence value otherwise it set to 0.0
+      setState(() {
+        expensevalue=qwe.toDouble() ;
+      });
+    });
+    loadIncome().then((lms){//excutes when load the app and keep same income value otherwise it set to 0.0
+      setState(() {
+        incomevalue=lms.toDouble() ;
+      });
+    });
+    loadBalance().then((val){//excutes when load the app and keep same balance value otherwise it set to 0.0
+      setState(() {
+        newbalance=val;
+      });
+    });
+  }
+  Future<void> savePercent() async {
+    if (percent !=0.0) {
+      final newCount = percent;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setDouble('newPercent', newCount);
+      setState(() {
+        percent = newCount;
+      });
+    }
+    if(expensevalue>incomevalue){
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setDouble('newPercent',0.0);
+      setState(() {
+        percent =0.0;
+      });
+    }
+
+  }
+  Future<void> saveBalance() async {
+    if (newbalance != 0) {
+      final newCount = newbalance;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setInt('newBalance', newCount);
+      setState(() {
+        newbalance = newCount;
+      });
+    }
+  }
+
+
+  Future<void> saveExpenses() async {
+    if (expensevalue != 0.0) {
+      final newCount = expensevalue;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setDouble('newExpense', newCount);
+      setState(() {
+        expensevalue = newCount;
+      });
+    }
+
+  }
+
+  Future<void> saveIncome() async {
+    if (incomevalue != 0.0) {
+      final newCount = expensevalue;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setDouble('newIncome', newCount);
+      setState(() {
+        incomevalue = newCount;
+      });
+    }
+
+
+  }
+  Future<double> loadIncome() async {
+    _prefs = await SharedPreferences.getInstance();
+    return _prefs?.getDouble('newIncome') ?? 0.0;
+  }
+  Future<double> loadPercent() async {
+    _prefs = await SharedPreferences.getInstance();
+    return _prefs?.getDouble('newPercent') ?? 0.0;
+  }
+  Future<int> loadBalance() async {
+    _prefs = await SharedPreferences.getInstance();
+    return _prefs?.getInt('newBalance') ?? 0;
+  }
+  Future<double> loadexpence() async {
+    _prefs = await SharedPreferences.getInstance();
+    return _prefs?.getDouble('newExpense') ?? 0.0;
+  }
+  double countPercenntage() {
+    //count the percentage by subtracting expense from income and divide it from the income value
+    double difference = incomevalue - expensevalue;
+    percent = difference / incomevalue;
+    if (percent >= 0 && percent <= 100) {
+      return percent;
+    }
+    else{
+      percent=0.0;
+      return percent;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "Hello, Sehan!",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 25,
-            ),
+          title:  FutureBuilder<String>(
+              future: getUserName(),
+              builder:(context,snapshot) {
+                return Text(
+                  "Hello,${snapshot.data}!",//print the user name who are currently using with
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 25,
+                  ),
+                );
+              }
           ),
           centerTitle: true,
           iconTheme: const IconThemeData(
@@ -63,64 +246,67 @@ class Controller extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Check()),
+                MaterialPageRoute(builder: (context) => Check()),//if the user click on the menu icon then move
               );
             },
             icon: const Icon(Icons.menu),
           ),
+
           actions: [
-            num == 0
-                ? IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Holder(
-                                  notificationList: notificationList,
-                                  onDeleteNotification: onDeleteNotification,
-                                )),
-                      );
-                    },
-                    icon: Icon(
-                      Icons.notifications_active_outlined,
-                      size: 40,
-                    ),
-                  )
+            count==0?IconButton(//if the count value is 0 then badge won't show otherwise it dissplays the unseen notification count
+              onPressed: () {
+                Navigator.push(
+                  context,
+
+                  MaterialPageRoute(builder: (context) =>Holder(totalBalance:newbalance,totalex:expensevalue,totalin:incomevalue,notificationList:Listn, onDeleteNotification:onDeleteNotification,)),//create a constructor to the Holder class to display the notification list
+                );
+              },
+              icon:Icon(Icons.notifications_active_outlined, size:40,),
+
+            )
                 : badges.Badge(
-                    badgeContent: Text('${num}'),
-                    position: badges.BadgePosition.topEnd(top: 2, end: 0),
-                    badgeAnimation: badges.BadgeAnimation.slide(),
-                    badgeStyle: badges.BadgeStyle(
-                      shape: badges.BadgeShape.circle,
-                      padding: EdgeInsets.all(8.0),
-                      badgeColor: Colors.red,
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Holder(
-                                  notificationList: notificationList,
-                                  onDeleteNotification: onDeleteNotification)),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.notifications_active_outlined,
-                        size: 40,
-                      ),
-                    ),
-                  ),
+
+
+              badgeContent:
+              Text('${
+                  count
+
+              }'),
+
+              position:badges.BadgePosition.topEnd(top:2, end:0),
+              badgeAnimation: badges.BadgeAnimation.slide(
+
+              ),
+              badgeStyle: badges.BadgeStyle(
+
+                shape: badges.BadgeShape.circle,
+                padding: EdgeInsets.all(8.0),
+                badgeColor: Colors.red,
+
+
+              ),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>Holder(totalBalance:newbalance,totalex:expensevalue,totalin:incomevalue,notificationList:Listn, onDeleteNotification:onDeleteNotification,)),
+                  );
+                },
+                icon:Icon(Icons.notifications_active_outlined, size:40,),
+
+              ),
+            ),
           ],
+
         ),
-        body: SingleChildScrollView(
+        body: SingleChildScrollView(//user allows to scrolldown
           child: Container(
             alignment: Alignment.topCenter,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 //const SizedBox(height: 10),
-                Container(
+                Container(//container which carries the percentage indicator
                   height: 270,
                   width: 450,
                   decoration: BoxDecoration(
@@ -128,18 +314,18 @@ class Controller extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   margin:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       CircularPercentIndicator(
                         radius: 120,
                         lineWidth: 30,
-                        percent: percent,
+                        percent:percent,
                         progressColor: const Color(0xff039EF0),
                         backgroundColor: const Color(0xff181EAA),
                         center: Text(
-                          '${(percent * 100).toStringAsFixed(0)}%',
+                          '${(percent* 100).toStringAsFixed(0)}%',//display the percentage
                           style: const TextStyle(
                             fontSize: 60,
                             fontWeight: FontWeight.bold,
@@ -147,14 +333,14 @@ class Controller extends StatelessWidget {
                           ),
                         ),
                       ),
-                      FractionallySizedBox(
+                      FractionallySizedBox(//this is for display the current date and time
                         widthFactor: 1.0,
                         child: Align(
                           alignment: Alignment.topCenter,
                           child: Padding(
                             padding: const EdgeInsets.only(top: 60.0),
                             child: Text(
-                              DateFormat('MMMM dd').format(DateTime.now()),
+                              DateFormat('MMMM dd').format(DateTime.now()),//time and date format
                               style: const TextStyle(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
@@ -164,7 +350,7 @@ class Controller extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const FractionallySizedBox(
+                      const FractionallySizedBox(//this is for display 'Remaining' as a word
                         widthFactor: 1.0,
                         child: Align(
                           alignment: Alignment.center,
@@ -184,7 +370,7 @@ class Controller extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
+                Container(//this container is for display the balance
                   height: 150,
                   width: 450,
                   margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -199,7 +385,7 @@ class Controller extends StatelessWidget {
                         child: Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text(
-                            'Balance',
+                            'Balance',//display the text as 'Balance'
                             style: TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.bold,
@@ -212,7 +398,7 @@ class Controller extends StatelessWidget {
                         bottom: 0,
                         left: 30,
                         right: 30,
-                        child: Container(
+                        child: Container(//this container shows the balance as value
                           height: 90,
                           decoration: const BoxDecoration(
                             borderRadius: BorderRadius.only(
@@ -226,7 +412,7 @@ class Controller extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Text(
-                                'RS.${balance.toString()}',
+                                '\$ ${newbalance.toString()}',//display the balance as String
                                 style: const TextStyle(
                                   fontSize: 40,
                                   fontWeight: FontWeight.bold,
@@ -246,7 +432,7 @@ class Controller extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.only(left: 22),
                     child: Text(
-                      'Activity',
+                      'Activity',//display the text As Activity bellow the balance Container
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -255,7 +441,7 @@ class Controller extends StatelessWidget {
                     ),
                   ),
                 ),
-                SingleChildScrollView(
+                SingleChildScrollView(//this shows the recent transactions with the balance
                   child: Row(
                     children: [
                       Container(
@@ -273,7 +459,7 @@ class Controller extends StatelessWidget {
                               child: Padding(
                                 padding: EdgeInsets.only(top: 5, left: 5),
                                 child: Text(
-                                  'Recent',
+                                  'Recent',//print the text as 'Recent'
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -285,11 +471,11 @@ class Controller extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Container(
+                                Container(//this container is for the recent transactions
                                   width: 60.0,
                                   height: 60.0,
                                   margin:
-                                      const EdgeInsets.only(top: 35, left: 10),
+                                  const EdgeInsets.only(top: 35, left: 10),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -313,8 +499,9 @@ class Controller extends StatelessWidget {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const Expence()),
+                                            builder: (context) =>
+                                                Expence(nume:count,notificationList: Listn, onDeleteNotification:onDeleteNotification,),
+                                          ),
                                         );
                                       },
                                     ),
@@ -324,7 +511,7 @@ class Controller extends StatelessWidget {
                                   width: 60.0,
                                   height: 60.0,
                                   margin:
-                                      const EdgeInsets.only(top: 35, left: 10),
+                                  const EdgeInsets.only(top: 35, left: 10),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -349,7 +536,7 @@ class Controller extends StatelessWidget {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  const Expence()),
+                                                  Expence(nume:count,notificationList:Listn, onDeleteNotification:onDeleteNotification)),
                                         );
                                       },
                                     ),
@@ -359,7 +546,7 @@ class Controller extends StatelessWidget {
                                   width: 50.0,
                                   height: 50.0,
                                   margin:
-                                      const EdgeInsets.only(top: 35, left: 20),
+                                  const EdgeInsets.only(top: 35, left: 20),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -378,7 +565,7 @@ class Controller extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const Expence()),
+                                                Expence(nume:count,notificationList:Listn, onDeleteNotification:onDeleteNotification)),
                                       );
                                     },
                                   ),
@@ -390,9 +577,9 @@ class Controller extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () {
-                          print("Savings");
+                          print("Savings");//user can move to the Savings file
                         },
-                        child: Container(
+                        child: Container(//this container is for the bottom buttons for the Svaings,Summery profile and scanner
                           height: 120,
                           width: 140,
                           margin: const EdgeInsets.only(
@@ -427,7 +614,7 @@ class Controller extends StatelessWidget {
                                 child: Image(
                                   width: 80,
                                   height: 80,
-                                  image: AssetImage('lib/images/Savings.png'),
+                                  image: AssetImage('lib/images/Savings.png'),//savings image
                                 ),
                               ),
                             ],
@@ -457,7 +644,7 @@ class Controller extends StatelessWidget {
                           child: Image(
                             width: 60,
                             height: 60,
-                            image: AssetImage('lib/images/Income.png'),
+                            image: AssetImage('lib/images/Income.png'),//income image
                           ),
                         ),
                       ),
@@ -479,7 +666,7 @@ class Controller extends StatelessWidget {
                           child: Image(
                             width: 80,
                             height: 80,
-                            image: AssetImage('lib/images/Summery.png'),
+                            image: AssetImage('lib/images/Summery.png'),//summery image
                           ),
                         ),
                       ),
@@ -506,7 +693,7 @@ class Controller extends StatelessWidget {
                           child: Image(
                             width: 60,
                             height: 60,
-                            image: AssetImage('lib/images/Profile.png'),
+                            image: AssetImage('lib/images/Profile.png'),//profile image
                           ),
                         ),
                       ),

@@ -26,11 +26,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
-  var initializationsettingsAndroid = const AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationsettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
   var initializationsettings = InitializationSettings(android: initializationsettingsAndroid);
   flutterLocalNotificationsPlugin.initialize(initializationsettings);
   await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-  runApp(const MyWork());
+  runApp(MyWork());
 }
 
 
@@ -45,12 +45,10 @@ class NotificationData {
   });
 }
 class MyWork extends StatelessWidget {
-  const MyWork({super.key});
-
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
 
       home: MyHomePage(),
     );
@@ -58,7 +56,7 @@ class MyWork extends StatelessWidget {
 }
 class MyHomePage extends StatefulWidget {
 
-  const MyHomePage({Key? key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
   final String? title;
 
@@ -76,8 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
   List<NotificationData> notificationList = [];
   List<DateTime> time = [];
   SharedPreferences? _prefs;
+  double totalex=0.0;
+  double totalin=0.0;
+  int totalBalance=0;
 
-  @override
   void initState(){
 
     super.initState();
@@ -118,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
         addNotificationToList(notification.body ?? '');
+        print(notificationList.length);
       }
     });
     getToken();
@@ -136,14 +137,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(notification.body!),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Text(
                         'Received on: ${
                             DateTime.now()
                         }',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -167,12 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
   }
-  void reset() async {
 
-    setState(() {
-      flag =0;
-    });
-  }
   Future<int> getNewMessagesCount() async {
     _prefs = await SharedPreferences.getInstance();
     return _prefs?.getInt('newMessagesCount') ?? 0;
@@ -194,6 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       saveMessage();
 
+
     });
 
   }
@@ -205,8 +202,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> saveMessage() async {
-    _prefs ??= await SharedPreferences.getInstance();
-
+    if (_prefs == null) {
+      _prefs = await SharedPreferences.getInstance();
+    }
     if (notificationList.isEmpty) {
       // If the notificationList is empty, clear the stored messages from SharedPreferences
       _prefs!.remove('messages');
@@ -251,10 +249,8 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       flag = newCount;
     });
+    print(notificationList.length);
   }
-
-
-
 
   getToken()async{
     String? token=await FirebaseMessaging.instance.getToken();
@@ -265,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
 
-      home: Controller(notificationList:notificationList, num:flag,onDeleteNotification: (int index) => _onDeleteNotification(index)),
+      home: Controller(balance:totalBalance,expense:totalex,income:totalin,notificationList:notificationList, num:flag,onDeleteNotification: (int index) => _onDeleteNotification(index)),
     );
   }
 
@@ -279,12 +275,11 @@ class Holder extends StatelessWidget{
 
   final Function(int) onDeleteNotification;
 
+  final double totalex;
+  final double totalin;
+  final int totalBalance;
 
-  const Holder({super.key, required this.notificationList, required this.onDeleteNotification,});
-
-
-
-  @override
+  Holder({required this.totalBalance,required this.totalex,required this.totalin,required this.notificationList, required this.onDeleteNotification,});
   Widget build(BuildContext context) {
 
 
@@ -303,8 +298,8 @@ class Holder extends StatelessWidget{
                     Container(
                       height: 170,
                       width: 400,
-                      margin: const EdgeInsets.only(left: 20, right: 15),
-                      decoration: const BoxDecoration(
+                      margin: EdgeInsets.only(left: 20, right: 15),
+                      decoration: BoxDecoration(
                         color: Color(0xff181EAA),
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(10),
@@ -316,7 +311,7 @@ class Holder extends StatelessWidget{
                         children: [
                           Container(
                             child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.arrow_back_ios_new,
                                 size: 40,
                                 color: Colors.white,
@@ -325,13 +320,13 @@ class Holder extends StatelessWidget{
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const HomePage(),
+                                    builder: (context) => HomePage(),
                                   ),
                                 );
                               },
                             ),
                           ),
-                          const FractionallySizedBox(
+                          FractionallySizedBox(
                             //UAbove the percentage value I have displayed the current date and time
                             widthFactor: 1.0,
                             child: Align(
@@ -355,7 +350,7 @@ class Holder extends StatelessWidget{
 
                     ListView(
                       shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
+                      physics: NeverScrollableScrollPhysics(),
                       children: List.generate(notificationList.length, (index) {
                         final notificationData = notificationList[index];
 
@@ -377,28 +372,28 @@ class Holder extends StatelessWidget{
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   color: Color(0xffADE8F4),
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(10),
                                   ),
                                 ), // Background color for the notification
-                                padding: const EdgeInsets.all(
+                                padding: EdgeInsets.all(
                                     10), // Padding around the notification
-                                margin: const EdgeInsets.all(
+                                margin: EdgeInsets.all(
                                     20), // Margin between notifications
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       notificationData.message,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 16,
                                         color: Color(0xff181EAA),
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const SizedBox(height: 5),
+                                    SizedBox(height: 5),
                                     Align(
                                       alignment: Alignment.bottomRight,
                                       child: Column(
@@ -407,7 +402,7 @@ class Holder extends StatelessWidget{
                                           Text(
                                             DateFormat('dd/MM/yyyy   h:mm a').format(
                                                 notificationData.receivedDateTime),
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.grey,
                                               fontWeight: FontWeight.bold,
