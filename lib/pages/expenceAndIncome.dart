@@ -1,23 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
+import 'Notification.dart';
+import 'homePage.dart';
 
 class Expence extends StatefulWidget {
-  const Expence({Key? key}) : super(key: key);
+  final List<NotificationData> notificationList;//initialize a list
+  final int nume;
+
+  final void Function(int index) onDeleteNotification;
+
+  Expence({Key? key,required this.notificationList, required this.nume, required this.onDeleteNotification,}) : super(key: key);
 
   @override
-  _ExpenceState createState() => _ExpenceState();
+  _ExpenceState createState() => _ExpenceState(
+    notificationList: notificationList,
+    nume: nume,
+    onDeleteNotification: onDeleteNotification,
+  );
+// You need to replace this with the correct way to get the instance of the _ExpenceState class
+
 }
 
 class _ExpenceState extends State<Expence> {
-  //variables
+  final List<NotificationData> notificationList;
+  final int nume;
+  final void Function(int index) onDeleteNotification;
+  _ExpenceState({
+    required this.notificationList,
+    required this.nume,
+    required this.onDeleteNotification,
+  });
+  double totalex=0.0;
+  double totalin=0.0;
 
   List<MyTransaction> transactions = [];
 
+
+
   final TextEditingController transactionNameController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool is_income = false;
   final formKey = GlobalKey<FormState>();
@@ -41,9 +66,11 @@ class _ExpenceState extends State<Expence> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> balanceStream;
   bool isBalanceStreamInitialized = false;
 
+  //get document Ids
+
   Future getDocIds() async {
     await FirebaseFirestore.instance
-        .collection('userDetails')
+        .collection('userDatails')
         .get()
         .then((snapshot) {
       if (snapshot.docs.isNotEmpty) {
@@ -89,10 +116,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new expence to the expenceID collection
 
   Future<void> addExpenceToFireStore(
-    String userId,
-    String transactionName,
-    int transactionAmount,
-  ) async {
+      String userId,
+      String transactionName,
+      int transactionAmount,
+      ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -116,10 +143,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new income to the incomeID collection
 
   Future<void> addIncomeToFireStore(
-    String userId,
-    String transactionName,
-    int transactionAmount,
-  ) async {
+      String userId,
+      String transactionName,
+      int transactionAmount,
+      ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -127,6 +154,7 @@ class _ExpenceState extends State<Expence> {
           .collection('userDetails')
           .doc(userId)
           .collection('incomeID');
+      ;
 
       await incomeCollection.add({
         'transactionName': transactionName,
@@ -140,7 +168,7 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
-  //fettching latest expence and income from firestore
+  //fettching latest exoence and income from firestore
 
   Future<void> fetchLatestTransactions(String userId) async {
     try {
@@ -211,9 +239,9 @@ class _ExpenceState extends State<Expence> {
           .get();
 
       int totalIncome = 0;
-      for (var incomeDoc in incomeSnapshot.docs) {
+      incomeSnapshot.docs.forEach((incomeDoc) {
         totalIncome += (incomeDoc.get('transactionAmount') as num).toInt();
-      }
+      });
 
       return totalIncome;
     } catch (ex) {
@@ -234,9 +262,9 @@ class _ExpenceState extends State<Expence> {
           .get();
 
       int totalExpence = 0;
-      for (var expenceDoc in expenceSnapshot.docs) {
+      expenceSnapshot.docs.forEach((expenceDoc) {
         totalExpence += (expenceDoc.get('transactionAmount') as num).toInt();
-      }
+      });
 
       return totalExpence;
     } catch (ex) {
@@ -248,16 +276,18 @@ class _ExpenceState extends State<Expence> {
   //method to calculate the total balance
 
   Future<int> getTotalBalance(String userId) async {
-    int totalIncome = await calculateTotalIncome(userId);
-    int totalExpence = await getTotalExpence(userId);
+    double totalIncome = (await calculateTotalIncome(userId)).toDouble();
+    double totalExpence = (await getTotalExpence(userId)).toDouble();
+    totalex=totalExpence;
+    totalin=totalIncome;
 
-    int balance = totalIncome - totalExpence;
+    int balance = (totalIncome - totalExpence).toInt();
 
     setState(() {
       totalBalance = balance;
     });
 
-    return balance;
+    return totalBalance;
   }
 
   //method to get the updates in realtime
@@ -307,7 +337,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('expenceID')
           .where('timestamp',
-              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -316,14 +346,14 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('incomeID')
           .where('timestamp',
-              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
       List<MyTransaction> transactions = [];
 
       //Add expence transactions
-      for (var expenceDoc in expenceSnapshot.docs) {
+      expenceSnapshot.docs.forEach((expenceDoc) {
         transactions.add(
           MyTransaction(
             transactionName: expenceDoc.get('transactionName'),
@@ -332,10 +362,10 @@ class _ExpenceState extends State<Expence> {
             timestamp: expenceDoc.get('timestamp').toDate(),
           ),
         );
-      }
+      });
 
       //Add income transactions
-      for (var incomeDoc in incomeSnapshot.docs) {
+      incomeSnapshot.docs.forEach((incomeDoc) {
         transactions.add(
           MyTransaction(
             transactionName: incomeDoc.get('transactionName'),
@@ -344,7 +374,7 @@ class _ExpenceState extends State<Expence> {
             timestamp: incomeDoc.get('timestamp').toDate(),
           ),
         );
-      }
+      });
 
       //Sort the transactions
       transactions.sort((a, b) => b.timestamp.compareTo(a.timestamp));
@@ -381,7 +411,7 @@ class _ExpenceState extends State<Expence> {
 
       // Listen for real-time changes to balance, income, and expense
       balanceStream = getBalanceStream(userId);
-      balanceStream.listen((sanpshot) {
+      balanceStream?.listen((sanpshot) {
         if (isBalanceStreamInitialized) {
           getTotalBalance(userId).then((balance) {
             setState(() {
@@ -525,7 +555,7 @@ class _ExpenceState extends State<Expence> {
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         String transactionType =
-                            is_income ? "Income" : "Expence";
+                        is_income ? "Income" : "Expence";
                         int transactionAmount =
                             int.parse(amountController.text) ?? 0;
 
@@ -537,8 +567,7 @@ class _ExpenceState extends State<Expence> {
 
                         //add transaction to the list
                         setState(() {
-                          transactions.insert(
-                            0,
+                          transactions.add(
                             MyTransaction(
                               transactionName: transactionName,
                               transactionAmount: transactionAmount,
@@ -574,6 +603,12 @@ class _ExpenceState extends State<Expence> {
           );
         });
   }
+  void updateTotalBalance(int newBalance) {
+    setState(() {
+      totalBalance = newBalance;
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -581,12 +616,17 @@ class _ExpenceState extends State<Expence> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor:
-            Colors.grey[100], // Set the background color of the App Bar
+        Colors.grey[100], // Set the background color of the App Bar
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.black, // Set the color of the back arrow
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>Controller(balance:totalBalance,expense:totalex,income:totalin,notificationList:notificationList,num:nume,onDeleteNotification:onDeleteNotification,),
+              ),
+            );
           },
         ),
         title: const Text(
@@ -829,8 +869,11 @@ class _ExpenceState extends State<Expence> {
               ],
             ),
           ),
+
         ],
       ),
     );
   }
+
 }
+

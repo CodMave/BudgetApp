@@ -9,8 +9,8 @@ class Menu extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(300, 812),
-      builder: (context, child) => const MaterialApp(
+      designSize: Size(300, 812),
+      builder: (context, child) => MaterialApp(
         debugShowCheckedModeBanner: false,
         home:MyMenu(),
       ),
@@ -20,9 +20,6 @@ class Menu extends StatelessWidget{
 
 
 class MyMenu extends StatefulWidget{
-  const MyMenu({super.key});
-
-  @override
   _MyMenuState createState()=>_MyMenuState();
 }
 class _MyMenuState extends State<MyMenu> {
@@ -48,9 +45,9 @@ class _MyMenuState extends State<MyMenu> {
                 Container(
                   height: 100,
                   width: 400,
-                  margin: const EdgeInsets.only(left:20,
+                  margin: EdgeInsets.only(left:20,
                       right:15),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color:Color(0xff181EAA),
 
                     borderRadius:BorderRadius.only(bottomLeft:Radius.circular(10),
@@ -63,7 +60,7 @@ class _MyMenuState extends State<MyMenu> {
                       Container(
 
                         child: IconButton(
-                          icon:  const Icon(
+                          icon:  Icon(
                             weight:10,
                             Icons.arrow_back_ios_new,
                             size:40,
@@ -72,7 +69,7 @@ class _MyMenuState extends State<MyMenu> {
                           onPressed: (){
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder:(context)=>const Check(),
+                              MaterialPageRoute(builder:(context)=>Check(),
                               ),
                             );
                           },
@@ -80,7 +77,7 @@ class _MyMenuState extends State<MyMenu> {
                         ),
                       ),
 
-                      const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                      FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                         widthFactor:1.0,
                         child:Align(
                           alignment: Alignment.center,
@@ -121,8 +118,8 @@ class _MyMenuState extends State<MyMenu> {
                               Container(
                                 width:400,
                                 height:140,
-                                margin: const EdgeInsets.only(left:20,top:10,right:20 ),
-                                decoration: const BoxDecoration(
+                                margin: EdgeInsets.only(left:20,top:10,right:20 ),
+                                decoration: BoxDecoration(
                                   color: Color(0xff90E0EF),
 
                                   borderRadius:BorderRadius.all(Radius.circular(10),
@@ -131,7 +128,7 @@ class _MyMenuState extends State<MyMenu> {
                                 ),
                                 child: Column(
                                   children: [
-                                    const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                                    FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                                       widthFactor:1.0,
                                       child:Align(
                                         alignment: Alignment.centerLeft,
@@ -153,7 +150,7 @@ class _MyMenuState extends State<MyMenu> {
                                     ),
 
                                     Padding(
-                                     padding: const EdgeInsets.only(top:0),
+                                      padding: EdgeInsets.only(top:0),
                                       child: ListView.builder(
                                         shrinkWrap: true,
                                         itemCount: options.length,
@@ -162,14 +159,14 @@ class _MyMenuState extends State<MyMenu> {
                                           return Container(
                                             // Adjust vertical spacing between radio buttons
                                             child: RadioListTile(
-                                              contentPadding: const EdgeInsets.symmetric(horizontal:120), // Adjust padding around the text
+                                              contentPadding: EdgeInsets.symmetric(horizontal:120), // Adjust padding around the text
                                               title: Text(option,
-                                              style: const TextStyle(
+                                                style: TextStyle(
                                                   color:Colors.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
 
-                                              ),),
+                                                ),),
                                               value: option,
                                               groupValue: selectedValue,
                                               onChanged: (value) {
@@ -189,15 +186,15 @@ class _MyMenuState extends State<MyMenu> {
                               Container(
                                 width:400,
                                 height:60,
-                                margin: const EdgeInsets.only(left:20,top:10,right:20 ),
-                                decoration: const BoxDecoration(
+                                margin: EdgeInsets.only(left:20,top:10,right:20 ),
+                                decoration: BoxDecoration(
                                   color: Color(0xff90E0EF),
 
                                   borderRadius:BorderRadius.all(Radius.circular(10),
 
                                   ),
                                 ),
-                                child: const Column(
+                                child: Column(
                                   children: [
                                     FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                                       widthFactor:1.0,
@@ -224,48 +221,11 @@ class _MyMenuState extends State<MyMenu> {
                                 ),
                               ),
 
-                        Container(
-                          width:400,
-                          height:80,
-                          margin: const EdgeInsets.only(left:20,top:10,right:20 ),
-                          decoration: const BoxDecoration(
-                            color: Color(0xff90E0EF),
-
-                            borderRadius:BorderRadius.all(Radius.circular(10),
-
-                            ),
-                          ),
-                          child: const Column(
-                            children: [
-                              FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
-                                widthFactor:1.0,
-                                child:Align(
-                                  alignment: Alignment.centerLeft,
-                                  child :Padding(
-                                    padding: EdgeInsets.only(left:20,top:20),
-                                    child:Text(
-                                      'Change Password',
-                                      style: TextStyle(
-                                        fontSize:20,
-                                        fontWeight: FontWeight.bold,
-
-                                        color:Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-
-                              ),
-
-                            ],
-                          ),
-                        ),
                               Container(
                                 width:400,
-                                height:100,
-                                margin: const EdgeInsets.only(left:20,top:10,right:20 ),
-                                decoration: const BoxDecoration(
+                                height:80,
+                                margin: EdgeInsets.only(left:20,top:10,right:20 ),
+                                decoration: BoxDecoration(
                                   color: Color(0xff90E0EF),
 
                                   borderRadius:BorderRadius.all(Radius.circular(10),
@@ -274,7 +234,44 @@ class _MyMenuState extends State<MyMenu> {
                                 ),
                                 child: Column(
                                   children: [
-                                    const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                                    FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                                      widthFactor:1.0,
+                                      child:Align(
+                                        alignment: Alignment.centerLeft,
+                                        child :Padding(
+                                          padding: EdgeInsets.only(left:20,top:20),
+                                          child:Text(
+                                            'Change Password',
+                                            style: TextStyle(
+                                              fontSize:20,
+                                              fontWeight: FontWeight.bold,
+
+                                              color:Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+
+                                    ),
+
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width:400,
+                                height:100,
+                                margin: EdgeInsets.only(left:20,top:10,right:20 ),
+                                decoration: BoxDecoration(
+                                  color: Color(0xff90E0EF),
+
+                                  borderRadius:BorderRadius.all(Radius.circular(10),
+
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
                                       widthFactor:1.0,
                                       child:Align(
                                         alignment: Alignment.centerLeft,
@@ -301,8 +298,8 @@ class _MyMenuState extends State<MyMenu> {
                                         padding: const EdgeInsets.only(top:10,bottom:0,left:150),
                                         child: Text(
 
-                                          version,
-                                          style: const TextStyle(
+                                          '$version',
+                                          style: TextStyle(
                                             fontWeight:FontWeight.bold,
                                             fontSize:20,
 
@@ -314,149 +311,149 @@ class _MyMenuState extends State<MyMenu> {
                                   ],
                                 ),
                               ),
-                        Container(
-                          width:400,
-                          height:120,
-
-                          margin: const EdgeInsets.only(left:20,top:10,right:20 ),
-                          decoration: const BoxDecoration(
-                            color: Color(0xff90E0EF),
-
-                            borderRadius:BorderRadius.all(Radius.circular(10),
-
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
-                                widthFactor:1.0,
-                                child:Align(
-                                  alignment: Alignment.centerLeft,
-                                  child :Padding(
-                                    padding: EdgeInsets.only(left:20,top:20),
-                                    child:Text(
-                                      'About',
-                                      style: TextStyle(
-                                        fontSize:20,
-                                        fontWeight: FontWeight.bold,
-
-                                        color:Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-
-                              ),
-
                               Container(
                                 width:400,
-                                height:60,
+                                height:120,
 
-                                margin: const EdgeInsets.only(left:20,top:10,right:20 ),
-                                decoration: const BoxDecoration(
+                                margin: EdgeInsets.only(left:20,top:10,right:20 ),
+                                decoration: BoxDecoration(
                                   color: Color(0xff90E0EF),
 
                                   borderRadius:BorderRadius.all(Radius.circular(10),
 
                                   ),
                                 ),
+                                child: Column(
+                                  children: [
+                                    FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                                      widthFactor:1.0,
+                                      child:Align(
+                                        alignment: Alignment.centerLeft,
+                                        child :Padding(
+                                          padding: EdgeInsets.only(left:20,top:20),
+                                          child:Text(
+                                            'About',
+                                            style: TextStyle(
+                                              fontSize:20,
+                                              fontWeight: FontWeight.bold,
 
-                                child: TextFormField(
-                                  minLines: 2,
-                                  maxLines:5,
-                                  keyboardType: TextInputType.text,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText:'Description...',
-                                    hintStyle: TextStyle(
-                                      color: Colors.grey,
+                                              color:Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+
+                                    ),
+
+                                    Container(
+                                      width:400,
+                                      height:60,
+
+                                      margin: EdgeInsets.only(left:20,top:10,right:20 ),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xff90E0EF),
+
+                                        borderRadius:BorderRadius.all(Radius.circular(10),
+
+                                        ),
+                                      ),
+
+                                      child: TextFormField(
+                                        minLines: 2,
+                                        maxLines:5,
+                                        keyboardType: TextInputType.text,
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText:'Description...',
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                          ),
+
+
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width:400,
+                                      height:100,
+                                      margin: EdgeInsets.only(left:20,top:10,right:20 ),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xff90E0EF),
+
+                                        borderRadius:BorderRadius.all(Radius.circular(10),
+
+                                        ),
+                                      ),
+                                      child: Column(
+                                          children: [
+                                            FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
+                                              widthFactor:1.0,
+                                              child:Align(
+                                                alignment: Alignment.centerLeft,
+                                                child :Padding(
+                                                  padding: EdgeInsets.only(left:20,bottom:5),
+                                                  child:Text(
+                                                    'Rate Us',
+                                                    style: TextStyle(
+                                                      fontSize:20,
+                                                      fontWeight: FontWeight.bold,
+
+                                                      color:Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+
+
+                                            ),
+                                            Text(
+                                              'Rating:$rating',
+                                              style: TextStyle(fontSize:15,color:Colors.black),
+                                            ),
+                                            Container(
+
+                                              child: RatingBar.builder(
+                                                  itemBuilder:(context,_)=>Icon(Icons.star,
+                                                      color:Colors.amber),
+                                                  minRating: 1,
+                                                  itemSize:40,
+                                                  itemPadding: EdgeInsets.symmetric(horizontal: 4),
+                                                  updateOnDrag: true,
+                                                  onRatingUpdate:(newRating){
+                                                    setState(() {
+                                                      this.rating=newRating;
+                                                    });
+
+                                                  }
+                                              ),
+                                            ),
+
+                                          ]
+                                      ),
                                     ),
 
 
-                                  ),
+
+                                  ],
+
                                 ),
                               ),
                             ],
                           ),
+
                         ),
-                        Container(
-
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                            Container(
-                            width:400,
-                            height:100,
-                            margin: const EdgeInsets.only(left:20,top:10,right:20 ),
-                            decoration: const BoxDecoration(
-                              color: Color(0xff90E0EF),
-
-                              borderRadius:BorderRadius.all(Radius.circular(10),
-
-                              ),
-                            ),
-                            child: Column(
-                                children: [
-    const FractionallySizedBox(//UAbove the percentage value I have displayed the current date and time
-    widthFactor:1.0,
-    child:Align(
-    alignment: Alignment.centerLeft,
-    child :Padding(
-    padding: EdgeInsets.only(left:20,bottom:5),
-    child:Text(
-    'Rate Us',
-    style: TextStyle(
-    fontSize:20,
-    fontWeight: FontWeight.bold,
-
-    color:Colors.black,
-    ),
-    ),
-    ),
-    ),
-
-
-    ),
-    Text(
-    'Rating:$rating',
-    style: const TextStyle(fontSize:15,color:Colors.black),
-    ),
-    Container(
-
-    child: RatingBar.builder(
-    itemBuilder:(context,_)=>const Icon(Icons.star,
-    color:Colors.amber),
-    minRating: 1,
-    itemSize:40,
-    itemPadding: const EdgeInsets.symmetric(horizontal: 4),
-    updateOnDrag: true,
-    onRatingUpdate:(newRating){
-    setState(() {
-    rating=newRating;
-    });
-
-    }
-    ),
-    ),
-
-                                  ]
-                        ),
-                            ),
-
-
-
                       ],
-
                     ),
                   ),
-                    ],
-                ),
-
-                  ),
-                    ],
-                ),
-                ),
                 ),
               ],
 
