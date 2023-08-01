@@ -78,7 +78,7 @@ class _GoalsState extends State<Goals> {
 
                   // Add plan button
 
-                  const SizedBox(width: 130),
+                  const SizedBox(width: 115),
 
                   GestureDetector(
                     onTap: () {

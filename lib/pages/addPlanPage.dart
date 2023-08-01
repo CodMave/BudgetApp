@@ -1,3 +1,4 @@
+import 'package:budgettrack/components/button.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/material.dart';
 import '../components/datePicker.dart';
@@ -43,9 +44,17 @@ class _AddPlanState extends State<AddPlan> {
     );
 
     if (picked != null && picked != selectedEndDate) {
-      setState(() {
-        selectedEndDate = picked;
-      });
+      if (selectedStartDate != null && picked.isAfter(selectedStartDate!)) {
+        setState(() {
+          selectedEndDate = picked;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('End date should be after start date'),
+          ),
+        );
+      }
     }
   }
 
@@ -178,6 +187,15 @@ class _AddPlanState extends State<AddPlan> {
                   selectedDate: selectedEndDate,
                   hintText: 'Select end date',
                 ),
+              ),
+
+              const SizedBox(height: 25),
+
+              //add plan button
+
+              MyButton(
+                onTap: () => {},
+                text: 'Add Plan',
               ),
             ],
           ),
