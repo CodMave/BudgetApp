@@ -6,77 +6,74 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-
 import 'homePage.dart';
 
-
-Future<void>_FirebaseMessagingBackgroundHandler(RemoteMessage message)async{
+Future<void> _FirebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print('Handling background message:${
-      message.messageId
-  }');
+  print('Handling background message:${message.messageId}');
 }
-const AndroidNotificationChannel channel=AndroidNotificationChannel('high_importance_channel','High Importance Notifications',
 
-  importance: Importance.high,);
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel',
+  'High Importance Notifications',
+  importance: Importance.high,
+);
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin=FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
-  var initializationsettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
-  var initializationsettings = InitializationSettings(android: initializationsettingsAndroid);
+  var initializationsettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationsettings =
+      InitializationSettings(android: initializationsettingsAndroid);
   flutterLocalNotificationsPlugin.initialize(initializationsettings);
-  await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
   runApp(MyWork());
 }
-
 
 class NotificationData {
   final String message;
   final DateTime receivedDateTime;
-
 
   NotificationData({
     required this.message,
     required this.receivedDateTime,
   });
 }
-class MyWork extends StatelessWidget {
 
+class MyWork extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       home: MyHomePage(),
     );
   }
 }
-class MyHomePage extends StatefulWidget {
 
+class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, this.title}) : super(key: key);
 
   final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
-
-
-
 }
 
-
 class _MyHomePageState extends State<MyHomePage> {
-  int flag=0;
+  int flag = 0;
   FirebaseMessaging msg = FirebaseMessaging.instance;
   List<NotificationData> notificationList = [];
   List<DateTime> time = [];
   SharedPreferences? _prefs;
 
-  void initState(){
-
+  void initState() {
     super.initState();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -98,7 +95,6 @@ class _MyHomePageState extends State<MyHomePage> {
           notification.hashCode,
           notification.title,
           notification.body,
-
           NotificationDetails(
             android: AndroidNotificationDetails(
               channel.id,
@@ -112,7 +108,6 @@ class _MyHomePageState extends State<MyHomePage> {
         );
 
         counter();
-
 
         addNotificationToList(notification.body ?? '');
       }
@@ -137,9 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Text(
-                        'Received on: ${
-                            DateTime.now()
-                        }',
+                        'Received on: ${DateTime.now()}',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -152,8 +145,6 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           },
         );
-
-
       }
     });
 
@@ -164,36 +155,33 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
   }
-  void reset() async {
 
+  void reset() async {
     setState(() {
-      flag =0;
+      flag = 0;
     });
   }
+
   Future<int> getNewMessagesCount() async {
     _prefs = await SharedPreferences.getInstance();
     return _prefs?.getInt('newMessagesCount') ?? 0;
   }
 
-
   void addNotificationToList(String message) {
-
     setState(() {
-
-      DateTime now=DateTime.now();
+      DateTime now = DateTime.now();
 
       final notificationData = NotificationData(
         message: message,
-        receivedDateTime:now,
+        receivedDateTime: now,
       );
 
       notificationList.insert(0, notificationData);
 
       saveMessage();
-
     });
-
   }
+
   void _onDeleteNotification(int index) {
     setState(() {
       notificationList.removeAt(index);
@@ -211,8 +199,11 @@ class _MyHomePageState extends State<MyHomePage> {
       _prefs!.remove('messages');
       _prefs!.remove('times');
     } else {
-      final messages = notificationList.map((notification) => notification.message).toList();
-      final times = notificationList.map((notification) => notification.receivedDateTime.toString()).toList();
+      final messages =
+          notificationList.map((notification) => notification.message).toList();
+      final times = notificationList
+          .map((notification) => notification.receivedDateTime.toString())
+          .toList();
       _prefs!.setStringList('messages', messages);
       _prefs!.setStringList('times', times);
     }
@@ -226,22 +217,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (savedMessages != null && savedTimes != null) {
       setState(() {
-        notificationList = savedMessages
-            .map((message) {
+        notificationList = savedMessages.map((message) {
           final index = savedMessages.indexOf(message);
           final receivedTime = DateTime.parse(savedTimes[index]);
           return NotificationData(
             message: message,
             receivedDateTime: receivedTime,
           );
-        })
-            .toList();
+        }).toList();
       });
     }
   }
-
-
-
 
   Future<void> counter() async {
     final newCount = flag + 1;
@@ -252,43 +238,31 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
-
-
-  getToken()async{
-    String? token=await FirebaseMessaging.instance.getToken();
-
-  }
+  getToken() async {}
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-      home: Controller(notificationList:notificationList, num:flag,onDeleteNotification: (int index) => _onDeleteNotification(index)),
+      home: Controller(
+          notificationList: notificationList,
+          num: flag,
+          onDeleteNotification: (int index) => _onDeleteNotification(index)),
     );
   }
-
-
-
 }
-class Holder extends StatelessWidget{
 
-
+class Holder extends StatelessWidget {
   final List<NotificationData> notificationList;
 
   final Function(int) onDeleteNotification;
 
-
-  Holder({required this.notificationList, required this.onDeleteNotification,});
-
-
+  Holder({
+    required this.notificationList,
+    required this.onDeleteNotification,
+  });
 
   Widget build(BuildContext context) {
-
-
-
     return Scaffold(
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -350,7 +324,6 @@ class Holder extends StatelessWidget{
                         ],
                       ),
                     ),
-
                     ListView(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -364,11 +337,11 @@ class Holder extends StatelessWidget{
                           ),
                           onDismissed: (direction) {
                             if (direction == DismissDirection.startToEnd) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(content: Text('$index item deleted')));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('$index item deleted')));
 
                               onDeleteNotification(index);
-
                             }
                           },
                           child: Column(
@@ -400,11 +373,13 @@ class Holder extends StatelessWidget{
                                     Align(
                                       alignment: Alignment.bottomRight,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            DateFormat('dd/MM/yyyy   h:mm a').format(
-                                                notificationData.receivedDateTime),
+                                            DateFormat('dd/MM/yyyy   h:mm a')
+                                                .format(notificationData
+                                                    .receivedDateTime),
                                             style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.grey,
@@ -422,18 +397,13 @@ class Holder extends StatelessWidget{
                         );
                       }),
                     )
-
                   ],
                 ),
-
               ),
             ],
           ),
         ),
-
       ),
-
     );
-
   }
 }

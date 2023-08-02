@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../components/button.dart';
-import '../components/tile.dart';
-import '../services/authService.dart';
+
 import '../pages/emailVerification.dart';
 
 class RegisterPage extends StatefulWidget {

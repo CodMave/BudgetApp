@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:budgettrack/components/button.dart';
-import 'package:budgettrack/pages/LoginPage.dart';
+
 import 'package:budgettrack/pages/homePage.dart';
-import 'package:budgettrack/pages/loginOrReg.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
