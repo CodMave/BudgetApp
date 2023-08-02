@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/plansTile.dart';
 import 'package:intl/intl.dart';
-
 import 'addPlanPage.dart';
 
 class Goals extends StatefulWidget {
@@ -132,7 +131,7 @@ class _GoalsState extends State<Goals> {
                   PlanTile(
                     firstText: 'Your current plan',
                     secondText: 'Stranting Date',
-                    date: '01/01/2021', //SHOULD BE USER INPUT
+                    date: '31/01/2021', //SHOULD BE USER INPUT
                   ),
 
                   SizedBox(width: 20),
