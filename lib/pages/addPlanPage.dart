@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 //import 'package:flutter/material.dart';
 import '../components/datePicker.dart';
 import '../components/planTextField.dart';
-import 'package:intl/intl.dart';
 
 class AddPlan extends StatefulWidget {
   const AddPlan({Key? key}) : super(key: key);
@@ -23,7 +22,7 @@ class _AddPlanState extends State<AddPlan> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      firstDate: DateTime(2015),
       lastDate: DateTime(2101),
     );
 
@@ -39,7 +38,7 @@ class _AddPlanState extends State<AddPlan> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      firstDate: DateTime(2015),
       lastDate: DateTime(2101),
     );
 
