@@ -1,4 +1,5 @@
 import 'package:budgettrack/pages/authPage.dart';
+import 'package:budgettrack/pages/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const AuthPage(),
+      home: SplashScreen(),
     );
   }
 }
