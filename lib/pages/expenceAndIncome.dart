@@ -1,28 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
 import 'Notification.dart';
 import 'homePage.dart';
 
 class Expence extends StatefulWidget {
-  final List<NotificationData> notificationList;//initialize a list
+  final List<NotificationData> notificationList; //initialize a list
   final int nume;
 
   final void Function(int index) onDeleteNotification;
 
-  Expence({Key? key,required this.notificationList, required this.nume, required this.onDeleteNotification,}) : super(key: key);
+  Expence({
+    Key? key,
+    required this.notificationList,
+    required this.nume,
+    required this.onDeleteNotification,
+  }) : super(key: key);
 
   @override
   _ExpenceState createState() => _ExpenceState(
-    notificationList: notificationList,
-    nume: nume,
-    onDeleteNotification: onDeleteNotification,
-  );
+        notificationList: notificationList,
+        nume: nume,
+        onDeleteNotification: onDeleteNotification,
+      );
 // You need to replace this with the correct way to get the instance of the _ExpenceState class
-
 }
 
 class _ExpenceState extends State<Expence> {
@@ -34,15 +40,13 @@ class _ExpenceState extends State<Expence> {
     required this.nume,
     required this.onDeleteNotification,
   });
-  double totalex=0.0;
-  double totalin=0.0;
+  double totalex = 0.0;
+  double totalin = 0.0;
 
   List<MyTransaction> transactions = [];
 
-
-
   final TextEditingController transactionNameController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool is_income = false;
   final formKey = GlobalKey<FormState>();
@@ -65,6 +69,38 @@ class _ExpenceState extends State<Expence> {
   //variable to store the stream
   late Stream<DocumentSnapshot<Map<String, dynamic>>> balanceStream;
   bool isBalanceStreamInitialized = false;
+
+  String? selectedExpenseCategory;
+  String? selectedIncomeCategory;
+  String? selectedCategory;
+
+  List expenseCategory = [
+    'Food',
+    'Transport',
+    'Shopping',
+    'Bills',
+    'Entertainment',
+    'Health',
+    'Loans',
+    'Education',
+    'Travel',
+    'Gifts',
+    'Donations',
+    'Other'
+  ];
+
+  List incomeCategory = [
+    'Salary',
+    'Awards',
+    'Grants',
+    'Sales',
+    'Rentals',
+    'Refunds',
+    'Lottery',
+    'Dividends',
+    'Investments',
+    'Other'
+  ];
 
   //get document Ids
 
@@ -116,10 +152,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new expence to the expenceID collection
 
   Future<void> addExpenceToFireStore(
-      String userId,
-      String transactionName,
-      int transactionAmount,
-      ) async {
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -129,7 +165,7 @@ class _ExpenceState extends State<Expence> {
           .collection('expenceID');
 
       await expenceCollection.add({
-        'transactionName': transactionName,
+        'transactionCategory': selectedCategory,
         'transactionAmount': transactionAmount,
         'timestamp': DateTime.now(),
       });
@@ -143,10 +179,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new income to the incomeID collection
 
   Future<void> addIncomeToFireStore(
-      String userId,
-      String transactionName,
-      int transactionAmount,
-      ) async {
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -157,7 +193,7 @@ class _ExpenceState extends State<Expence> {
       ;
 
       await incomeCollection.add({
-        'transactionName': transactionName,
+        'transactionCategory': selectedCategory,
         'transactionAmount': transactionAmount,
         'timestamp': DateTime.now(),
       });
@@ -187,9 +223,10 @@ class _ExpenceState extends State<Expence> {
         final income = incomeSnapshot.docs[0];
         setState(() {
           lastIncomeTransaction = MyTransaction(
-            transactionName: income.get('transactionName'),
+            //transactionName: income.get('transactionName'),
             transactionAmount: income.get('transactionAmount'),
             transactionType: 'Income',
+            selectedCategory: income.get('transactionCategory'),
             timestamp: income.get('timestamp').toDate(),
           );
         });
@@ -208,9 +245,10 @@ class _ExpenceState extends State<Expence> {
         final expence = expenceSnapshot.docs[0];
         setState(() {
           lastExpenseTransaction = MyTransaction(
-            transactionName: expence.get('transactionName'),
+            //transactionName: expence.get('transactionName'),
             transactionAmount: expence.get('transactionAmount'),
             transactionType: 'Expence',
+            selectedCategory: expence.get('transactionCategory'),
             timestamp: expence.get('timestamp').toDate(),
           );
         });
@@ -278,8 +316,8 @@ class _ExpenceState extends State<Expence> {
   Future<int> getTotalBalance(String userId) async {
     double totalIncome = (await calculateTotalIncome(userId)).toDouble();
     double totalExpence = (await getTotalExpence(userId)).toDouble();
-    totalex=totalExpence;
-    totalin=totalIncome;
+    totalex = totalExpence;
+    totalin = totalIncome;
 
     int balance = (totalIncome - totalExpence).toInt();
 
@@ -337,7 +375,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('expenceID')
           .where('timestamp',
-          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -346,7 +384,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('incomeID')
           .where('timestamp',
-          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -356,9 +394,10 @@ class _ExpenceState extends State<Expence> {
       expenceSnapshot.docs.forEach((expenceDoc) {
         transactions.add(
           MyTransaction(
-            transactionName: expenceDoc.get('transactionName'),
+            //transactionName: expenceDoc.get('transactionName'),
             transactionAmount: expenceDoc.get('transactionAmount'),
             transactionType: 'Expence',
+            selectedCategory: expenceDoc.get('transactionCategory'),
             timestamp: expenceDoc.get('timestamp').toDate(),
           ),
         );
@@ -368,9 +407,10 @@ class _ExpenceState extends State<Expence> {
       incomeSnapshot.docs.forEach((incomeDoc) {
         transactions.add(
           MyTransaction(
-            transactionName: incomeDoc.get('transactionName'),
+            //transactionName: incomeDoc.get('transactionName'),
             transactionAmount: incomeDoc.get('transactionAmount'),
             transactionType: 'Income',
+            selectedCategory: incomeDoc.get('transactionCategory'),
             timestamp: incomeDoc.get('timestamp').toDate(),
           ),
         );
@@ -430,9 +470,10 @@ class _ExpenceState extends State<Expence> {
           final expence = snapshot.docs[0];
           setState(() {
             lastExpenseTransaction = MyTransaction(
-              transactionName: expence.get('transactionName'),
+              //transactionName: expence.get('transactionName'),
               transactionAmount: expence.get('transactionAmount'),
               transactionType: 'Expence',
+              selectedCategory: expence.get('transactionCategory'),
               timestamp: expence.get('timestamp').toDate(),
             );
           });
@@ -517,12 +558,30 @@ class _ExpenceState extends State<Expence> {
                         Row(
                           children: [
                             Expanded(
-                              child: TextField(
+                              child: DropdownButtonFormField<String>(
                                 decoration: const InputDecoration(
+                                  hintText: 'Select the Category',
                                   border: OutlineInputBorder(),
-                                  hintText: "Enter the Transaction Name",
                                 ),
-                                controller: transactionNameController,
+                                value: selectedCategory,
+                                items: is_income
+                                    ? incomeCategory.map((Category) {
+                                        return DropdownMenuItem<String>(
+                                          value: Category,
+                                          child: Text(Category),
+                                        );
+                                      }).toList()
+                                    : expenseCategory.map((Category) {
+                                        return DropdownMenuItem<String>(
+                                          value: Category,
+                                          child: Text(Category),
+                                        );
+                                      }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedCategory = value;
+                                  });
+                                },
                               ),
                             ),
                           ],
@@ -555,7 +614,7 @@ class _ExpenceState extends State<Expence> {
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         String transactionType =
-                        is_income ? "Income" : "Expence";
+                            is_income ? "Income" : "Expence";
                         int transactionAmount =
                             int.parse(amountController.text) ?? 0;
 
@@ -569,9 +628,10 @@ class _ExpenceState extends State<Expence> {
                         setState(() {
                           transactions.add(
                             MyTransaction(
-                              transactionName: transactionName,
+                              //transactionName: transactionName,
                               transactionAmount: transactionAmount,
                               transactionType: transactionType,
+                              selectedCategory: selectedCategory,
                               timestamp: DateTime.now(),
                             ),
                           );
@@ -603,11 +663,11 @@ class _ExpenceState extends State<Expence> {
           );
         });
   }
+
   void updateTotalBalance(int newBalance) {
     setState(() {
       totalBalance = newBalance;
     });
-
   }
 
   @override
@@ -616,7 +676,7 @@ class _ExpenceState extends State<Expence> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor:
-        Colors.grey[100], // Set the background color of the App Bar
+            Colors.grey[100], // Set the background color of the App Bar
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.black, // Set the color of the back arrow
@@ -624,7 +684,14 @@ class _ExpenceState extends State<Expence> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>Controller(balance:totalBalance,expense:totalex,income:totalin,notificationList:notificationList,num:nume,onDeleteNotification:onDeleteNotification,),
+                builder: (context) => Controller(
+                  balance: totalBalance,
+                  expense: totalex,
+                  income: totalin,
+                  notificationList: notificationList,
+                  num: nume,
+                  onDeleteNotification: onDeleteNotification,
+                ),
               ),
             );
           },
@@ -850,9 +917,10 @@ class _ExpenceState extends State<Expence> {
                   itemBuilder: (context, index) {
                     //int reverseIndex = transactions.length - 1 - index;
                     return MyTransaction(
-                      transactionName: transactions[index].transactionName,
+                      //transactionName: transactions[index].transactionName,
                       transactionAmount: transactions[index].transactionAmount,
                       transactionType: transactions[index].transactionType,
+                      selectedCategory: selectedCategory,
                       timestamp: transactions[index].timestamp,
                     );
                   },
@@ -869,11 +937,8 @@ class _ExpenceState extends State<Expence> {
               ],
             ),
           ),
-
         ],
       ),
     );
   }
-
 }
-
