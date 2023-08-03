@@ -746,7 +746,7 @@ class _ExpenceState extends State<Expence> {
                                       "${lastIncomeTransaction?.transactionAmount ?? '0'}",
                                       style: const TextStyle(
                                         color: Colors.black,
-                                        fontSize: 18,
+                                        fontSize:18,
                                       ),
                                     ),
                                   ],

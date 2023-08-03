@@ -45,6 +45,7 @@ List<NotificationData> Listn=[];
 class Controller extends StatefulWidget {
   int newbalance=0;
 
+
   final List<NotificationData> notificationList;
   final int num;
   final void Function(int index) onDeleteNotification;
@@ -70,6 +71,7 @@ class Controller extends StatefulWidget {
 }
 
 class _ControllerState extends State<Controller> {
+
   bool isContainerVisible = false;
   final void Function(int index) onDeleteNotification;
   int newbalance = 0;
@@ -173,9 +175,13 @@ class _ControllerState extends State<Controller> {
       _prefs?.setInt('newBalance', newCount);
       setState(() {
         newbalance = newCount;
+
       });
+
     }
   }
+
+
 
 
   Future<void> saveExpenses() async {
@@ -185,28 +191,38 @@ class _ControllerState extends State<Controller> {
       _prefs?.setDouble('newExpense', newCount);
       setState(() {
         expensevalue = newCount;
+
       });
+
     }
   }
 
+
   Future<void> saveIncome() async {
+
     if (incomevalue != 0.0) {
-      final newCount = expensevalue;
+      final newCount = incomevalue;
       _prefs = await SharedPreferences.getInstance();
       _prefs?.setDouble('newIncome', newCount);
       setState(() {
         incomevalue = newCount;
+
       });
+
     }
   }
 
+
   Future<double> loadIncome() async {
     _prefs = await SharedPreferences.getInstance();
+    print(_prefs?.getDouble('newIncome') );
     return _prefs?.getDouble('newIncome') ?? 0.0;
+
   }
 
   Future<double> loadPercent() async {
     _prefs = await SharedPreferences.getInstance();
+
     return _prefs?.getDouble('newPercent') ?? 0.0;
   }
 
@@ -233,57 +249,91 @@ class _ControllerState extends State<Controller> {
     }
   }
 
+
  void ContainerVisibility() {
-    showDialog(context: context,
+
+      showDialog(context: context,
         builder: (BuildContext context){
           return Stack(
           children: [
-            Container(
-              margin: EdgeInsets.only(top:200,left:180),
-              height:150,
-              width:250,
-              child: AlertDialog(
-                content: Column(
+             AlertDialog(
+                content: Container(
+                  alignment: Alignment.center,
+                  height:100,
+                  width:400,
+               child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
 
                   children: [
-                    SizedBox(height: 10),
                     Row(
+
                       children: [
 
                         Text(
-                          'Income:',
+                          'Total Income:',
                           style: TextStyle(
-                            fontSize:10,
+                            fontSize:15,
                             color: Colors.black,
                           ),
                         ),
-                        Text(
-                          '${incomevalue.toString()}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize:10,
-                            color: Colors.black,
+
+                        Padding(
+                          padding: const EdgeInsets.only(left:15.0),
+                          child: FutureBuilder<double>(
+                              future: loadIncome(),
+                              builder: (context, snapshot) {
+
+                                  return Text(
+                                    '${snapshot.data}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                    ),
+                                  );
+                                }
                           ),
+
+                        ),
+                        Icon(
+                          Icons.arrow_upward,
+                          color: Colors.green,
+                          size: 28,
                         ),
                       ],
                     ),
-                    SizedBox(height:15),
+                    SizedBox(height:5),
                     Row(
                       children: [
                         Text(
-                          'Expense:',
+                          'Total Expense:',
                           style: TextStyle(
-                            fontSize:10,
+                            fontSize:15,
                             color: Colors.black,
                           ),
                         ),
-                        Text(
-                          '${expensevalue.toString()}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize:10,
-                            color: Colors.black,
+                        Padding(
+                          padding: const EdgeInsets.only(left:8.0),
+                          child:FutureBuilder<double>(
+                              future: loadexpence(),
+                              builder: (context, snapshot) {
+                                 return Text(
+                                    '${snapshot.data}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                    ),
+                                  );
+                                }
+
                           ),
+
+                        ),
+                        Icon(
+                          Icons.arrow_downward,
+                          color: Colors.red,
+                          size: 28,
                         ),
                       ],
                     )
@@ -392,13 +442,14 @@ class _ControllerState extends State<Controller> {
           ],
 
         ),
-        body: SingleChildScrollView( //user allows to scrolldown
+        body: SingleChildScrollView(
+          //user allows to scrolldown
           child: Container(
             alignment: Alignment.topCenter,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                  Container( //container which carries the percentage indicator
+                  Container(//container which carries the percentage indicator
                   height: 270,
                   width: 450,
                   decoration: BoxDecoration(
@@ -417,14 +468,14 @@ class _ControllerState extends State<Controller> {
                         percent: percent,
                         progressColor: const Color(0xff039EF0),
                         backgroundColor: const Color(0xff181EAA),
-                        center: TextButton(
-                          onPressed:() {
-                            setState(() {
-                              ContainerVisibility();
-                            });
 
-                          },
+                        center: TextButton(
+                          onPressed:()
+                          {
+                             ContainerVisibility();
+                              },
                           child: Text(
+
                             '${(percent * 100).toStringAsFixed(0)}%',
                             //display the percentage
                             style: const TextStyle(
