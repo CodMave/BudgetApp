@@ -32,15 +32,6 @@ class _EmailVerification extends State<EmailVerification> {
         const Duration(seconds: 3),
         (_) => checkIsEmailVerified(),
       );
-    } else {
-      //navigate to home page
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
-      );
     }
   }
 
@@ -158,8 +149,17 @@ class _EmailVerification extends State<EmailVerification> {
                 const SizedBox(height: 15),
 
                 //cancel button
+                //cancel button
                 GestureDetector(
-                  onTap: () => FirebaseAuth.instance.signOut(),
+                  onTap: () {
+                    // Check if there is a current user before signing out
+                    if (FirebaseAuth.instance.currentUser != null) {
+                      FirebaseAuth.instance.signOut();
+                    }
+
+                    // You may also choose to navigate back to the previous screen instead of signing out directly.
+                    Navigator.of(context).pop();
+                  },
                   child: Text(
                     "Cancel",
                     style: TextStyle(
@@ -168,6 +168,7 @@ class _EmailVerification extends State<EmailVerification> {
                     ),
                   ),
                 ),
+
               ],
             ),
           ),
