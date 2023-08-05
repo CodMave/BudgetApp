@@ -11,6 +11,7 @@ import 'package:budgettrack/pages/Notification.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Profile.dart';
+import 'Savings.dart';
 import 'expenceAndIncome.dart';
 import 'goals.dart';
 
@@ -742,7 +743,24 @@ class _ControllerState extends State<Controller> {
                       ),
                       InkWell(
                         onTap: () {
-                          print("Savings"); //user can move to the Savings file
+                          FutureBuilder<int>(
+                              future: loadBalance(),
+                              builder: (context, snapshot) {
+
+                                final int? balance = snapshot.data;
+                                if (balance != null) {
+
+                                  return  Savings(balance: balance);
+
+                                }
+                                else{
+                                  return Savings(balance: 0);
+                                }
+
+                              }
+
+                          );
+                       //user can move to the Savings file
                         },
                         child: Container( //this container is for the bottom buttons for the Svaings,Summery profile and scanner
                           height: 120,
