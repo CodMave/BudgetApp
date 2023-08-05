@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 
 class MyTransaction extends StatelessWidget {
   // Variables
-  //final String transactionName;
+  final String transactionName;
   final int transactionAmount;
   final String transactionType;
   final DateTime timestamp;
-  final String? selectedCategory;
 
   const MyTransaction({
     super.key,
-    //required this.transactionName,
+    required this.transactionName,
     required this.transactionAmount,
     required this.transactionType,
     required this.timestamp,
-    required this.selectedCategory,
   });
 
   @override
@@ -44,7 +42,7 @@ class MyTransaction extends StatelessWidget {
                 children: [
                   // Name
                   Text(
-                    selectedCategory ?? 'Other',
+                    transactionName,
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 20,
