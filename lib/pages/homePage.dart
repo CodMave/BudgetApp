@@ -351,6 +351,8 @@ class _ControllerState extends State<Controller> {
 
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -743,22 +745,12 @@ class _ControllerState extends State<Controller> {
                       ),
                       InkWell(
                         onTap: () {
-                          FutureBuilder<int>(
-                              future: loadBalance(),
-                              builder: (context, snapshot) {
 
-                                final int? balance = snapshot.data;
-                                if (balance != null) {
-
-                                  return  Savings(balance: balance);
-
-                                }
-                                else{
-                                  return Savings(balance: 0);
-                                }
-
-                              }
-
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Savings(balance:newbalance),
+                            ),
                           );
                        //user can move to the Savings file
                         },
