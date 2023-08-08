@@ -75,14 +75,14 @@ class _ExpenceState extends State<Expence> {
   List<String> expenceCategories = [
     'Food',
     'Shopping',
-    'Travel',
     'Bills',
     'Entertainment',
     'Health',
     'Education',
-    'Gifts',
     'Donations',
     'Rental',
+    'Fuel',
+    'Transport',
     'Others',
   ];
 

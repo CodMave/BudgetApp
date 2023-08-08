@@ -23,18 +23,19 @@ class _AddPlanState extends State<AddPlan> {
   List<String> expenceCategories = [
     'Food',
     'Shopping',
-    'Travel',
     'Bills',
     'Entertainment',
     'Health',
     'Education',
-    'Gifts',
     'Donations',
     'Rental',
+    'Fuel',
+    'Transport',
     'Others',
   ];
 
   //Function to show the date picker for start date
+
   Future<void> _selectStartDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -51,6 +52,7 @@ class _AddPlanState extends State<AddPlan> {
   }
 
   //Function to show the date picker for end date
+
   Future<void> _selectEndDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -75,7 +77,8 @@ class _AddPlanState extends State<AddPlan> {
   }
 
   //Validation
-  _validateFields() {
+
+  _validateFields() async {
     if (planAmountController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -126,33 +129,49 @@ class _AddPlanState extends State<AddPlan> {
       );
     } else {
       addGoalsToFirestore(
-        //FirebaseAuth.instance.currentUser!.uid,
+        await getCurrentUser(),
         selectedCategory!,
-        planAmountController.text as int,
-        selectedStartDate.toString(),
-        selectedEndDate.toString(),
+        int.parse(planAmountController.text),
+        selectedStartDate!,
+        selectedEndDate!,
       );
       Navigator.pop(context);
     }
   }
 
+  //Method to get current user
+
+  Future<String> getCurrentUser() async {
+    try {
+      final User? user = FirebaseAuth.instance.currentUser;
+
+      return user!.uid;
+    } catch (ex) {
+      print('current user fetchimg failed in add paln page');
+      return '';
+    }
+  }
+
   //Method add goals to the database
+
   Future<void> addGoalsToFirestore(
-    //String userId,
+    String userId,
     String selectedCategory,
     int planAmountController,
-    String selectedStartDate,
-    String selectedEndDate,
+    DateTime selectedStartDate,
+    DateTime selectedEndDate,
   ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      await firestore.collection('goalsID').add({
-        //'userId': userId,
+      final CollectionReference goalsCollection =
+          firestore.collection('userDetails').doc(userId).collection('goalsID');
+
+      await goalsCollection.add({
+        'amount': planAmountController,
         'category': selectedCategory,
-        'amount': planAmountController.toString(),
-        'startDate': selectedStartDate.toString(),
         'endDate': selectedEndDate,
+        'startDate': selectedStartDate,
       });
     } catch (e) {
       print('Goals adding to firestore failed');
