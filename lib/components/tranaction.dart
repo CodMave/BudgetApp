@@ -7,7 +7,8 @@ class MyTransaction extends StatelessWidget {
   final String transactionType;
   final DateTime timestamp;
 
-  const MyTransaction({super.key, 
+  const MyTransaction({
+    super.key,
     required this.transactionName,
     required this.transactionAmount,
     required this.transactionType,

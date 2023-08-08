@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../components/plansTile.dart';
 import 'package:intl/intl.dart';
 import 'addPlanPage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Goals extends StatefulWidget {
   final Function()? onTap;
@@ -12,6 +14,40 @@ class Goals extends StatefulWidget {
 }
 
 class _GoalsState extends State<Goals> {
+  int amount = 0;
+  String? categoty;
+  DateTime? startDate;
+  DateTime? endDate;
+
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> _plansStream;
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    String? userId = auth.currentUser?.uid;
+
+    _plansStream = firestore
+        .collection('userDetails')
+        .doc(userId)
+        .collection('goalsID')
+        .doc()
+        .snapshots();
+
+    _plansStream.listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
+      if (snapshot.exists) {
+        setState(() {
+          amount = snapshot.data()!['amount'];
+          categoty = snapshot.data()!['category'];
+          startDate = snapshot.data()!['startDate'];
+          endDate = snapshot.data()!['endDate'];
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
