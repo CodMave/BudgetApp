@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:budgettrack/components/button.dart';
-import 'package:budgettrack/pages/homePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'homePage.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({Key? key}) : super(key: key);
@@ -32,15 +33,6 @@ class _EmailVerification extends State<EmailVerification> {
         const Duration(seconds: 3),
         (_) => checkIsEmailVerified(),
       );
-    } else {
-      //navigate to home page
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
-      );
     }
   }
 
@@ -59,16 +51,6 @@ class _EmailVerification extends State<EmailVerification> {
       isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     });
 
-    if (isEmailVerified) {
-      //navigate to home page
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
-      );
-    }
   }
 
   Future sendVerificationEmail() async {
@@ -94,11 +76,13 @@ class _EmailVerification extends State<EmailVerification> {
   Widget build(BuildContext context) {
     if (isEmailVerified) {
       return const HomePage();
-    } else {
+    }
+    else {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.grey[300],
           elevation: 1,
+          automaticallyImplyLeading: false,
         ),
         backgroundColor: Colors.grey[300],
         body: Center(
@@ -158,8 +142,17 @@ class _EmailVerification extends State<EmailVerification> {
                 const SizedBox(height: 15),
 
                 //cancel button
+                //cancel button
                 GestureDetector(
-                  onTap: () => FirebaseAuth.instance.signOut(),
+                  onTap: () {
+                    // Check if there is a current user before signing out
+                    if (FirebaseAuth.instance.currentUser != null) {
+                      FirebaseAuth.instance.signOut();
+                    }
+
+                    // You may also choose to navigate back to the previous screen instead of signing out directly.
+                    Navigator.of(context).pop();
+                  },
                   child: Text(
                     "Cancel",
                     style: TextStyle(
@@ -168,11 +161,13 @@ class _EmailVerification extends State<EmailVerification> {
                     ),
                   ),
                 ),
+
               ],
             ),
           ),
         ),
       );
     }
+    }
   }
-}
+

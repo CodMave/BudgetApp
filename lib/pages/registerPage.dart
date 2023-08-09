@@ -50,7 +50,6 @@ class _RegisterPage extends State<RegisterPage> {
       },
     );
 
-    //sign up
     try {
       if (passwordControll.text == confirmPasswordControll.text) {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -66,29 +65,32 @@ class _RegisterPage extends State<RegisterPage> {
           selectedCurrency!,
         );
 
+        //loading circle end
+        Navigator.pop(context);
+
         //navigate to email verification page
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const EmailVerification(),
+            builder: (context) => EmailVerification(),
           ),
         );
       } else {
+        //loading circle end
+        Navigator.pop(context);
+
         // error
         wrongInputlAlert("Passwords don't match");
       }
-      //Navigator.pop(context);
     } on FirebaseAuthException catch (ex) {
+      //loading circle end
       Navigator.pop(context);
+
       // wrong mail
       wrongInputlAlert(ex.code);
     }
-
-    //loading circle end
-    if (mounted) {
-      Navigator.pop(context);
-    }
   }
+
 
   //Wrong mail or password
 

@@ -24,6 +24,7 @@ class Check extends StatelessWidget {
 }
 
 class Profile extends StatefulWidget {
+  FirebaseAuth auth = FirebaseAuth.instance;
   Profile({
     Key? key,
     this.title,
@@ -418,7 +419,7 @@ class _Profile extends State<Profile> {
                       margin: EdgeInsets.only(top: 10),
                       child: ElevatedButton(
                           onPressed: () {
-                            print('Hello World');
+                            _auth.signOut();
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xff181EAA),
