@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'homePage.dart';
 
@@ -15,8 +19,10 @@ class Savings extends StatefulWidget {
 }
 
 class _SavingsState extends State<Savings> {
+  SharedPreferences? _prefs;
   String? selectedyear = "23";
   int savingbalance=0;
+  List<int>balanceList=[];
   final items = [
     '23',
     '24',
@@ -50,6 +56,34 @@ class _SavingsState extends State<Savings> {
   _SavingsState({required this.savingbalance
   }
   );
+  void initState(){
+    super.initState();
+    loadbalance();
+    Timer.periodic(Duration(minutes: 5),
+        (Timer timer){
+      updateBalance();
+        });
+
+  }
+
+  void updateBalance(){
+
+    balanceList.add(savingbalance);
+    saveBalanceList();
+  }
+  Future<void> loadbalance() async {
+    _prefs = await SharedPreferences.getInstance();
+    final savedbalancelist=_prefs?.getStringList('balanceList')??[];
+    setState(() {
+      balanceList = savedbalancelist.map((balanceStr) => int.parse(balanceStr)).toList();
+    });
+  }
+  Future<void> saveBalanceList() async {
+    _prefs = await SharedPreferences.getInstance();
+    // Convert the balanceList to a list of strings before saving
+    final balanceStrList = balanceList.map((balance) => balance.toString()).toList();
+    await _prefs?.setStringList('balanceList', balanceStrList);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +196,28 @@ class _SavingsState extends State<Savings> {
                           color:Color(0xff90E0EF),
                           borderRadius: BorderRadius.circular(20),
                         ),
+                        child:ListView.builder(
+                          itemCount: balanceList.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Container(
+                                width:100,
+                                height:40,
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+
+                                padding: EdgeInsets.all(10.0),
+                                child: Text(
+                                  'Balance: ${balanceList[index]}',
+                                  style: TextStyle(fontSize: 16, color: Colors.white),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
 
                       ),
                     ],

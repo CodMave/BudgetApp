@@ -74,7 +74,11 @@ class _EmailVerification extends State<EmailVerification> {
 
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
+    if (isEmailVerified) {
+      return const HomePage();
+    }
+    else {
+      return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.grey[300],
           elevation: 1,
@@ -163,6 +167,7 @@ class _EmailVerification extends State<EmailVerification> {
           ),
         ),
       );
+    }
     }
   }
 
