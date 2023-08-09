@@ -1,5 +1,6 @@
+import 'package:budgettrack/components/planTextField.dart';
 import 'package:flutter/material.dart';
-import '../components/plansTile.dart';
+import '../components/datePicker.dart';
 import 'package:intl/intl.dart';
 import 'addPlanPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,11 +19,235 @@ class _GoalsState extends State<Goals> {
   String? categoty;
   DateTime? startDate;
   DateTime? endDate;
+  final planTitleController = TextEditingController();
+  final planAmountController = TextEditingController();
 
   late Stream<DocumentSnapshot<Map<String, dynamic>>> _plansStream;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  String? selectedCategory;
+  List<String> expenceCategories = [
+    'Food',
+    'Shopping',
+    'Bills',
+    'Entertainment',
+    'Health',
+    'Education',
+    'Donations',
+    'Rental',
+    'Fuel',
+    'Transport',
+    'Others',
+  ];
+
+  //Dialog box to add new plan
+
+  void addNewPlan() {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text(
+                'ADD NEW PLAN',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey, // Use the defined formKey here
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      //Expence text
+                      const Text(
+                        'Expence Category',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      //Expence category dropdown
+
+                      Container(
+                        height: 50,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.grey)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DropdownButton<String>(
+                              underline: const SizedBox(),
+                              icon: const Icon(Icons.arrow_downward_sharp),
+                              hint: const Text(
+                                'Select category',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                              value: selectedCategory,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedCategory = value;
+                                });
+                              },
+                              items: expenceCategories
+                                  .map<DropdownMenuItem<String>>(
+                                (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                },
+                              ).toList()),
+                        ),
+                      ),
+
+                      const SizedBox(height: 25),
+
+                      // plan amount title
+
+                      const Text(
+                        'Amount',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // plan amount text field
+
+                      PlanTextField(
+                        controller: planAmountController,
+                        hintText: 'Enter plan amount',
+                      ),
+
+                      const SizedBox(height: 25),
+
+                      // Enter and Cancel Buttons
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          //Cancel button
+                          Container(
+                            height: 50,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.black),
+                            ),
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                'Cancel',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 10),
+
+                          //Enter button
+
+                          Container(
+                            height: 50,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.black),
+                            ),
+                            child: TextButton(
+                              onPressed: () {},
+                              child: const Text(
+                                'Enter',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  //Function to show the date picker for start date
+
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != startDate) {
+      setState(() {
+        startDate = picked;
+      });
+    }
+  }
+
+  //Function to show the date picker for end date
+
+  Future<void> _selectEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != endDate) {
+      if (startDate != null && picked.isAfter(startDate!)) {
+        setState(() {
+          endDate = picked;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'End date should be after start date',
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            backgroundColor: Colors.red[300],
+          ),
+        );
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -117,12 +342,7 @@ class _GoalsState extends State<Goals> {
 
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddPlan(),
-                        ),
-                      );
+                      addNewPlan();
                     },
                     child: Container(
                       height: 50,
@@ -158,25 +378,118 @@ class _GoalsState extends State<Goals> {
 
             // plan starting date and ending date tiles
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Row(
                 children: [
                   // start date container
 
-                  PlanTile(
-                    firstText: 'Your current plan',
-                    secondText: 'Stranting Date',
-                    date: '31/01/2021', //SHOULD BE USER INPUT
+                  GestureDetector(
+                    child: Container(
+                      height: 170,
+                      width: 170,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff90E0EF),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.4),
+                            offset: const Offset(4.0, 4.0),
+                            blurRadius: 10.0,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.all(9.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Your current plan',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Starting Date',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 18,
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              InkWell(
+                                onTap: () => _selectStartDate(context),
+                                child: DatePick(
+                                  selectedDate: startDate,
+                                  hintText: 'Select start date',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
 
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
 
                   // end date container
-                  PlanTile(
-                    firstText: 'Your current plan',
-                    secondText: 'Ending Date',
-                    date: '31/01/2021', //SHOULD BE USER INPUT
+
+                  GestureDetector(
+                    child: Container(
+                      height: 170,
+                      width: 170,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff90E0EF),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.4),
+                            offset: const Offset(4.0, 4.0),
+                            blurRadius: 10.0,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.all(9.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Your current plan',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Ending Date',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 18,
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              InkWell(
+                                onTap: () => _selectEndDate(context),
+                                child: DatePick(
+                                  selectedDate: endDate,
+                                  hintText: 'Select end date',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

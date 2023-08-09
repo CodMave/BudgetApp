@@ -34,48 +34,6 @@ class _AddPlanState extends State<AddPlan> {
     'Others',
   ];
 
-  //Function to show the date picker for start date
-
-  Future<void> _selectStartDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2015),
-      lastDate: DateTime(2101),
-    );
-
-    if (picked != null && picked != selectedStartDate) {
-      setState(() {
-        selectedStartDate = picked;
-      });
-    }
-  }
-
-  //Function to show the date picker for end date
-
-  Future<void> _selectEndDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2015),
-      lastDate: DateTime(2101),
-    );
-
-    if (picked != null && picked != selectedEndDate) {
-      if (selectedStartDate != null && picked.isAfter(selectedStartDate!)) {
-        setState(() {
-          selectedEndDate = picked;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('End date should be after start date'),
-          ),
-        );
-      }
-    }
-  }
-
   //Validation
 
   _validateFields() async {
@@ -274,55 +232,7 @@ class _AddPlanState extends State<AddPlan> {
                 hintText: 'Enter plan amount',
               ),
 
-              const SizedBox(height: 25),
-
-              // start date title
-              const Text(
-                'Start Date',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  //fontWeight: FontWeight.bold,
-                ),
-              ),
-
               const SizedBox(height: 15),
-
-              // start date text field
-              InkWell(
-                onTap: () => _selectStartDate(context),
-                child: DatePick(
-                  selectedDate: selectedStartDate,
-                  hintText: 'Select start date',
-                ),
-              ),
-
-              const SizedBox(height: 25),
-
-              // end date title
-
-              const Text(
-                'End Date',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  //fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              // end date text field
-
-              InkWell(
-                onTap: () => _selectEndDate(context),
-                child: DatePick(
-                  selectedDate: selectedEndDate,
-                  hintText: 'Select end date',
-                ),
-              ),
-
-              const SizedBox(height: 30),
 
               //add plan button
 

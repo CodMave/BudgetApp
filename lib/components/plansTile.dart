@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class PlanTile extends StatelessWidget {
   //const PlanTile({super.key, required this.firstText, required this.secondText});
 
   final String firstText;
   final String secondText;
-  final String date;
+  final DateTime? date;
 
-  const PlanTile({super.key, 
+  const PlanTile({
+    super.key,
     required this.firstText,
     required this.secondText,
     required this.date,
@@ -53,7 +55,7 @@ class PlanTile extends StatelessWidget {
               ),
               const SizedBox(height: 25),
               Text(
-                date,
+                date != null ? DateFormat.MMMEd().format(date!) : 'No Date',
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 14,
