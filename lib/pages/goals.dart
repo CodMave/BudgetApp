@@ -44,6 +44,106 @@ class _GoalsState extends State<Goals> {
     'Others',
   ];
 
+  _validateFields() async {
+    if (planAmountController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Please Enter The Amount',
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+          backgroundColor: Colors.red[300],
+        ),
+      );
+    } else if (selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Please Select a Category',
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+          backgroundColor: Colors.red[300],
+        ),
+      );
+    } else if (startDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Please Select a Start Date',
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+          backgroundColor: Colors.red[300],
+        ),
+      );
+    } else if (endDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Please Select an End Date',
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+          backgroundColor: Colors.red[300],
+        ),
+      );
+    } else {
+      addGoalsToFirestore(
+        await getCurrentUser(),
+        selectedCategory!,
+        int.parse(planAmountController.text),
+        startDate!,
+        endDate!,
+      );
+      Navigator.pop(context);
+    }
+  }
+
+  //Method to get current user
+
+  Future<String> getCurrentUser() async {
+    try {
+      final User? user = FirebaseAuth.instance.currentUser;
+
+      return user!.uid;
+    } catch (ex) {
+      print('current user fetchimg failed in add paln page');
+      return '';
+    }
+  }
+
+  //Method add goals to the database
+
+  Future<void> addGoalsToFirestore(
+    String userId,
+    String selectedCategory,
+    int planAmountController,
+    DateTime selectedStartDate,
+    DateTime selectedEndDate,
+  ) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final CollectionReference goalsCollection =
+          firestore.collection('userDetails').doc(userId).collection('goalsID');
+
+      await goalsCollection.add({
+        'amount': planAmountController,
+        'category': selectedCategory,
+        'endDate': selectedEndDate,
+        'startDate': selectedStartDate,
+      });
+    } catch (e) {
+      print('Goals adding to firestore failed');
+    }
+  }
+
   //Dialog box to add new plan
 
   void addNewPlan() {
@@ -178,7 +278,7 @@ class _GoalsState extends State<Goals> {
                               border: Border.all(color: Colors.black),
                             ),
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: _validateFields(),
                               child: const Text(
                                 'Enter',
                                 style: TextStyle(
