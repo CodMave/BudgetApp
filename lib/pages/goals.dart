@@ -46,53 +46,33 @@ class _GoalsState extends State<Goals> {
 
   _validateFields() async {
     if (planAmountController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'Please Enter The Amount',
-            style: TextStyle(
-              fontSize: 18,
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Please Enter The Amount',
+              style: TextStyle(
+                fontSize: 18,
+              ),
             ),
+            backgroundColor: Colors.red[300],
           ),
-          backgroundColor: Colors.red[300],
-        ),
-      );
+        );
+      });
     } else if (selectedCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'Please Select a Category',
-            style: TextStyle(
-              fontSize: 18,
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Please Select a Category',
+              style: TextStyle(
+                fontSize: 18,
+              ),
             ),
+            backgroundColor: Colors.red[300],
           ),
-          backgroundColor: Colors.red[300],
-        ),
-      );
-    } else if (startDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'Please Select a Start Date',
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          ),
-          backgroundColor: Colors.red[300],
-        ),
-      );
-    } else if (endDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'Please Select an End Date',
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          ),
-          backgroundColor: Colors.red[300],
-        ),
-      );
+        );
+      });
     } else {
       addGoalsToFirestore(
         await getCurrentUser(),
@@ -154,11 +134,13 @@ class _GoalsState extends State<Goals> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: const Text(
-                'ADD NEW PLAN',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              title: const Center(
+                child: Text(
+                  'ADD NEW PLAN',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               content: SingleChildScrollView(
@@ -168,11 +150,14 @@ class _GoalsState extends State<Goals> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       //Expence text
-                      const Text(
-                        'Expence Category',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Expence Category',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
 
@@ -180,38 +165,41 @@ class _GoalsState extends State<Goals> {
 
                       //Expence category dropdown
 
-                      Container(
-                        height: 50,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Colors.grey)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DropdownButton<String>(
-                              underline: const SizedBox(),
-                              icon: const Icon(Icons.arrow_downward_sharp),
-                              hint: const Text(
-                                'Select category',
-                                style: TextStyle(
-                                  fontSize: 18,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          height: 50,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.grey)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DropdownButton<String>(
+                                underline: const SizedBox(),
+                                icon: const Icon(Icons.arrow_downward_sharp),
+                                hint: const Text(
+                                  'Select category',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              value: selectedCategory,
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedCategory = value;
-                                });
-                              },
-                              items: expenceCategories
-                                  .map<DropdownMenuItem<String>>(
-                                (String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
+                                value: selectedCategory,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedCategory = value;
+                                  });
                                 },
-                              ).toList()),
+                                items: expenceCategories
+                                    .map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  },
+                                ).toList()),
+                          ),
                         ),
                       ),
 
@@ -219,12 +207,15 @@ class _GoalsState extends State<Goals> {
 
                       // plan amount title
 
-                      const Text(
-                        'Amount',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          //fontWeight: FontWeight.bold,
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Amount',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            //fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
 
@@ -232,9 +223,12 @@ class _GoalsState extends State<Goals> {
 
                       // plan amount text field
 
-                      PlanTextField(
-                        controller: planAmountController,
-                        hintText: 'Enter plan amount',
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: PlanTextField(
+                          controller: planAmountController,
+                          hintText: 'Enter plan amount',
+                        ),
                       ),
 
                       const SizedBox(height: 25),
@@ -278,7 +272,9 @@ class _GoalsState extends State<Goals> {
                               border: Border.all(color: Colors.black),
                             ),
                             child: TextButton(
-                              onPressed: _validateFields(),
+                              onPressed: () {
+                                _validateFields();
+                              },
                               child: const Text(
                                 'Enter',
                                 style: TextStyle(
@@ -438,7 +434,7 @@ class _GoalsState extends State<Goals> {
 
                   // Add plan button
 
-                  const SizedBox(width: 115),
+                  const SizedBox(width: 100),
 
                   GestureDetector(
                     onTap: () {
