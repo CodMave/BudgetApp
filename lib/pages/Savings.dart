@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'homePage.dart';
 
 class Savings extends StatefulWidget {
@@ -22,7 +23,18 @@ class _SavingsState extends State<Savings> {
   SharedPreferences? _prefs;
   String? selectedyear = "23";
   int savingbalance=0;
-  List<int>balanceList=[];
+
+  DateTime now=DateTime.now();
+  List<String>Days=[
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednessday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+
+  ];
   final items = [
     '23',
     '24',
@@ -55,74 +67,110 @@ class _SavingsState extends State<Savings> {
   ];
   _SavingsState({required this.savingbalance
   }
-  );
-  void initState(){
+      );
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void initState()  {
     super.initState();
     loadbalance();
-    Timer.periodic(Duration(minutes: 5),
-        (Timer timer){
-      updateBalance();
-        });
+    loadYear();
 
   }
-
-  void updateBalance(){
-
-    balanceList.add(savingbalance);
-    saveBalanceList();
-  }
-  Future<void> loadbalance() async {
+  Future<int> loadbalance() async {
     _prefs = await SharedPreferences.getInstance();
-    final savedbalancelist=_prefs?.getStringList('balanceList')??[];
-    setState(() {
-      balanceList = savedbalancelist.map((balanceStr) => int.parse(balanceStr)).toList();
-    });
+    final savedbalancelist=_prefs?.getInt('newBalance')??0;
+
+    return savedbalancelist;
   }
-  Future<void> saveBalanceList() async {
+  Future<int> loadYear() async {
     _prefs = await SharedPreferences.getInstance();
-    // Convert the balanceList to a list of strings before saving
-    final balanceStrList = balanceList.map((balance) => balance.toString()).toList();
-    await _prefs?.setStringList('balanceList', balanceStrList);
+    final selectedYear = _prefs?.getString('selectedYear');
+    if (selectedYear != null && items.contains(selectedYear)) {
+      setState(() {
+        selectedyear = selectedYear;
+      });
+
+    }
+
+    return int.parse(selectedyear!);
+  }
+  Future<void> saveBalance() async {
+    if (savingbalance != 0) {
+      final newCount = savingbalance;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setInt('newBalance', newCount);
+      setState(() {
+        savingbalance = newCount;
+
+      });
+
+    }
+  }
+
+
+  Future<List> getthebalancefromDB(String year) async {
+    List<int>currentBalance =[];
+    User? user = _auth
+        .currentUser; //created an instance to the User of Firebase authorized
+    username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Savings').where('Year', isEqualTo: int.parse(year))
+          .get();
+
+
+      incomeSnapshot.docs.forEach((cDoc) {
+        currentBalance.add(cDoc.get('Balance'));
+      });
+
+      return currentBalance;
+    } catch (ex) {
+      print('calculating total balance failed');
+      return [];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     DropdownMenuItem<String>buildMenuItem(String item)=>
-    DropdownMenuItem(
-      value:item,
-      child: Text(
-        item,
-        style:TextStyle(fontWeight:FontWeight.bold,fontSize:60) ,
-      ),
-    );
-    print(this.savingbalance);
+        DropdownMenuItem(
+          value:item,
+          child: Text(
+            item,
+            style:TextStyle(fontWeight:FontWeight.bold,fontSize:60) ,
+          ),
+        );
     return SafeArea(
       child: Scaffold(
-        appBar:  AppBar(
-          backgroundColor: Colors.grey[100],
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomePage(),
-                ),
-              );
-            },
+          appBar:  AppBar(
+            backgroundColor: Colors.grey[100],
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              color: Colors.black,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ),
+                );
+              },
+            ),
+            title: const Text('S A V I N G S',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 20,
+                )),
+            centerTitle: true,
+            elevation: 0,
           ),
-          title: const Text('S A V I N G S',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 20,
-              )),
-          centerTitle: true,
-          elevation: 0,
-        ),
-        body:SingleChildScrollView(
-          child: Column(
-            children: [
+          body:SingleChildScrollView(
+            child: Column(
+              children: [
                 Container(
                   //alignment: Alignment.center,
                   margin:EdgeInsets.only(top:10,left:20,right:20),
@@ -147,11 +195,11 @@ class _SavingsState extends State<Savings> {
                             ),
                             child: Center(
                               child: Text('20',
-                              style: TextStyle(
-                                fontSize:60,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),),
+                                style: TextStyle(
+                                  fontSize:60,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),),
                             ),
                           ),
                           Container(
@@ -169,10 +217,12 @@ class _SavingsState extends State<Savings> {
                               child: DropdownButton<String>(
 
                                 value: selectedyear,
-                                onChanged: (String? newValue) {
+                                onChanged: (String? newValue) async {
                                   setState(() {
                                     selectedyear = newValue!;
                                   });
+                                  _prefs?.setString('selectedYear', selectedyear!);
+
                                 },
                                 underline: Container(),
                                 //isExpanded: true, // Make the dropdown list take up the maximum available height
@@ -196,27 +246,51 @@ class _SavingsState extends State<Savings> {
                           color:Color(0xff90E0EF),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child:ListView.builder(
-                          itemCount: balanceList.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Container(
-                                width:100,
-                                height:40,
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-
-                                padding: EdgeInsets.all(10.0),
-                                child: Text(
-                                  'Balance: ${balanceList[index]}',
-                                  style: TextStyle(fontSize: 16, color: Colors.white),
-                                ),
-                              ),
-                            );
+                        child:// In the build method
+                        FutureBuilder<List>(
+                          future: getthebalancefromDB(selectedyear!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Text(
+                                'Fetching balance...',
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text(
+                                'Error: ${snapshot.error}',
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              );
+                            } else if (!snapshot.hasData || snapshot.data?.isEmpty == true) {
+                              return Text(
+                                'No data available.',
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              );
+                            } else {
+                              final balanceList = snapshot.data!;
+                              return ListView.builder(
+                                itemCount: balanceList.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Container(
+                                      width: 100,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: EdgeInsets.all(10.0),
+                                      child: Text(
+                                        'Balance: ${balanceList[index]}',
+                                        style: TextStyle(fontSize: 16, color: Colors.white),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }
                           },
                         ),
+
 
 
                       ),
@@ -224,9 +298,9 @@ class _SavingsState extends State<Savings> {
                   ),
                 ),
 
-            ],
-          ),
-        )
+              ],
+            ),
+          )
       ),
     );
   }
