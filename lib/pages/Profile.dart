@@ -41,6 +41,7 @@ class _Profile extends State<Profile> {
     'Yen',
     'Indian Rupees',
     'කහවනු'
+        'Euro'
   ];
   String selectedValue = 'SL Rupees';
   // Default selected value
