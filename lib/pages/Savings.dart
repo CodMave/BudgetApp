@@ -18,7 +18,7 @@ class Savings extends StatefulWidget {
     savingbalance:balance,
   );
 }
-
+String documentId='';
 class _SavingsState extends State<Savings> {
   SharedPreferences? _prefs;
   String? selectedyear = "23";
@@ -26,13 +26,14 @@ class _SavingsState extends State<Savings> {
 
   DateTime now=DateTime.now();
   List<String>Days=[
-    'Sunday',
+
     'Monday',
     'Tuesday',
     'Wednessday',
     'Thursday',
     'Friday',
     'Saturday',
+    'Sunday',
 
   ];
   final items = [
@@ -65,17 +66,143 @@ class _SavingsState extends State<Savings> {
     '50',
     // ADD MORE
   ];
+ // Default time: 12:00
+
   _SavingsState({required this.savingbalance
   }
       );
+
+  DateTime lastDate = DateTime.now();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void initState()  {
     super.initState();
     loadbalance();
     loadYear();
+    loadLastDate();
+    updateBalance();
 
   }
+  Future<List> getthebalancefromDB(String year) async {
+    List<int>currentBalance =[];
+    User? user = _auth
+        .currentUser; //created an instance to the User of Firebase authorized
+    username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Savings').where('Year', isEqualTo: int.parse(year))
+          .get();
+
+
+      incomeSnapshot.docs.forEach((cDoc) {
+        currentBalance.add(cDoc.get('Balance'));
+      });
+
+      return currentBalance;
+    } catch (ex) {
+      print('calculating total balance failed');
+      return [];
+    }
+  }
+  Future<DateTime> loadLastDate() async {
+    _prefs = await SharedPreferences.getInstance();
+    final storedDate = _prefs?.getString('lastDate');
+
+    if (storedDate != null) {
+      return DateFormat('yyyy-MM-dd').parse(storedDate);
+    } else {
+      // No stored date, use the current date
+      return DateTime.now();
+    }
+  }
+
+  Future<void> saveLastDate(DateTime date) async {
+    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+    _prefs = await SharedPreferences.getInstance();
+    _prefs?.setString('lastDate', formattedDate);
+  }
+
+  Future<void> updateBalance() async {
+    final currentDate = DateTime.now();
+    final lastUpdateDate = await loadLastDate();
+
+    if (currentDate.difference(lastUpdateDate).inDays > 0) {
+      // Allow the user to add a new balance for the new day
+      documentId = await addSavingsToFireStore(
+        await loadbalance(),
+        Days[now.weekday - 1],
+        int.parse(selectedyear!),
+      ).toString();
+      // Save the current date as the last update date
+      await saveLastDate(currentDate);
+    } else {
+      // Check if an entry for the current day exists in the database
+      final existingEntry = await getExistingEntry(Days[now.weekday - 1], int.parse(selectedyear!));
+
+      if (existingEntry != null) {
+        // Update the existing balance for the current day
+        try {
+          final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+          final DocumentReference documentReference = firestore
+              .collection('userDetails')
+              .doc(username)
+              .collection('Savings')
+              .doc(existingEntry);
+
+          // Use the update method to update the "Balance" field
+          await documentReference.update({
+            'Balance': await loadbalance(),
+          });
+
+          print('Balance updated successfully!');
+        } catch (ex) {
+          print('Error updating balance: $ex');
+        }
+      } else {
+        // No entry for the current day, add a new one
+        documentId = await addSavingsToFireStore(
+          await loadbalance(),
+          Days[now.weekday - 1],
+          int.parse(selectedyear!),
+        ).toString();
+      }
+    }
+    setState(() {});
+  }
+  Future<String?> getExistingEntry(String day, int year) async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Savings')
+          .where('Day', isEqualTo: day)
+          .where('Year', isEqualTo: year)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the document ID of the existing entry
+        return querySnapshot.docs.first.id;
+      } else {
+        // No entry found
+        return null;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return null;
+    }
+  }
+
+
   Future<int> loadbalance() async {
     _prefs = await SharedPreferences.getInstance();
     final savedbalancelist=_prefs?.getInt('newBalance')??0;
@@ -103,36 +230,42 @@ class _SavingsState extends State<Savings> {
         savingbalance = newCount;
 
       });
-
+      await saveLastDate(DateTime.now());
     }
   }
 
-
-  Future<List> getthebalancefromDB(String year) async {
-    List<int>currentBalance =[];
-    User? user = _auth
-        .currentUser; //created an instance to the User of Firebase authorized
-    username = user!.uid;
+  Future<String> addSavingsToFireStore(
+      int balance,
+      String Day,
+      int year,
+      ) async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
 
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final incomeSnapshot = await firestore
+
+      final CollectionReference incomeCollection = firestore
           .collection('userDetails')
           .doc(username)
-          .collection('Savings').where('Year', isEqualTo: int.parse(year))
-          .get();
+          .collection('Savings');
 
-
-      incomeSnapshot.docs.forEach((cDoc) {
-        currentBalance.add(cDoc.get('Balance'));
+      final DocumentReference newDocument = await incomeCollection.add({
+        'Balance': balance,
+        'Day': Day,
+        'Year': year,
       });
 
-      return currentBalance;
+      final String newDocumentId = newDocument.id;
+      print('New document created with ID: $newDocumentId');
+
+      return newDocumentId;
     } catch (ex) {
-      print('calculating total balance failed');
-      return [];
+      print('Income adding failed: $ex');
+      return ''; // Return an empty string to indicate failure
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -223,20 +356,23 @@ class _SavingsState extends State<Savings> {
                                   });
                                   _prefs?.setString('selectedYear', selectedyear!);
 
+
                                 },
                                 underline: Container(),
                                 //isExpanded: true, // Make the dropdown list take up the maximum available height
                                 itemHeight: 70,
 
+
                                 items:items.map(buildMenuItem).toList(),
 
                               ),
-                            ),
+                                  ),
                           ),
 
 
                         ],
                       ),
+
                       Container(
                         margin:EdgeInsets.only(top:20),
 
@@ -246,8 +382,7 @@ class _SavingsState extends State<Savings> {
                           color:Color(0xff90E0EF),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child:// In the build method
-                        FutureBuilder<List>(
+                        child:FutureBuilder<List>(
                           future: getthebalancefromDB(selectedyear!),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -267,31 +402,36 @@ class _SavingsState extends State<Savings> {
                               );
                             } else {
                               final balanceList = snapshot.data!;
-                              return ListView.builder(
-                                itemCount: balanceList.length,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    title: Container(
-                                      width: 100,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      padding: EdgeInsets.all(10.0),
-                                      child: Text(
-                                        'Balance: ${balanceList[index]}',
-                                        style: TextStyle(fontSize: 16, color: Colors.white),
-                                      ),
-                                    ),
-                                  );
+                              return RefreshIndicator(
+                                // Use RefreshIndicator to enable manual refresh
+                                onRefresh: () async {
+                                  // Implement the refresh logic (e.g., fetch updated data)
+                                  await updateBalance();
                                 },
+                                child: ListView.builder(
+                                  itemCount: balanceList.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      title: Container(
+                                        width: 100,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Text(
+                                          'Balance: ${balanceList[index]}',
+                                          style: TextStyle(fontSize: 16, color: Colors.white),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               );
                             }
                           },
                         ),
-
-
 
                       ),
                     ],
