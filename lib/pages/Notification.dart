@@ -20,20 +20,20 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 );
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
   var initializationsettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  AndroidInitializationSettings('@mipmap/ic_launcher');
   var initializationsettings =
-      InitializationSettings(android: initializationsettingsAndroid);
+  InitializationSettings(android: initializationsettingsAndroid);
   flutterLocalNotificationsPlugin.initialize(initializationsettings);
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+      AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
   runApp(MyWork());
 }
@@ -72,6 +72,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<NotificationData> notificationList = [];
   List<DateTime> time = [];
   SharedPreferences? _prefs;
+  double totalex = 0.0;
+  double totalin = 0.0;
+  int totalBalance = 0;
 
   void initState() {
     super.initState();
@@ -110,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
         counter();
 
         addNotificationToList(notification.body ?? '');
+        print(notificationList.length);
       }
     });
     getToken();
@@ -156,12 +160,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void reset() async {
-    setState(() {
-      flag = 0;
-    });
-  }
-
   Future<int> getNewMessagesCount() async {
     _prefs = await SharedPreferences.getInstance();
     return _prefs?.getInt('newMessagesCount') ?? 0;
@@ -193,14 +191,13 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_prefs == null) {
       _prefs = await SharedPreferences.getInstance();
     }
-
     if (notificationList.isEmpty) {
       // If the notificationList is empty, clear the stored messages from SharedPreferences
       _prefs!.remove('messages');
       _prefs!.remove('times');
     } else {
       final messages =
-          notificationList.map((notification) => notification.message).toList();
+      notificationList.map((notification) => notification.message).toList();
       final times = notificationList
           .map((notification) => notification.receivedDateTime.toString())
           .toList();
@@ -236,14 +233,20 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       flag = newCount;
     });
+    print(notificationList.length);
   }
 
-  getToken() async {}
+  getToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Controller(
+          balance: totalBalance,
+          expense: totalex,
+          income: totalin,
           notificationList: notificationList,
           num: flag,
           onDeleteNotification: (int index) => _onDeleteNotification(index)),
@@ -251,18 +254,53 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Holder extends StatelessWidget {
+class Holder extends StatefulWidget {
   final List<NotificationData> notificationList;
 
   final Function(int) onDeleteNotification;
 
+  final double totalex;
+  final double totalin;
+  final int totalBalance;
+
   Holder({
+    required this.totalBalance,
+    required this.totalex,
+    required this.totalin,
     required this.notificationList,
     required this.onDeleteNotification,
   });
 
+  @override
+  State<Holder> createState() => _HolderState();
+}
+
+class _HolderState extends State<Holder> {
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        backgroundColor: Colors.grey[100],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomePage(),
+              ),
+            );
+          },
+        ),
+        title: const Text('N O T I F I C A T I O N S',
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: 20,
+            )),
+        centerTitle: true,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -272,130 +310,79 @@ class Holder extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Container(
-                      height: 170,
-                      width: 400,
-                      margin: EdgeInsets.only(left: 20, right: 15),
-                      decoration: BoxDecoration(
-                        color: Color(0xff181EAA),
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10),
-                        ),
-                      ),
-                      child: Stack(
-                        alignment: Alignment.topLeft,
-                        children: [
-                          Container(
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back_ios_new,
-                                size: 40,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomePage(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          FractionallySizedBox(
-                            //UAbove the percentage value I have displayed the current date and time
-                            widthFactor: 1.0,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 0),
-                                child: Text(
-                                  'Notifications',
-                                  style: TextStyle(
-                                    fontSize: 35,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     ListView(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      children: List.generate(notificationList.length, (index) {
-                        final notificationData = notificationList[index];
+                      children: List.generate(widget.notificationList.length,
+                              (index) {
+                            final notificationData = widget.notificationList[index];
 
-                        return Dismissible(
-                          key: UniqueKey(),
-                          background: Container(
-                            color: Colors.blue,
-                          ),
-                          onDismissed: (direction) {
-                            if (direction == DismissDirection.startToEnd) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('$index item deleted')));
-
-                              onDeleteNotification(index);
-                            }
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xffADE8F4),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
-                                ), // Background color for the notification
-                                padding: EdgeInsets.all(
-                                    10), // Padding around the notification
-                                margin: EdgeInsets.all(
-                                    20), // Margin between notifications
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      notificationData.message,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0xff181EAA),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Align(
-                                      alignment: Alignment.bottomRight,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            DateFormat('dd/MM/yyyy   h:mm a')
-                                                .format(notificationData
-                                                    .receivedDateTime),
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.grey,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                            return Dismissible(
+                              key: UniqueKey(),
+                              background: Container(
+                                color: Colors.blue,
                               ),
-                            ],
-                          ),
-                        );
-                      }),
+                              onDismissed: (direction) {
+                                if (direction == DismissDirection.startToEnd) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text('$index item deleted')));
+
+                                  widget.onDeleteNotification(index);
+                                }
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Color(0xffADE8F4),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ), // Background color for the notification
+                                    padding: EdgeInsets.all(
+                                        10), // Padding around the notification
+                                    margin: EdgeInsets.all(
+                                        20), // Margin between notifications
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          notificationData.message,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xff181EAA),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Align(
+                                          alignment: Alignment.bottomRight,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                DateFormat('dd/MM/yyyy   h:mm a')
+                                                    .format(notificationData
+                                                    .receivedDateTime),
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.grey,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
                     )
                   ],
                 ),
