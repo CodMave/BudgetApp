@@ -1,6 +1,6 @@
 This is a Budget Tracker app for software group project module
 
-tecnologies used
+technologies used
 -flutter
 -dart
 -firebase
@@ -8,8 +8,8 @@ tecnologies used
 Group members
 
 -Muhammed Fais
--Shehan
+-Shehan Yasaruvan
 -Pasindu Nimesh
 -Nilupa Fernando
--Ama Prabuthikka
--Chaturi Ranasinghe
+-Ama Prabuddhika
+-Chathuri Ranasinghe

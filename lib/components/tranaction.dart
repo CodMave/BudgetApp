@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MyTransaction extends StatelessWidget {
@@ -8,7 +7,8 @@ class MyTransaction extends StatelessWidget {
   final String transactionType;
   final DateTime timestamp;
 
-  MyTransaction({
+  const MyTransaction({
+    super.key,
     required this.transactionName,
     required this.transactionAmount,
     required this.transactionType,
@@ -51,8 +51,7 @@ class MyTransaction extends StatelessWidget {
 
                   // Amount
                   Text(
-                    (transactionType == "Expence" ? "- " : "+ ") +
-                        "\$ $transactionAmount",
+                    "${transactionType == "Expence" ? "- " : "+ "}\$ $transactionAmount",
                     style: TextStyle(
                       color: transactionType == "Expence"
                           ? Colors.red

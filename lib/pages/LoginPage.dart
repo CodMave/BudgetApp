@@ -2,7 +2,6 @@ import 'package:budgettrack/components/textfield.dart';
 import 'package:budgettrack/services/authService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import '../components/button.dart';
 import '../components/tile.dart';
@@ -10,7 +9,7 @@ import 'forgotPassword.dart';
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
-  LoginPage({super.key, required this.onTap});
+  const LoginPage({super.key, required this.onTap});
 
   @override
   State<LoginPage> createState() => _LoginPageState();

@@ -4,16 +4,42 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
+import 'Notification.dart';
+import 'homePage.dart';
 
 class Expence extends StatefulWidget {
-  const Expence({Key? key}) : super(key: key);
+  final List<NotificationData> notificationList; //initialize a list
+  final int nume;
+
+  final void Function(int index) onDeleteNotification;
+
+  Expence({
+    Key? key,
+    required this.notificationList,
+    required this.nume,
+    required this.onDeleteNotification,
+  }) : super(key: key);
 
   @override
-  _ExpenceState createState() => _ExpenceState();
+  _ExpenceState createState() => _ExpenceState(
+        notificationList: notificationList,
+        nume: nume,
+        onDeleteNotification: onDeleteNotification,
+      );
+// You need to replace this with the correct way to get the instance of the _ExpenceState class
 }
 
 class _ExpenceState extends State<Expence> {
-  //variables
+  final List<NotificationData> notificationList;
+  final int nume;
+  final void Function(int index) onDeleteNotification;
+  _ExpenceState({
+    required this.notificationList,
+    required this.nume,
+    required this.onDeleteNotification,
+  });
+  double totalex = 0.0;
+  double totalin = 0.0;
 
   List<MyTransaction> transactions = [];
 
@@ -41,6 +67,33 @@ class _ExpenceState extends State<Expence> {
   //variable to store the stream
   late Stream<DocumentSnapshot<Map<String, dynamic>>> balanceStream;
   bool isBalanceStreamInitialized = false;
+
+  //variables to store the selected category
+  String selectedCategory = 'Others';
+
+  //list Expence categories
+  List<String> expenceCategories = [
+    'Food',
+    'Shopping',
+    'Bills',
+    'Entertainment',
+    'Health',
+    'Education',
+    'Donations',
+    'Rental',
+    'Fuel',
+    'Transport',
+    'Others',
+  ];
+
+  //list income categories
+  List<String> incomeCategories = [
+    'Salary',
+    'Bonus',
+    'Gifts',
+    'Rental',
+    'Others',
+  ];
 
   //get document Ids
 
@@ -105,7 +158,7 @@ class _ExpenceState extends State<Expence> {
           .collection('expenceID');
 
       await expenceCollection.add({
-        'transactionName': transactionName,
+        'transactionName': selectedCategory,
         'transactionAmount': transactionAmount,
         'timestamp': DateTime.now(),
       });
@@ -133,7 +186,7 @@ class _ExpenceState extends State<Expence> {
       ;
 
       await incomeCollection.add({
-        'transactionName': transactionName,
+        'transactionName': selectedCategory,
         'transactionAmount': transactionAmount,
         'timestamp': DateTime.now(),
       });
@@ -252,16 +305,18 @@ class _ExpenceState extends State<Expence> {
   //method to calculate the total balance
 
   Future<int> getTotalBalance(String userId) async {
-    int totalIncome = await calculateTotalIncome(userId);
-    int totalExpence = await getTotalExpence(userId);
+    double totalIncome = (await calculateTotalIncome(userId)).toDouble();
+    double totalExpence = (await getTotalExpence(userId)).toDouble();
+    totalex = totalExpence;
+    totalin = totalIncome;
 
-    int balance = totalIncome - totalExpence;
+    int balance = (totalIncome - totalExpence).toInt();
 
     setState(() {
       totalBalance = balance;
     });
 
-    return balance;
+    return totalBalance;
   }
 
   //method to get the updates in realtime
@@ -491,12 +546,37 @@ class _ExpenceState extends State<Expence> {
                         Row(
                           children: [
                             Expanded(
-                              child: TextField(
+                              child: DropdownButtonFormField<String>(
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
-                                  hintText: "Enter the Transaction Name",
+                                  hintText: "Select the Category",
                                 ),
-                                controller: transactionNameController,
+                                value: selectedCategory,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedCategory = newValue!;
+                                    transactionNameController.text = newValue;
+                                  });
+                                },
+                                items: is_income
+                                    ? incomeCategories
+                                        .map<DropdownMenuItem<String>>(
+                                          (String category) =>
+                                              DropdownMenuItem<String>(
+                                            value: category,
+                                            child: Text(category),
+                                          ),
+                                        )
+                                        .toList()
+                                    : expenceCategories
+                                        .map<DropdownMenuItem<String>>(
+                                          (String category) =>
+                                              DropdownMenuItem<String>(
+                                            value: category,
+                                            child: Text(category),
+                                          ),
+                                        )
+                                        .toList(),
                               ),
                             ),
                           ],
@@ -539,6 +619,11 @@ class _ExpenceState extends State<Expence> {
                         //get the user id
                         String? userId = await getCurrentUserId();
 
+                        transactions
+                            .sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+                        //Navigator.of(context).pop();
+
                         //add transaction to the list
                         setState(() {
                           transactions.add(
@@ -578,6 +663,12 @@ class _ExpenceState extends State<Expence> {
         });
   }
 
+  void updateTotalBalance(int newBalance) {
+    setState(() {
+      totalBalance = newBalance;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -589,7 +680,19 @@ class _ExpenceState extends State<Expence> {
           icon: const Icon(Icons.arrow_back),
           color: Colors.black, // Set the color of the back arrow
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Controller(
+                  balance: totalBalance,
+                  expense: totalex,
+                  income: totalin,
+                  notificationList: notificationList,
+                  num: nume,
+                  onDeleteNotification: onDeleteNotification,
+                ),
+              ),
+            );
           },
         ),
         title: const Text(
@@ -709,7 +812,7 @@ class _ExpenceState extends State<Expence> {
                                       "${lastIncomeTransaction?.transactionAmount ?? '0'}",
                                       style: const TextStyle(
                                         color: Colors.black,
-                                        fontSize: 18,
+                                        fontSize:18,
                                       ),
                                     ),
                                   ],
@@ -811,18 +914,13 @@ class _ExpenceState extends State<Expence> {
                 ListView.builder(
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
-                    int reverseIndex = transactions.length - 1 - index;
                     return MyTransaction(
-                      transactionName:
-                          transactions[reverseIndex].transactionName,
-                      transactionAmount:
-                          transactions[reverseIndex].transactionAmount,
-                      transactionType:
-                          transactions[reverseIndex].transactionType,
-                      timestamp: transactions[reverseIndex].timestamp,
+                      transactionName: transactions[index].transactionName,
+                      transactionAmount: transactions[index].transactionAmount,
+                      transactionType: transactions[index].transactionType,
+                      timestamp: transactions[index].timestamp,
                     );
                   },
-                  reverse: true,
                 ),
                 // Positioned widget for the button
                 Positioned(
