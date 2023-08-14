@@ -440,7 +440,7 @@ class _ExpenceState extends State<Expence> {
 
       // Listen for real-time changes to balance, income, and expense
       balanceStream = getBalanceStream(userId);
-      balanceStream?.listen((sanpshot) {
+      balanceStream.listen((sanpshot) {
         if (isBalanceStreamInitialized) {
           getTotalBalance(userId).then((balance) {
             setState(() {
@@ -611,7 +611,7 @@ class _ExpenceState extends State<Expence> {
                         String transactionType =
                             is_income ? "Income" : "Expence";
                         int transactionAmount =
-                            int.parse(amountController.text) ?? 0;
+                            int.parse(amountController.text);
 
                         String transactionName = transactionNameController.text;
                         print(transactionName);

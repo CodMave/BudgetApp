@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'homePage.dart';
 
 class Savings extends StatefulWidget {
@@ -17,12 +18,24 @@ class Savings extends StatefulWidget {
     savingbalance:balance,
   );
 }
-
+String documentId='';
 class _SavingsState extends State<Savings> {
   SharedPreferences? _prefs;
   String? selectedyear = "23";
   int savingbalance=0;
-  List<int>balanceList=[];
+
+  DateTime now=DateTime.now();
+  List<String>Days=[
+
+    'Monday',
+    'Tuesday',
+    'Wednessday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+
+  ];
   final items = [
     '23',
     '24',
@@ -53,76 +66,244 @@ class _SavingsState extends State<Savings> {
     '50',
     // ADD MORE
   ];
+ // Default time: 12:00
+
   _SavingsState({required this.savingbalance
   }
-  );
-  void initState(){
+      );
+
+  DateTime lastDate = DateTime.now();
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void initState()  {
     super.initState();
     loadbalance();
-    Timer.periodic(Duration(minutes: 5),
-        (Timer timer){
-      updateBalance();
-        });
+    loadYear();
+    loadLastDate();
+    updateBalance();
 
   }
+  Future<List> getthebalancefromDB(String year) async {
+    List<int>currentBalance =[];
+    User? user = _auth
+        .currentUser; //created an instance to the User of Firebase authorized
+    username = user!.uid;
 
-  void updateBalance(){
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Savings').where('Year', isEqualTo: int.parse(year))
+          .get();
 
-    balanceList.add(savingbalance);
-    saveBalanceList();
+
+      incomeSnapshot.docs.forEach((cDoc) {
+        currentBalance.add(cDoc.get('Balance'));
+      });
+
+      return currentBalance;
+    } catch (ex) {
+      print('calculating total balance failed');
+      return [];
+    }
   }
-  Future<void> loadbalance() async {
+  Future<DateTime> loadLastDate() async {
     _prefs = await SharedPreferences.getInstance();
-    final savedbalancelist=_prefs?.getStringList('balanceList')??[];
-    setState(() {
-      balanceList = savedbalancelist.map((balanceStr) => int.parse(balanceStr)).toList();
-    });
+    final storedDate = _prefs?.getString('lastDate');
+
+    if (storedDate != null) {
+      return DateFormat('yyyy-MM-dd').parse(storedDate);
+    } else {
+      // No stored date, use the current date
+      return DateTime.now();
+    }
   }
-  Future<void> saveBalanceList() async {
+
+  Future<void> saveLastDate(DateTime date) async {
+    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
     _prefs = await SharedPreferences.getInstance();
-    // Convert the balanceList to a list of strings before saving
-    final balanceStrList = balanceList.map((balance) => balance.toString()).toList();
-    await _prefs?.setStringList('balanceList', balanceStrList);
+    _prefs?.setString('lastDate', formattedDate);
   }
+
+  Future<void> updateBalance() async {
+    final currentDate = DateTime.now();
+    final lastUpdateDate = await loadLastDate();
+
+    if (currentDate.difference(lastUpdateDate).inDays > 0) {
+      // Allow the user to add a new balance for the new day
+      documentId = await addSavingsToFireStore(
+        await loadbalance(),
+        Days[now.weekday - 1],
+        int.parse(selectedyear!),
+      ).toString();
+      // Save the current date as the last update date
+      await saveLastDate(currentDate);
+    } else {
+      // Check if an entry for the current day exists in the database
+      final existingEntry = await getExistingEntry(Days[now.weekday - 1], int.parse(selectedyear!));
+
+      if (existingEntry != null) {
+        // Update the existing balance for the current day
+        try {
+          final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+          final DocumentReference documentReference = firestore
+              .collection('userDetails')
+              .doc(username)
+              .collection('Savings')
+              .doc(existingEntry);
+
+          // Use the update method to update the "Balance" field
+          await documentReference.update({
+            'Balance': await loadbalance(),
+          });
+
+          print('Balance updated successfully!');
+        } catch (ex) {
+          print('Error updating balance: $ex');
+        }
+      } else {
+        // No entry for the current day, add a new one
+        documentId = await addSavingsToFireStore(
+          await loadbalance(),
+          Days[now.weekday - 1],
+          int.parse(selectedyear!),
+        ).toString();
+      }
+    }
+    setState(() {});
+  }
+  Future<String?> getExistingEntry(String day, int year) async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Savings')
+          .where('Day', isEqualTo: day)
+          .where('Year', isEqualTo: year)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the document ID of the existing entry
+        return querySnapshot.docs.first.id;
+      } else {
+        // No entry found
+        return null;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return null;
+    }
+  }
+
+
+  Future<int> loadbalance() async {
+    _prefs = await SharedPreferences.getInstance();
+    final savedbalancelist=_prefs?.getInt('newBalance')??0;
+
+    return savedbalancelist;
+  }
+  Future<int> loadYear() async {
+    _prefs = await SharedPreferences.getInstance();
+    final selectedYear = _prefs?.getString('selectedYear');
+    if (selectedYear != null && items.contains(selectedYear)) {
+      setState(() {
+        selectedyear = selectedYear;
+      });
+
+    }
+
+    return int.parse(selectedyear!);
+  }
+  Future<void> saveBalance() async {
+    if (savingbalance != 0) {
+      final newCount = savingbalance;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setInt('newBalance', newCount);
+      setState(() {
+        savingbalance = newCount;
+
+      });
+      await saveLastDate(DateTime.now());
+    }
+  }
+
+  Future<String> addSavingsToFireStore(
+      int balance,
+      String Day,
+      int year,
+      ) async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final CollectionReference incomeCollection = firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Savings');
+
+      final DocumentReference newDocument = await incomeCollection.add({
+        'Balance': balance,
+        'Day': Day,
+        'Year': year,
+      });
+
+      final String newDocumentId = newDocument.id;
+      print('New document created with ID: $newDocumentId');
+
+      return newDocumentId;
+    } catch (ex) {
+      print('Income adding failed: $ex');
+      return ''; // Return an empty string to indicate failure
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     DropdownMenuItem<String>buildMenuItem(String item)=>
-    DropdownMenuItem(
-      value:item,
-      child: Text(
-        item,
-        style:TextStyle(fontWeight:FontWeight.bold,fontSize:60) ,
-      ),
-    );
-    print(this.savingbalance);
+        DropdownMenuItem(
+          value:item,
+          child: Text(
+            item,
+            style:TextStyle(fontWeight:FontWeight.bold,fontSize:60) ,
+          ),
+        );
     return SafeArea(
       child: Scaffold(
-        appBar:  AppBar(
-          backgroundColor: Colors.grey[100],
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomePage(),
-                ),
-              );
-            },
+          appBar:  AppBar(
+            backgroundColor: Colors.grey[100],
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              color: Colors.black,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ),
+                );
+              },
+            ),
+            title: const Text('S A V I N G S',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 20,
+                )),
+            centerTitle: true,
+            elevation: 0,
           ),
-          title: const Text('S A V I N G S',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 20,
-              )),
-          centerTitle: true,
-          elevation: 0,
-        ),
-        body:SingleChildScrollView(
-          child: Column(
-            children: [
+          body:SingleChildScrollView(
+            child: Column(
+              children: [
                 Container(
                   //alignment: Alignment.center,
                   margin:EdgeInsets.only(top:10,left:20,right:20),
@@ -147,11 +328,11 @@ class _SavingsState extends State<Savings> {
                             ),
                             child: Center(
                               child: Text('20',
-                              style: TextStyle(
-                                fontSize:60,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),),
+                                style: TextStyle(
+                                  fontSize:60,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),),
                             ),
                           ),
                           Container(
@@ -169,24 +350,29 @@ class _SavingsState extends State<Savings> {
                               child: DropdownButton<String>(
 
                                 value: selectedyear,
-                                onChanged: (String? newValue) {
+                                onChanged: (String? newValue) async {
                                   setState(() {
                                     selectedyear = newValue!;
                                   });
+                                  _prefs?.setString('selectedYear', selectedyear!);
+
+
                                 },
                                 underline: Container(),
                                 //isExpanded: true, // Make the dropdown list take up the maximum available height
                                 itemHeight: 70,
 
+
                                 items:items.map(buildMenuItem).toList(),
 
                               ),
-                            ),
+                                  ),
                           ),
 
 
                         ],
                       ),
+
                       Container(
                         margin:EdgeInsets.only(top:20),
 
@@ -196,37 +382,65 @@ class _SavingsState extends State<Savings> {
                           color:Color(0xff90E0EF),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child:ListView.builder(
-                          itemCount: balanceList.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Container(
-                                width:100,
-                                height:40,
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(10),
+                        child:FutureBuilder<List>(
+                          future: getthebalancefromDB(selectedyear!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Text(
+                                'Fetching balance...',
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text(
+                                'Error: ${snapshot.error}',
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              );
+                            } else if (!snapshot.hasData || snapshot.data?.isEmpty == true) {
+                              return Text(
+                                'No data available.',
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              );
+                            } else {
+                              final balanceList = snapshot.data!;
+                              return RefreshIndicator(
+                                // Use RefreshIndicator to enable manual refresh
+                                onRefresh: () async {
+                                  // Implement the refresh logic (e.g., fetch updated data)
+                                  await updateBalance();
+                                },
+                                child: ListView.builder(
+                                  itemCount: balanceList.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      title: Container(
+                                        width: 100,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Text(
+                                          'Balance: ${balanceList[index]}',
+                                          style: TextStyle(fontSize: 16, color: Colors.white),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
-
-                                padding: EdgeInsets.all(10.0),
-                                child: Text(
-                                  'Balance: ${balanceList[index]}',
-                                  style: TextStyle(fontSize: 16, color: Colors.white),
-                                ),
-                              ),
-                            );
+                              );
+                            }
                           },
                         ),
-
 
                       ),
                     ],
                   ),
                 ),
 
-            ],
-          ),
-        )
+              ],
+            ),
+          )
       ),
     );
   }

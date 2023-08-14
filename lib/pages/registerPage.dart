@@ -2,13 +2,15 @@ import 'package:budgettrack/components/textfield.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import '../components/button.dart';
+
 import '../pages/emailVerification.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
-  const RegisterPage({super.key, required this.onTap});
+  RegisterPage({super.key, required this.onTap});
 
   @override
   State<RegisterPage> createState() => _RegisterPage();
@@ -50,6 +52,7 @@ class _RegisterPage extends State<RegisterPage> {
       },
     );
 
+    //sign up
     try {
       if (passwordControll.text == confirmPasswordControll.text) {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -65,32 +68,29 @@ class _RegisterPage extends State<RegisterPage> {
           selectedCurrency!,
         );
 
-        //loading circle end
-        Navigator.pop(context);
-
         //navigate to email verification page
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => EmailVerification(),
+            builder: (context) => const EmailVerification(),
           ),
         );
       } else {
-        //loading circle end
-        Navigator.pop(context);
-
         // error
         wrongInputlAlert("Passwords don't match");
       }
+      //Navigator.pop(context);
     } on FirebaseAuthException catch (ex) {
-      //loading circle end
       Navigator.pop(context);
-
       // wrong mail
       wrongInputlAlert(ex.code);
     }
-  }
 
+    //loading circle end
+    if (mounted) {
+      Navigator.pop(context);
+    }
+  }
 
   //Wrong mail or password
 
