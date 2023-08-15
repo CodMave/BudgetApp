@@ -1,3 +1,4 @@
+import 'package:budgettrack/pages/Startup.dart';
 import 'package:budgettrack/pages/authPage.dart';
 import 'package:budgettrack/pages/splashscreen.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SplashScreen(),
+      home: Myclass(),
     );
   }
 }
