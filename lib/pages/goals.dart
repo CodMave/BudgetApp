@@ -20,8 +20,6 @@ class _GoalsState extends State<Goals> {
   String? categoty;
   DateTime? startDate;
   DateTime? endDate;
-  String? userSelectedCurrency;
-  String? currencySymbol;
   final planTitleController = TextEditingController();
   final planAmountController = TextEditingController();
 
@@ -48,40 +46,6 @@ class _GoalsState extends State<Goals> {
     'Transport',
     'Others',
   ];
-
-  //Method to fetch user selected currency
-
-  Future getUserCurrency() async {
-    await FirebaseFirestore.instance
-        .collection('userDetails')
-        .get()
-        .then((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        userSelectedCurrency = snapshot.docs[0].data()['currency'];
-        currencySymbolAssign();
-      }
-    });
-  }
-
-  void currencySymbolAssign() {
-    if (userSelectedCurrency == 'USD') {
-      currencySymbol = '\$';
-    } else if (userSelectedCurrency == 'EUR') {
-      currencySymbol = '€';
-    } else if (userSelectedCurrency == 'INR') {
-      currencySymbol = '₹';
-    } else if (userSelectedCurrency == 'SLR') {
-      currencySymbol = 'Rs';
-    } else if (userSelectedCurrency == 'GBP') {
-      currencySymbol = '£';
-    } else if (userSelectedCurrency == 'AUD') {
-      currencySymbol = 'A\$';
-    } else if (userSelectedCurrency == 'CAD') {
-      currencySymbol = 'C\$';
-    }
-  }
-
-  //Method to get current user
 
   Future<String> getCurrentUser() async {
     try {
@@ -120,7 +84,77 @@ class _GoalsState extends State<Goals> {
     }
   }
 
-  //Dialog box to add new plan
+  //Function to show the date picker for start date
+
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != startDate) {
+      setState(() {
+        startDate = picked;
+      });
+    }
+  }
+
+  //Function to show the date picker for end date
+
+  Future<void> _selectEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != endDate) {
+      if (startDate != null && picked.isAfter(startDate!)) {
+        setState(() {
+          endDate = picked;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'End date should be after start date',
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            backgroundColor: Colors.red[300],
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    String? userId = auth.currentUser?.uid;
+
+    _plansStream = firestore
+        .collection('userDetails')
+        .doc(userId)
+        .collection('goalsID')
+        .doc()
+        .snapshots();
+
+    _plansStream.listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
+      if (snapshot.exists) {
+        setState(() {
+          amount = snapshot.data()!['amount'];
+          categoty = snapshot.data()!['category'];
+          startDate = snapshot.data()!['startDate'];
+          endDate = snapshot.data()!['endDate'];
+        });
+      }
+    });
+  }
 
   void addNewPlan() {
     showDialog(
@@ -313,6 +347,7 @@ class _GoalsState extends State<Goals> {
                                       amount: amount,
                                       startDate: startDate,
                                       endDate: endDate,
+                                      //currency: currencySymbol,
                                     ));
                                   },
                                 );
@@ -332,6 +367,26 @@ class _GoalsState extends State<Goals> {
                                   startDate!,
                                   endDate!,
                                 );
+
+                                _plansStream = firestore
+                                    .collection('userDetails')
+                                    .doc(userId)
+                                    .collection('goalsID')
+                                    .doc()
+                                    .snapshots();
+
+                                _plansStream.listen(
+                                    (DocumentSnapshot<Map<String, dynamic>>
+                                        snapshot) {
+                                  if (snapshot.exists) {
+                                    setState(() {
+                                      amount = snapshot.data()!['amount'];
+                                      categoty = snapshot.data()!['category'];
+                                      startDate = snapshot.data()!['startDate'];
+                                      endDate = snapshot.data()!['endDate'];
+                                    });
+                                  }
+                                });
 
                                 //selectedCategory = '';
                                 //planAmountController.clear();
@@ -356,78 +411,6 @@ class _GoalsState extends State<Goals> {
         );
       },
     );
-  }
-
-  //Function to show the date picker for start date
-
-  Future<void> _selectStartDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2015),
-      lastDate: DateTime(2101),
-    );
-
-    if (picked != null && picked != startDate) {
-      setState(() {
-        startDate = picked;
-      });
-    }
-  }
-
-  //Function to show the date picker for end date
-
-  Future<void> _selectEndDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2015),
-      lastDate: DateTime(2101),
-    );
-
-    if (picked != null && picked != endDate) {
-      if (startDate != null && picked.isAfter(startDate!)) {
-        setState(() {
-          endDate = picked;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-              'End date should be after start date',
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            backgroundColor: Colors.red[300],
-          ),
-        );
-      }
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    String? userId = auth.currentUser?.uid;
-
-    _plansStream = firestore
-        .collection('userDetails')
-        .doc(userId)
-        .collection('goalsID')
-        .doc()
-        .snapshots();
-
-    _plansStream.listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
-      if (snapshot.exists) {
-        setState(() {
-          amount = snapshot.data()!['amount'];
-          categoty = snapshot.data()!['category'];
-          startDate = snapshot.data()!['startDate'];
-          endDate = snapshot.data()!['endDate'];
-        });
-      }
-    });
   }
 
   @override
@@ -663,10 +646,11 @@ class _GoalsState extends State<Goals> {
                   itemBuilder: (context, index) {
                     final myGoal = myGoals[index];
                     return MyGoal(
-                      category: selectedCategory,
-                      amount: amount,
-                      startDate: startDate,
-                      endDate: endDate,
+                      category: myGoal.category,
+                      amount: myGoal.amount,
+                      startDate: myGoal.startDate,
+                      endDate: myGoal.endDate,
+                      //currency: currencySymbol,
                     );
                   },
                 ),

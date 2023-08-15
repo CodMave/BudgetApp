@@ -13,6 +13,7 @@ class MyGoal extends StatelessWidget {
     required this.amount,
     required this.startDate,
     required this.endDate,
+    //required this.currency,
   });
 
   @override
@@ -25,23 +26,17 @@ class MyGoal extends StatelessWidget {
           color: Colors.grey[300],
           height: 100,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  category!,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                  ),
-                ),
-                Row(
+                // text and amount
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "\$",
-                      style: const TextStyle(
-                        color: Colors.black,
+                      category!,
+                      style: TextStyle(
+                        color: Colors.grey[800],
                         fontSize: 20,
                       ),
                     ),
@@ -49,11 +44,13 @@ class MyGoal extends StatelessWidget {
                       "$amount",
                       style: const TextStyle(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: 40,
                       ),
-                    ),
+                    )
                   ],
-                )
+                ),
+
+                //circular indicator
               ],
             ),
           ),
