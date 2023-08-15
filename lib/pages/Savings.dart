@@ -25,17 +25,7 @@ class _SavingsState extends State<Savings> {
   int savingbalance=0;
 
   DateTime now=DateTime.now();
-  List<String>Days=[
 
-    'Monday',
-    'Tuesday',
-    'Wednessday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-
-  ];
   final items = [
     '23',
     '24',
@@ -79,7 +69,7 @@ class _SavingsState extends State<Savings> {
     super.initState();
     loadbalance();
     loadYear();
-    loadLastDate();
+    loadLastMonth();
     updateBalance();
 
   }
@@ -108,44 +98,32 @@ class _SavingsState extends State<Savings> {
       return [];
     }
   }
-  Future<DateTime> loadLastDate() async {
+  Future<DateTime> loadLastMonth() async {
     _prefs = await SharedPreferences.getInstance();
-    final storedDate = _prefs?.getString('lastDate');
+    final storedMonth = _prefs?.getString('lastMonth');
 
-    if (storedDate != null) {
-      return DateFormat('yyyy-MM-dd').parse(storedDate);
+    if (storedMonth != null) {
+      return DateFormat('MMMM').parse(storedMonth);
     } else {
       // No stored date, use the current date
-      return DateTime.now();
+      return DateTime(now.month);
     }
   }
 
-  Future<void> saveLastDate(DateTime date) async {
-    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+  Future<void> saveLastMonth(DateTime Month) async {
+    final formattedMonth = DateFormat('MMMM').format(Month);
     _prefs = await SharedPreferences.getInstance();
-    _prefs?.setString('lastDate', formattedDate);
+    _prefs?.setString('lastMonth', formattedMonth);
   }
-
   Future<void> updateBalance() async {
-    final currentDate = DateTime.now();
-    final lastUpdateDate = await loadLastDate();
+    final currentMonth = DateTime.now();
 
-    if (currentDate.difference(lastUpdateDate).inDays > 0) {
-      // Allow the user to add a new balance for the new day
-      documentId = await addSavingsToFireStore(
-        await loadbalance(),
-        Days[now.weekday - 1],
-        int.parse(selectedyear!),
-      ).toString();
-      // Save the current date as the last update date
-      await saveLastDate(currentDate);
-    } else {
-      // Check if an entry for the current day exists in the database
-      final existingEntry = await getExistingEntry(Days[now.weekday - 1], int.parse(selectedyear!));
+      // Update the balance for the current month
+      try {
+        final existingEntry = await getExistingEntry(
+            DateFormat('MMMM').format(currentMonth), int.parse(selectedyear!));
 
-      if (existingEntry != null) {
-        // Update the existing balance for the current day
-        try {
+        if (existingEntry != null) {
           final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
           final DocumentReference documentReference = firestore
@@ -160,21 +138,22 @@ class _SavingsState extends State<Savings> {
           });
 
           print('Balance updated successfully!');
-        } catch (ex) {
-          print('Error updating balance: $ex');
+        } else {
+          // No entry for the current month, add a new one
+          documentId = await addSavingsToFireStore(
+            await loadbalance(),
+            DateFormat('MMMM').format(currentMonth),
+            int.parse(selectedyear!),
+          ).toString();
         }
-      } else {
-        // No entry for the current day, add a new one
-        documentId = await addSavingsToFireStore(
-          await loadbalance(),
-          Days[now.weekday - 1],
-          int.parse(selectedyear!),
-        ).toString();
+      } catch (ex) {
+        print('Error updating balance: $ex');
       }
-    }
+    await saveLastMonth(currentMonth);
     setState(() {});
   }
-  Future<String?> getExistingEntry(String day, int year) async {
+
+  Future<String?> getExistingEntry(String month, int year) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
 
@@ -185,7 +164,7 @@ class _SavingsState extends State<Savings> {
           .collection('userDetails')
           .doc(username)
           .collection('Savings')
-          .where('Day', isEqualTo: day)
+          .where('Month', isEqualTo: month)
           .where('Year', isEqualTo: year)
           .get();
 
@@ -230,7 +209,7 @@ class _SavingsState extends State<Savings> {
         savingbalance = newCount;
 
       });
-      await saveLastDate(DateTime.now());
+      await saveLastMonth(DateTime.now());
     }
   }
 
@@ -252,7 +231,7 @@ class _SavingsState extends State<Savings> {
 
       final DocumentReference newDocument = await incomeCollection.add({
         'Balance': balance,
-        'Day': Day,
+        'Month': Day,
         'Year': year,
       });
 
@@ -413,16 +392,40 @@ class _SavingsState extends State<Savings> {
                                   itemBuilder: (context, index) {
                                     return ListTile(
                                       title: Container(
+                                        margin:EdgeInsets.only(top:10),
                                         width: 100,
-                                        height: 40,
+                                        height: 60,
                                         decoration: BoxDecoration(
-                                          color: Colors.blue,
+                                          color: Colors.white,
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         padding: EdgeInsets.all(10.0),
-                                        child: Text(
-                                          'Balance: ${balanceList[index]}',
-                                          style: TextStyle(fontSize: 16, color: Colors.white),
+                                        child: Row(
+                                          children: [
+
+                                            Text(
+                                              '${DateFormat('MMMM').format(DateTime.now())}',
+
+                                              style: TextStyle(fontSize:20, color: Colors.black,fontWeight:FontWeight.bold),
+                                            ),
+                                            Container(
+                                              margin:EdgeInsets.only(left:50),
+                                              width: 140,
+                                              height:80,
+                                              decoration: BoxDecoration(
+                                                color: Colors.lightBlue,
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+
+                                                  '\$ ${balanceList[index]}',
+
+                                                  style: TextStyle(fontSize:20, color: Colors.black,fontWeight: FontWeight.bold),
+                                                ),
+                                              ),
+                                            )
+                                          ],
                                         ),
                                       ),
                                     );
