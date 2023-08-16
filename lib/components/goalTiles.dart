@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MyGoal extends StatelessWidget {
+class MyGoal extends StatefulWidget {
   final String? category;
   final int amount;
   final DateTime? startDate;
@@ -16,6 +16,11 @@ class MyGoal extends StatelessWidget {
     //required this.currency,
   });
 
+  @override
+  State<MyGoal> createState() => _MyGoalState();
+}
+
+class _MyGoalState extends State<MyGoal> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -34,14 +39,14 @@ class MyGoal extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      category!,
+                      widget.category!,
                       style: TextStyle(
                         color: Colors.grey[800],
                         fontSize: 20,
                       ),
                     ),
                     Text(
-                      "$amount",
+                      "${widget.amount}",
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 40,

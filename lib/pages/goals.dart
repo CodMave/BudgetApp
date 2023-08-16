@@ -356,6 +356,8 @@ class _GoalsState extends State<Goals> {
 
                                 Navigator.of(context).pop();
 
+                                setState(() {});
+
                                 //Add the goals to the database
 
                                 print('goal amount is $amount');
@@ -477,7 +479,7 @@ class _GoalsState extends State<Goals> {
 
                 // Add plan button
 
-                const SizedBox(width: 100),
+                const SizedBox(width: 105),
 
                 GestureDetector(
                   onTap: () {
@@ -560,7 +562,7 @@ class _GoalsState extends State<Goals> {
                                 fontSize: 18,
                               ),
                             ),
-                            const SizedBox(height: 25),
+                            const SizedBox(height: 20),
                             InkWell(
                               onTap: () => _selectStartDate(context),
                               child: DatePick(
@@ -616,7 +618,7 @@ class _GoalsState extends State<Goals> {
                                 fontSize: 18,
                               ),
                             ),
-                            const SizedBox(height: 25),
+                            const SizedBox(height: 20),
                             InkWell(
                               onTap: () => _selectEndDate(context),
                               child: DatePick(

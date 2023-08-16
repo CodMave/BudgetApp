@@ -39,64 +39,36 @@ class _MyMenuState extends State<MyMenu> {
     List<String> options = ['Light', 'Dark'];
     return SafeArea(
         child: Scaffold(
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        backgroundColor: Colors.grey[100],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Check(),
+                ));
+          },
+        ),
+        title: const Text(
+          'S E T T I N G S',
+          style: TextStyle(
+            color: Colors.blue,
+            fontSize: 20,
+            //fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+      ),
       resizeToAvoidBottomInset: false,
       body: Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              height: 100,
-              width: 400,
-              margin: EdgeInsets.only(left: 20, right: 15),
-              decoration: BoxDecoration(
-                color: Color(0xff181EAA),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10),
-                ),
-              ),
-              child: Stack(
-                alignment: Alignment.topLeft,
-                children: [
-                  Container(
-                    child: IconButton(
-                      icon: Icon(
-                        weight: 10,
-                        Icons.arrow_back_ios_new,
-                        size: 40,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Check(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  FractionallySizedBox(
-                    //UAbove the percentage value I have displayed the current date and time
-                    widthFactor: 1.0,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 0),
-                        child: Text(
-                          'Budget Tracker',
-                          style: TextStyle(
-                            fontSize: 35,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             SingleChildScrollView(
               child: Container(
                 child: Column(
@@ -106,6 +78,7 @@ class _MyMenuState extends State<MyMenu> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          SizedBox(height: 20),
                           Container(
                             width: 400,
                             height: 140,
