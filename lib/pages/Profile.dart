@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'LoginPage.dart';
 import 'homePage.dart';
 
 class Check extends StatelessWidget {
@@ -24,6 +25,8 @@ class Check extends StatelessWidget {
 }
 
 class Profile extends StatefulWidget {
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   Profile({
     Key? key,
     this.title,
@@ -38,10 +41,12 @@ class Profile extends StatefulWidget {
 class _Profile extends State<Profile> {
   //private class of the Profile class
 
+
   Uint8List? _image; //initialize the image variable
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   final String _imagekey =
       'user_image'; //initialize the _imagekey to hold default value to the image
+
 
   PickImage(ImageSource source) async {
     //Allow the user to pick an image to change the profile
@@ -71,7 +76,9 @@ class _Profile extends State<Profile> {
   void saveImageToStorage(Uint8List image) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String imageData =
-        base64Encode(image); //again encode the String to the image
+
+    base64Encode(image); //again encode the String to the image
+
     prefs.setString(_imagekey, imageData);
   }
 
@@ -88,8 +95,9 @@ class _Profile extends State<Profile> {
   }
 
   void
-      TakePhoto() async //allows to user to set the profile image as taken photo fro camera
-  {
+  TakePhoto() async //allows to user to set the profile image as taken photo fro camera
+      {
+
     Uint8List img = await PickImage(ImageSource.camera);
     if (img != null) {
       saveImageToStorage(img); //save the image
@@ -139,7 +147,7 @@ class _Profile extends State<Profile> {
     email = user!.email!;
     if (user != null) {
       QuerySnapshot qs = await FirebaseFirestore.instance.collection(
-          //the query check wither the authentication email match with the email which is taken at the user details
+
           'userDetails').where('email', isEqualTo: email).limit(1).get();
 
       if (qs.docs.isNotEmpty) {
@@ -198,6 +206,16 @@ class _Profile extends State<Profile> {
       ),
     );
   }
+  Future<void> _signOut(BuildContext context) async {//when our user press on the sign out button then user has to sign in again
+    try {
+      await _auth.signOut(); // Sign out the current user
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) =>LoginPage(onTap: () {  },)), // Replace LoginPage with your app's login page
+              (Route<dynamic> route) => false); // Clear the navigation stack
+    } catch (e) {
+      print('Error while signing out: $e');
+    }
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,235 +227,240 @@ class _Profile extends State<Profile> {
           color: Colors.black,
           onPressed: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomePage(),
-                ));
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomePage(),
+              ),
+            );
           },
         ),
-        title: const Text(
+        title: Text(
           'P R O F I L E',
           style: TextStyle(
             color: Colors.blue,
-            fontSize: 20,
+            fontSize: 20.0,
+            //fontWeight: FontWeight.bold,
+
           ),
         ),
         centerTitle: true,
         elevation: 0,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                alignment: Alignment.topCenter,
-                margin: EdgeInsets.only(left: 40, right: 40, top: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    //const SizedBox(height: 10),
-                    Column(children: [
-                      Container(
-                        height: 250,
-                        width: 250,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffEDF2FB),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              height: 200,
-                              width: 200,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                              ),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  _image != null
-                                      ? //if the user hasn't set an image yet then display this image in the following circle avatar
-                                      CircleAvatar(
-                                          radius: 80.0,
-                                          backgroundImage: MemoryImage(_image!))
-                                      : CircleAvatar(
-                                          //if the user set an image then display the corresponding image in the following circle avatar
-                                          radius: 80.0,
-                                          backgroundImage: AssetImage(
-                                              'lib/images/Profileimage.png')),
-                                  Positioned(
-                                    bottom: 20.0,
-                                    right: 20.0,
-                                    child: InkWell(
-                                      onTap: () {
-                                        showModalBottomSheet(
-                                          context: context,
-                                          builder: (context) =>
-                                              buttonsheet(context),
-                                        );
-                                      },
-                                      child: Icon(
-                                        Icons
-                                            .camera_alt, //camera icon allows user to set an image
-                                        color: Colors.teal,
-                                        size: 28.0,
-                                      ),
+
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            /// PROFILE HEADER
+            Container(
+              alignment: Alignment.topCenter,
+              margin: EdgeInsets.only(left: 40, right: 40, top: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  //const SizedBox(height: 10),
+                  Column(children: [
+                    Container(
+                      height: 250,
+                      width: 250,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffEDF2FB),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            height: 200,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                            ),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                _image != null
+                                    ? //if the user hasn't set an image yet then display this image in the following circle avatar
+                                CircleAvatar(
+                                    radius: 80.0,
+                                    backgroundImage: MemoryImage(_image!))
+                                    : CircleAvatar(
+                                  //if the user set an image then display the corresponding image in the following circle avatar
+                                    radius: 80.0,
+                                    backgroundImage: AssetImage(
+                                        'lib/images/Profileimage.png')),
+                                Positioned(
+                                  bottom: 20.0,
+                                  right: 20.0,
+                                  child: InkWell(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) =>
+                                            buttonsheet(context),
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons
+                                          .camera_alt, //camera icon allows user to set an image
+                                      color: Colors.teal,
+                                      size: 28.0,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ]),
-                  ],
-                ),
+                    ),
+                  ]),
+                ],
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FractionallySizedBox(
-                    widthFactor: 1.0,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 60, top: 15),
-                        child: Text(
-                          'User Name',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                          ),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FractionallySizedBox(
+                  widthFactor: 1.0,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 60, top: 15),
+                      child: Text(
+                        'User Name',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+
                         ),
                       ),
                     ),
                   ),
-                  Container(
-                    //this container display the current user's name as text
-                    width: 300,
 
-                    margin: EdgeInsets.only(left: 60, right: 60, top: 10),
-                    padding: EdgeInsets.only(
-                        top: 20.0, left: 10, right: 10, bottom: 20.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 0.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
+                ),
+                Container(
+                  //this container display the current user's name as text
+                  width: 300,
+
+                  margin: EdgeInsets.only(left: 60, right: 60, top: 10),
+                  padding: EdgeInsets.only(
+                      top: 20.0, left: 10, right: 10, bottom: 20.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 0.0,
                     ),
-                    child: FutureBuilder<String>(
-                        future: getUserName(),
-                        builder: (context, snapshot) {
-                          return Text(
-                            "${snapshot.data}",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                            ),
-                          );
-                        }),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  FractionallySizedBox(
-                    widthFactor: 1.0,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 60, top: 15),
-                        child: Text(
-                          'Currency',
+                  child: FutureBuilder<String>(
+                      future: getUserName(),
+                      builder: (context, snapshot) {
+                        return Text(
+                          "${snapshot.data}",
                           style: TextStyle(
-                            fontSize: 20,
                             color: Colors.black,
+                            fontSize: 20,
+
                           ),
+                        );
+                      }),
+                ),
+                FractionallySizedBox(
+                  widthFactor: 1.0,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 60, top: 15),
+                      child: Text(
+                        'Currency',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
                         ),
                       ),
                     ),
-                  ),
-                  Container(
-                    //this container displays the user's currency as the text
-                    width: 300,
+                 
+                ),
+                Container(
+                  //this container displays the user's currency as the text
+                  width: 300,
 
-                    margin: EdgeInsets.only(left: 60, right: 60, top: 10),
-                    padding: EdgeInsets.only(
-                        top: 20.0, left: 10, right: 10, bottom: 20.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 0.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
+                  margin: EdgeInsets.only(left: 60, right: 60, top: 10),
+                  padding: EdgeInsets.only(
+                      top: 20.0, left: 10, right: 10, bottom: 20.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 0.0,
                     ),
-                    child: FutureBuilder<String>(
-                        future: getCurrency(),
-                        builder: (context, snapshot) {
-                          return Text(
-                            "${snapshot.data}",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                            ),
-                          );
-                        }),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 30),
-                        child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyMenu()),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              //a button set to allow the user to move to the settings page
-                              primary: Color(0xff181EAA),
-                              onPrimary: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 12),
-                              textStyle: TextStyle(fontSize: 20),
-                              elevation: 3,
+                  child: FutureBuilder<String>(
+                      future: getCurrency(),
+                      builder: (context, snapshot) {
+                        return Text(
+                          "${snapshot.data}",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                        );
+                      }),
+                ),
+                Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 30),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MyMenu()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            //a button set to allow the user to move to the settings page
+                            primary: Color(0xff181EAA),
+                            onPrimary: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Text('Settings')),
-                      ),
-                      Container(
-                        //this button allows to user to log out from the account
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 12),
+                            textStyle: TextStyle(fontSize: 20),
+                            elevation: 3,
+                          ),
+                          child: Text('Settings')),
+                    ),
+                    Container(
+                      //this button allows to user to log out from the account
                         margin: EdgeInsets.only(top: 10),
                         child: ElevatedButton(
-                            onPressed: () {
-                              print('Hello World');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              primary: Color(0xff181EAA),
-                              onPrimary: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 12),
-                              textStyle: TextStyle(fontSize: 20),
-                              elevation: 3,
+                          onPressed: () => _signOut(context), // Use _signOut as the onPressed callback
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xff181EAA),
+                            onPrimary: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Text('Log Out')),
-                      )
-                    ],
-                  )
-                ],
-              )
-            ],
-          ),
+                            padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                            textStyle: TextStyle(fontSize: 20),
+                            elevation: 3,
+                          ),
+                          child: Text('Log Out'),
+                        )
+
+                    )
+                  ],
+                )
+              ],
+            )
+          ],
+
         ),
       ),
     );

@@ -111,7 +111,10 @@ class _SavingsState extends State<Savings> {
     }
   }
 
-  Future<DateTime> loadLastDate() async {
+
+
+  Future<DateTime> loadLastMonth() async {
+
     _prefs = await SharedPreferences.getInstance();
     final storedMonth = _prefs?.getString('lastMonth');
 
