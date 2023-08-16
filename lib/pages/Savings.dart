@@ -24,10 +24,9 @@ String documentId = '';
 class _SavingsState extends State<Savings> {
   SharedPreferences? _prefs;
   String? selectedyear = "23";
-  int savingbalance=0;
+  int savingbalance = 0;
 
-  DateTime now=DateTime.now();
-
+  DateTime now = DateTime.now();
 
   final items = [
     '23',
@@ -74,6 +73,18 @@ class _SavingsState extends State<Savings> {
     updateBalance();
   }
 
+  Future<DateTime> loadLastMonth() async {
+    _prefs = await SharedPreferences.getInstance();
+    final storedMonth = _prefs?.getString('lastMonth');
+
+    if (storedMonth != null) {
+      return DateFormat('MMMM').parse(storedMonth);
+    } else {
+      // No stored date, use the current date
+      return DateTime(now.month);
+    }
+  }
+
   Future<List> getthebalancefromDB(String year) async {
     List<int> currentBalance = [];
     User? user = _auth
@@ -101,7 +112,9 @@ class _SavingsState extends State<Savings> {
   }
 
 
+
   Future<DateTime> loadLastMonth() async {
+
     _prefs = await SharedPreferences.getInstance();
     final storedMonth = _prefs?.getString('lastMonth');
 
@@ -118,46 +131,44 @@ class _SavingsState extends State<Savings> {
     _prefs = await SharedPreferences.getInstance();
     _prefs?.setString('lastMonth', formattedMonth);
   }
-  Future<void> updateBalance() async {
 
+  Future<void> updateBalance() async {
     final currentMonth = DateTime.now();
 
+    // Update the balance for the current month
+    try {
+      final existingEntry = await getExistingEntry(
+          DateFormat('MMMM').format(currentMonth), int.parse(selectedyear!));
 
-      // Update the balance for the current month
-      try {
-        final existingEntry = await getExistingEntry(
-            DateFormat('MMMM').format(currentMonth), int.parse(selectedyear!));
+      if (existingEntry != null) {
+        final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-        if (existingEntry != null) {
-          final FirebaseFirestore firestore = FirebaseFirestore.instance;
+        final DocumentReference documentReference = firestore
+            .collection('userDetails')
+            .doc(username)
+            .collection('Savings')
+            .doc(existingEntry);
 
-          final DocumentReference documentReference = firestore
-              .collection('userDetails')
-              .doc(username)
-              .collection('Savings')
-              .doc(existingEntry);
+        // Use the update method to update the "Balance" field
+        await documentReference.update({
+          'Balance': await loadbalance(),
+        });
 
-          // Use the update method to update the "Balance" field
-          await documentReference.update({
-            'Balance': await loadbalance(),
-          });
-
-          print('Balance updated successfully!');
-        } else {
-          // No entry for the current month, add a new one
-          documentId = await addSavingsToFireStore(
-            await loadbalance(),
-            DateFormat('MMMM').format(currentMonth),
-            int.parse(selectedyear!),
-          ).toString();
-        }
-      } catch (ex) {
-        print('Error updating balance: $ex');
+        print('Balance updated successfully!');
+      } else {
+        // No entry for the current month, add a new one
+        documentId = await addSavingsToFireStore(
+          await loadbalance(),
+          DateFormat('MMMM').format(currentMonth),
+          int.parse(selectedyear!),
+        ).toString();
       }
+    } catch (ex) {
+      print('Error updating balance: $ex');
+    }
     await saveLastMonth(currentMonth);
     setState(() {});
   }
-
 
   Future<String?> getExistingEntry(String month, int year) async {
     User? user = _auth.currentUser;
@@ -392,37 +403,41 @@ class _SavingsState extends State<Savings> {
                                   itemBuilder: (context, index) {
                                     return ListTile(
                                       title: Container(
-                                        margin:EdgeInsets.only(top:10),
+                                        margin: EdgeInsets.only(top: 10),
                                         width: 100,
                                         height: 60,
                                         decoration: BoxDecoration(
-
                                           color: Colors.white,
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
                                         padding: EdgeInsets.all(10.0),
                                         child: Row(
                                           children: [
-
                                             Text(
                                               '${DateFormat('MMMM').format(DateTime.now())}',
-
-                                              style: TextStyle(fontSize:20, color: Colors.black,fontWeight:FontWeight.bold),
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                             Container(
-                                              margin:EdgeInsets.only(left:50),
+                                              margin: EdgeInsets.only(left: 50),
                                               width: 140,
-                                              height:80,
+                                              height: 80,
                                               decoration: BoxDecoration(
                                                 color: Colors.lightBlue,
-                                                borderRadius: BorderRadius.circular(10),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Center(
                                                 child: Text(
-
                                                   '\$ ${balanceList[index]}',
-
-                                                  style: TextStyle(fontSize:20, color: Colors.black,fontWeight: FontWeight.bold),
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                               ),
                                             )

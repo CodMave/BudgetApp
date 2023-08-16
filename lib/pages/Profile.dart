@@ -26,6 +26,7 @@ class Check extends StatelessWidget {
 
 class Profile extends StatefulWidget {
   FirebaseAuth auth = FirebaseAuth.instance;
+
   Profile({
     Key? key,
     this.title,
@@ -40,10 +41,12 @@ class Profile extends StatefulWidget {
 class _Profile extends State<Profile> {
   //private class of the Profile class
 
+
   Uint8List? _image; //initialize the image variable
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   final String _imagekey =
       'user_image'; //initialize the _imagekey to hold default value to the image
+
 
   PickImage(ImageSource source) async {
     //Allow the user to pick an image to change the profile
@@ -73,7 +76,9 @@ class _Profile extends State<Profile> {
   void saveImageToStorage(Uint8List image) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String imageData =
+
     base64Encode(image); //again encode the String to the image
+
     prefs.setString(_imagekey, imageData);
   }
 
@@ -92,6 +97,7 @@ class _Profile extends State<Profile> {
   void
   TakePhoto() async //allows to user to set the profile image as taken photo fro camera
       {
+
     Uint8List img = await PickImage(ImageSource.camera);
     if (img != null) {
       saveImageToStorage(img); //save the image
@@ -141,7 +147,7 @@ class _Profile extends State<Profile> {
     email = user!.email!;
     if (user != null) {
       QuerySnapshot qs = await FirebaseFirestore.instance.collection(
-        //the query check wither the authentication email match with the email which is taken at the user details
+
           'userDetails').where('email', isEqualTo: email).limit(1).get();
 
       if (qs.docs.isNotEmpty) {
@@ -234,11 +240,13 @@ class _Profile extends State<Profile> {
             color: Colors.blue,
             fontSize: 20.0,
             //fontWeight: FontWeight.bold,
+
           ),
         ),
         centerTitle: true,
         elevation: 0,
       ),
+
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -327,10 +335,12 @@ class _Profile extends State<Profile> {
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
+
                         ),
                       ),
                     ),
                   ),
+
                 ),
                 Container(
                   //this container display the current user's name as text
@@ -354,6 +364,7 @@ class _Profile extends State<Profile> {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 20,
+
                           ),
                         );
                       }),
@@ -372,7 +383,7 @@ class _Profile extends State<Profile> {
                         ),
                       ),
                     ),
-                  ),
+                 
                 ),
                 Container(
                   //this container displays the user's currency as the text
@@ -449,6 +460,7 @@ class _Profile extends State<Profile> {
               ],
             )
           ],
+
         ),
       ),
     );
