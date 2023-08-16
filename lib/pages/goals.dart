@@ -485,7 +485,7 @@ class _GoalsState extends State<Goals> {
                   },
                   child: Container(
                     height: 50,
-                    width: 110,
+                    width: 100,
                     decoration: BoxDecoration(
                       color: Colors.blue[300],
                       borderRadius: BorderRadius.circular(10),
