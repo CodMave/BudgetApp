@@ -26,11 +26,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(325, 812),
-      builder: (context, child) => MaterialApp(
-        debugShowCheckedModeBanner: false,//remove the debug label
-        home: MyWork(),//call to the class work
-      ),
+        designSize: Size(325, 812),
+        builder: (context, child) => MaterialApp(//remove the debug label
+          home: MyWork(),//call to the class work
+        ),
+
     );
   }
 }
@@ -354,6 +354,7 @@ class _ControllerState extends State<Controller> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.grey[100],
         appBar: AppBar(
           title: FutureBuilder<String>(
               future: getUserName(),

@@ -1,8 +1,13 @@
-import 'package:budgettrack/components/textfield.dart';
-import 'package:budgettrack/services/authService.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:budgettrack/components/textfield.dart';
+import 'package:budgettrack/pages/homePage.dart';
+import 'package:budgettrack/services/authService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../components/button.dart';
 import '../components/tile.dart';
 import 'forgotPassword.dart';
@@ -16,14 +21,65 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
   //text editing
   final usernameControll = TextEditingController();
-
+  String mtoken='';
   final passwordControll = TextEditingController();
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  //user signin method
-  void userSignIn() async {
-    //loading circle
+  void setvalidity()async{
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    final existingEntry = await getExistingEntry('valid');
+
+    if (existingEntry != null) {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final DocumentReference documentReference = firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Tokens')
+          .doc(existingEntry);
+
+      // Use the update method to update the "Balance" field
+      await documentReference.update({
+        'State': 'invalid',
+      });
+    }
+  }
+
+
+  Future<String?> getExistingEntry(String state) async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Tokens')
+          .where('State', isEqualTo: state)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the document ID of the existing entry
+        return querySnapshot.docs.first.id;
+      } else {
+        return null;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return null;
+    }
+  }
+ void userSignIn() async {
+
+  if (usernameControll.text.isEmpty || passwordControll.text.isEmpty) {
+      wrongInputlAlert();
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -40,22 +96,34 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordControll.text,
       );
     } on FirebaseAuthException catch (ex) {
+
+
       if (mounted) {
-        Navigator.pop(context);
+
+            Navigator.pop(context);
       }
+
       // wrong mail
       if (ex.code == 'user-not-found') {
         wrongInputlAlert();
+        return;
       }
       //wrong password
       else if (ex.code == 'wrong-password') {
         wrongInputlAlert();
+        return ;
       }
     }
 
     //loading circle end
     if (mounted) {
-      Navigator.pop(context);
+      setvalidity();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
     }
   }
 
@@ -206,7 +274,14 @@ class _LoginPageState extends State<LoginPage> {
 
                 MyTitle(
                   imagePath: 'lib/images/google.png',
-                  onTap: () => AuthService().signInWithGoodle(),
+                  onTap: () => {
+                    if(AuthService().signInWithGoodle()!=null){
+                    Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => HomePage()
+                    )
+                    ),
+                    }
+                  }
                 ),
 
                 const SizedBox(width: 25),
