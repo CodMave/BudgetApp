@@ -771,7 +771,10 @@ class _ControllerState extends State<Controller> {
                   children: [
                     InkWell(
                       onTap: () {
-                        print("Income");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyApp()),
+                        );
                       },
                       child: Container(
                         height: 80,
@@ -794,12 +797,7 @@ class _ControllerState extends State<Controller> {
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Pro(),
-                          ),
-                        );
+                        print("Summary");
                       },
                       child: Container(
                         height: 80,

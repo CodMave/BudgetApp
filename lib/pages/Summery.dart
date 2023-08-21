@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
+//import 'package:fl_chart/fl_chart.dart';
 import 'homePage.dart';
-
-void main() {
-  runApp(MyApp());
-}
 
 class MyApp extends StatelessWidget {
   @override
@@ -162,7 +158,7 @@ class _ProState extends State<Pro> {
                   ),
                 ),
               ],
-              //   if (showChart) chart()
+              //  if (showChart) chart()
             ],
           ),
         ),
