@@ -1,12 +1,10 @@
 import 'dart:async';
 
 import 'package:budgettrack/components/button.dart';
-
-import 'package:budgettrack/pages/homePage.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
+import 'homePage.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({Key? key}) : super(key: key);
@@ -33,16 +31,7 @@ class _EmailVerification extends State<EmailVerification> {
 
       timer = Timer.periodic(
         const Duration(seconds: 3),
-        (_) => checkIsEmailVerified(),
-      );
-    } else {
-      //navigate to home page
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
+            (_) => checkIsEmailVerified(),
       );
     }
   }
@@ -62,16 +51,6 @@ class _EmailVerification extends State<EmailVerification> {
       isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     });
 
-    if (isEmailVerified) {
-      //navigate to home page
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
-      );
-    }
   }
 
   Future sendVerificationEmail() async {
@@ -83,7 +62,7 @@ class _EmailVerification extends State<EmailVerification> {
         canResendEmail = false;
       });
 
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 5));
 
       setState(() {
         canResendEmail = true;
