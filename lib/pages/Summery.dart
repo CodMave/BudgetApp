@@ -1,5 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'homePage.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Pro(),
+    );
+  }
+}
 
 class Pro extends StatefulWidget {
   @override
@@ -7,11 +21,20 @@ class Pro extends StatefulWidget {
 }
 
 class _ProState extends State<Pro> {
-  bool showContainers = false;
+  bool showContainers1 = false;
+  bool showContainers2 = false;
+  bool showChart = false;
 
   void toggleContainersVisibility() {
     setState(() {
-      showContainers = !showContainers;
+      showContainers1 = !showContainers1;
+    });
+  }
+
+  void handleWeeklyButtonPressed() {
+    setState(() {
+      showContainers2 = !showContainers2;
+      showChart = !showChart;
     });
   }
 
@@ -28,11 +51,12 @@ class _ProState extends State<Pro> {
               ),
               HorizontalButtonRow(
                 onDailyPressed: toggleContainersVisibility,
+                onWeeklyPressed: handleWeeklyButtonPressed,
               ),
               SizedBox(
                 height: 20,
               ),
-              if (showContainers) ...[
+              if (showContainers1) ...[
                 Container(
                   height: 80,
                   width: 400,
@@ -85,6 +109,60 @@ class _ProState extends State<Pro> {
                   ),
                 ),
               ],
+              if (showContainers2) ...[
+                Container(
+                  height: 80,
+                  width: 400,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 134, 209, 249),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Received: Rs. 00.00',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        'Paid: Rs: 1000.00',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  height: 50,
+                  width: 400,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 134, 209, 249),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Total balance :  Rs. 1000.00',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              //   if (showChart) chart()
             ],
           ),
         ),
@@ -146,8 +224,11 @@ class ContainerWithDecoration extends StatelessWidget {
 
 class HorizontalButtonRow extends StatelessWidget {
   final VoidCallback? onDailyPressed;
+  final VoidCallback? onWeeklyPressed;
 
-  const HorizontalButtonRow({Key? key, this.onDailyPressed}) : super(key: key);
+  const HorizontalButtonRow(
+      {Key? key, this.onDailyPressed, this.onWeeklyPressed})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +248,7 @@ class HorizontalButtonRow extends StatelessWidget {
         ),
         SizedBox(width: 10),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: onWeeklyPressed,
           style: ElevatedButton.styleFrom(
             primary: Color(0xff181EAA),
             onPrimary: Colors.white,
