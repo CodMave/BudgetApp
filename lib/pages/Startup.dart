@@ -1,9 +1,9 @@
 
-
-import 'package:budgettrack/pages/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
+
+import 'loginOrReg.dart';
 
 
 
@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       onPressed: () {
                          Navigator.push(context,
-                 MaterialPageRoute(builder: (context) => SplashScreen()),//create the connection to the Uth page
+                 MaterialPageRoute(builder: (context) =>LoginOrRegiter()),//create the connection to the Uth page
                           );
                       },
                       child: Text("Get Started"),

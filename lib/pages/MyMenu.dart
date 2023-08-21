@@ -39,6 +39,7 @@ class _MyMenuState extends State<MyMenu> {
     List<String> options = ['Light', 'Dark'];
     return SafeArea(
         child: Scaffold(
+
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
@@ -84,6 +85,7 @@ class _MyMenuState extends State<MyMenu> {
                               width: 400,
                               height: 140,
                               margin:
+
                                   EdgeInsets.only(left: 20, top: 10, right: 20),
                               decoration: BoxDecoration(
                                 color: Color(0xff90E0EF),

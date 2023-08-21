@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:budgettrack/pages/authPage.dart';
+import 'package:budgettrack/pages/homePage.dart';
 import 'package:flutter/material.dart';
 class SplashScreen extends StatefulWidget{
 
@@ -13,9 +12,9 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
 
     super.initState();
-    Timer(Duration(seconds: 10),
+    Timer(Duration(seconds:5),
             ()=>Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => AuthPage()
+            MaterialPageRoute(builder: (context) => HomePage()
             )
         )
     );

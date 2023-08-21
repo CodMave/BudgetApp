@@ -11,6 +11,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Profile.dart';
 import 'Savings.dart';
+import 'Summery.dart';
 import 'expenceAndIncome.dart';
 import 'goals.dart';
 
@@ -27,10 +28,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(325, 812),
-      builder: (context, child) => MaterialApp(
-        debugShowCheckedModeBanner: false,//remove the debug label
+      builder: (context, child) => MaterialApp(//remove the debug label
         home: MyWork(),//call to the class work
       ),
+
     );
   }
 }
@@ -354,6 +355,7 @@ class _ControllerState extends State<Controller> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.grey[100],
         appBar: AppBar(
           title: FutureBuilder<String>(
               future: getUserName(),
@@ -802,7 +804,11 @@ class _ControllerState extends State<Controller> {
                   children: [
                     InkWell(
                       onTap: () {
-                        print("Income");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Pro()),
+                        );
                       },
                       child: Container(
                         height: 80,
