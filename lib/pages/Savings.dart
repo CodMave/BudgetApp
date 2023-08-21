@@ -73,18 +73,6 @@ class _SavingsState extends State<Savings> {
     updateBalance();
   }
 
-  Future<DateTime> loadLastMonth() async {
-    _prefs = await SharedPreferences.getInstance();
-    final storedMonth = _prefs?.getString('lastMonth');
-
-    if (storedMonth != null) {
-      return DateFormat('MMMM').parse(storedMonth);
-    } else {
-      // No stored date, use the current date
-      return DateTime(now.month);
-    }
-  }
-
   Future<List> getthebalancefromDB(String year) async {
     List<int> currentBalance = [];
     User? user = _auth
@@ -111,10 +99,7 @@ class _SavingsState extends State<Savings> {
     }
   }
 
-
-
   Future<DateTime> loadLastMonth() async {
-
     _prefs = await SharedPreferences.getInstance();
     final storedMonth = _prefs?.getString('lastMonth');
 

@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'LoginPage.dart';
+import 'authPage.dart';
 import 'homePage.dart';
 
 class Check extends StatelessWidget {
@@ -26,7 +27,6 @@ class Check extends StatelessWidget {
 
 class Profile extends StatefulWidget {
   FirebaseAuth auth = FirebaseAuth.instance;
-
   Profile({
     Key? key,
     this.title,
@@ -75,7 +75,6 @@ class _Profile extends State<Profile> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String imageData =
         base64Encode(image); //again encode the String to the image
-
     prefs.setString(_imagekey, imageData);
   }
 
@@ -142,11 +141,9 @@ class _Profile extends State<Profile> {
     User? user = _auth.currentUser;
     email = user!.email!;
     if (user != null) {
-      QuerySnapshot qs = await FirebaseFirestore.instance
-          .collection('userDetails')
-          .where('email', isEqualTo: email)
-          .limit(1)
-          .get();
+      QuerySnapshot qs = await FirebaseFirestore.instance.collection(
+          //the query check wither the authentication email match with the email which is taken at the user details
+          'userDetails').where('email', isEqualTo: email).limit(1).get();
 
       if (qs.docs.isNotEmpty) {
         // Loop through the documents to find the one with the matching email
@@ -222,7 +219,7 @@ class _Profile extends State<Profile> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
         leading: IconButton(
@@ -305,8 +302,8 @@ class _Profile extends State<Profile> {
                                       );
                                     },
                                     child: Icon(
-                                      Icons
-                                          .camera_alt, //camera icon allows user to set an image
+                                      Icons.camera_alt,
+                                      //camera icon allows user to set an image
                                       color: Colors.teal,
                                       size: 28.0,
                                     ),
@@ -368,101 +365,93 @@ class _Profile extends State<Profile> {
                       }),
                 ),
                 FractionallySizedBox(
-                    widthFactor: 1.0,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 60, top: 15),
-                        child: Text(
-                          'Currency',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                          ),
+                  widthFactor: 1.0,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 60, top: 15),
+                      child: Text(
+                        'Currency',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
                         ),
                       ),
+                    ),
+                  ),
+                ),
+                Container(
+                  //this container displays the user's currency as the text
+                  width: 300,
+
+                  margin: EdgeInsets.only(left: 60, right: 60, top: 10),
+                  padding: EdgeInsets.only(
+                      top: 20.0, left: 10, right: 10, bottom: 20.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 0.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: FutureBuilder<String>(
+                      future: getCurrency(),
+                      builder: (context, snapshot) {
+                        return Text(
+                          "${snapshot.data}",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                        );
+                      }),
+                ),
+                Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 30),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MyMenu()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            //a button set to allow the user to move to the settings page
+                            primary: Color(0xff181EAA),
+                            onPrimary: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 12),
+                            textStyle: TextStyle(fontSize: 20),
+                            elevation: 3,
+                          ),
+                          child: Text('Settings')),
                     ),
                     Container(
-                      width: 300,
-                      margin:
-                          const EdgeInsets.only(left: 60, right: 60, top: 10),
-                      padding: const EdgeInsets.only(
-                          top: 20.0, left: 10, right: 10, bottom: 20.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 0.0,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: FutureBuilder<String>(
-                        future: getCurrency(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<String> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator(); // Show a loading indicator if the data is still loading
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            return Text(
-                              "${snapshot.data}",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 30),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MyMenu()),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                //a button set to allow the user to move to the settings page
-                                primary: Color(0xff181EAA),
-                                onPrimary: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 40, vertical: 12),
-                                textStyle: TextStyle(fontSize: 20),
-                                elevation: 3,
-                              ),
-                              child: Text('Settings')),
-                        ),
-                        Container(
-                            //this button allows to user to log out from the account
-                            margin: EdgeInsets.only(top: 10),
-                            child: ElevatedButton(
-                              onPressed: () => _signOut(
-                                  context), // Use _signOut as the onPressed callback
-                              style: ElevatedButton.styleFrom(
-                                primary: Color(0xff181EAA),
-                                onPrimary: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 40, vertical: 12),
-                                textStyle: TextStyle(fontSize: 20),
-                                elevation: 3,
-                              ),
-                              child: Text('Log Out'),
-                            ))
-                      ],
-                    ))
+                        //this button allows to user to log out from the account
+                        margin: EdgeInsets.only(top: 10),
+                        child: ElevatedButton(
+                          onPressed: () => _signOut(context),
+                          // Use _signOut as the onPressed callback
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xff181EAA),
+                            onPrimary: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 12),
+                            textStyle: TextStyle(fontSize: 20),
+                            elevation: 3,
+                          ),
+                          child: Text('Log Out'),
+                        ))
+                  ],
+                )
               ],
             )
           ],

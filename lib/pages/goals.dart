@@ -156,6 +156,8 @@ class _GoalsState extends State<Goals> {
     });
   }
 
+  final String? userId = FirebaseAuth.instance.currentUser?.uid;
+
   void addNewPlan() {
     showDialog(
       barrierDismissible: false,
@@ -343,6 +345,7 @@ class _GoalsState extends State<Goals> {
                                 setState(
                                   () {
                                     myGoals.add(MyGoal(
+                                      userId: userId,
                                       category: selectedCategory,
                                       amount: amount,
                                       startDate: startDate,
@@ -641,22 +644,38 @@ class _GoalsState extends State<Goals> {
           //user plans tiles
 
           Expanded(
-            child: Stack(
-              children: [
-                ListView.builder(
-                  itemCount: myGoals.length,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: firestore
+                  .collection('userDetails')
+                  .doc(userId)
+                  .collection('goalsID')
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(); // Show loading indicator
+                }
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+                // If there are no errors, handle the data
+                final goals = snapshot.data?.docs ?? [];
+                return ListView.builder(
+                  itemCount: goals.length,
                   itemBuilder: (context, index) {
-                    final myGoal = myGoals[index];
+                    final goalDoc = goals[index];
+                    final goalData = goalDoc.data() as Map<String, dynamic>;
                     return MyGoal(
-                      category: myGoal.category,
-                      amount: myGoal.amount,
-                      startDate: myGoal.startDate,
-                      endDate: myGoal.endDate,
+                      userId: userId!,
+                      category: goalData['category'],
+                      amount: goalData['amount'],
+                      startDate: goalData['startDate'].toDate(),
+                      endDate: goalData['endDate'].toDate(),
                       //currency: currencySymbol,
                     );
                   },
-                ),
-              ],
+                );
+              },
             ),
           ),
         ],
