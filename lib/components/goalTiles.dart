@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:percent_indicator/percent_indicator.dart'; // Import Firestore
 
 class MyGoal extends StatefulWidget {
   final String userId;
@@ -57,39 +57,7 @@ class _MyGoalState extends State<MyGoal> {
                     ),
                   ],
                 ),
-                const SizedBox(width: 50),
-                Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DateFormat.MMMd().format(widget.startDate!),
-                        style: TextStyle(
-                          color: Colors.grey[800],
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        'To',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        DateFormat.MMMd().format(widget.endDate!),
-                        style: TextStyle(
-                          color: Colors.grey[800],
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 50),
+                const SizedBox(width: 100),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerRight,
@@ -99,29 +67,64 @@ class _MyGoalState extends State<MyGoal> {
                       child: StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('userDetails')
-                            .doc('userId')
+                            .doc(widget.userId)
                             .collection('expenceID')
-                            .where('category', isEqualTo: widget.category)
+                            .where('transactionName',
+                                isEqualTo: widget.category)
+                            .where('timestamp',
+                                isGreaterThanOrEqualTo: widget.startDate)
+                            .where('timestamp',
+                                isLessThanOrEqualTo: widget.endDate)
                             .snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return CircularProgressIndicator(); // Loading indicator
+                            return CircularProgressIndicator();
                           }
 
                           if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
                           }
 
-                          // Calculate category progress based on expenses
                           double totalAmount = 0;
                           snapshot.data!.docs.forEach((expenseDoc) {
-                            totalAmount += expenseDoc['amount'];
+                            int transactionAmount =
+                                expenseDoc['transactionAmount'];
+                            totalAmount += transactionAmount.toDouble();
                           });
-                          double progress = 1.0 - (totalAmount / widget.amount);
 
-                          return CircularProgressIndicator(
-                            value: progress,
+                          double maxProgress = 1.0;
+                          double progress =
+                              maxProgress - (totalAmount / widget.amount);
+                          progress = progress.clamp(0.0, maxProgress);
+
+                          Color progressColor;
+                          if (progress >= 0.5) {
+                            progressColor = Colors.green;
+                          } else if (progress >= 0.2) {
+                            progressColor = Colors.yellow;
+                          } else {
+                            progressColor = Colors.red;
+                          }
+
+                          Color backgroundColor;
+                          if (progress >= 0.5) {
+                            backgroundColor = Colors.green[100]!;
+                          } else if (progress >= 0.2) {
+                            backgroundColor = Colors.yellow[100]!;
+                          } else {
+                            backgroundColor = Colors.red[100]!;
+                          }
+
+                          return CircularPercentIndicator(
+                            animation: true,
+                            animationDuration: 1000,
+                            radius: 30,
+                            lineWidth: 6,
+                            percent: progress,
+                            progressColor: progressColor,
+                            backgroundColor: backgroundColor,
+                            circularStrokeCap: CircularStrokeCap.round,
                           );
                         },
                       ),
