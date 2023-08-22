@@ -1,9 +1,11 @@
 This is a Budget Tracker app for software group project module
 
-technologies used
+Developed using
 -flutter
 -dart
--firebase
+
+Data base used
+-firestore
 
 Group members
 
