@@ -214,7 +214,7 @@ class _GoalsState extends State<Goals> {
                               hint: const Text(
                                 'Select category',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 16,
                                 ),
                               ),
                               value: selectedCategory,
@@ -244,7 +244,7 @@ class _GoalsState extends State<Goals> {
                         ),
                       ),
 
-                      const SizedBox(height: 25),
+                      const SizedBox(height: 10),
 
                       // plan amount title
 
@@ -254,7 +254,7 @@ class _GoalsState extends State<Goals> {
                           'Amount',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 20,
+                            fontSize: 18,
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -291,6 +291,86 @@ class _GoalsState extends State<Goals> {
                                 }
                                 return null;
                               },
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      //Start Date picker
+
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Start Date',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            //fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          height: 50,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: () => _selectStartDate(context),
+                              child: DatePick(
+                                selectedDate: startDate,
+                                hintText: 'Select start date',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'End Date',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            //fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      //End Date picker
+
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          height: 50,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: () => _selectEndDate(context),
+                              child: DatePick(
+                                selectedDate: endDate,
+                                hintText: 'Select end date',
+                              ),
                             ),
                           ),
                         ),
@@ -518,128 +598,17 @@ class _GoalsState extends State<Goals> {
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
 
-          // plan starting date and ending date tiles
+          // underline
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Row(
-              children: [
-                // start date container
-
-                GestureDetector(
-                  child: Container(
-                    height: 170,
-                    width: 170,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff90E0EF),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.4),
-                          offset: const Offset(4.0, 4.0),
-                          blurRadius: 10.0,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.all(9.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Your current plan',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Starting Date',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 18,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            InkWell(
-                              onTap: () => _selectStartDate(context),
-                              child: DatePick(
-                                selectedDate: startDate,
-                                hintText: 'Select start date',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 20),
-
-                // end date container
-
-                GestureDetector(
-                  child: Container(
-                    height: 170,
-                    width: 170,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff90E0EF),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.4),
-                          offset: const Offset(4.0, 4.0),
-                          blurRadius: 10.0,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.all(9.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Your current plan',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Ending Date',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 18,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            InkWell(
-                              onTap: () => _selectEndDate(context),
-                              child: DatePick(
-                                selectedDate: endDate,
-                                hintText: 'Select end date',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          Container(
+            height: 1,
+            width: double.infinity,
+            color: Colors.grey[500],
           ),
 
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
 
           //user plans tiles
 
@@ -653,25 +622,66 @@ class _GoalsState extends State<Goals> {
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator(); // Show loading indicator
+                  return const CircularProgressIndicator();
                 }
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 }
-                // If there are no errors, handle the data
+
                 final goals = snapshot.data?.docs ?? [];
+
+                // Group goals by start and end dates
+                final Map<String, List<DocumentSnapshot>> groupedGoals = {};
+
+                for (var goalDoc in goals) {
+                  final goalData = goalDoc.data() as Map<String, dynamic>;
+                  final startDate = goalData['startDate'].toDate();
+                  final endDate = goalData['endDate'].toDate();
+                  final dateKey =
+                      '${DateFormat.MMMd().format(startDate)} - ${DateFormat.MMMd().format(endDate)}';
+
+                  if (groupedGoals.containsKey(dateKey)) {
+                    groupedGoals[dateKey]!.add(goalDoc);
+                  } else {
+                    groupedGoals[dateKey] = [goalDoc];
+                  }
+                }
+
+                // Build the UI for grouped goals
                 return ListView.builder(
-                  itemCount: goals.length,
+                  itemCount: groupedGoals.length,
                   itemBuilder: (context, index) {
-                    final goalDoc = goals[index];
-                    final goalData = goalDoc.data() as Map<String, dynamic>;
-                    return MyGoal(
-                      userId: userId!,
-                      category: goalData['category'],
-                      amount: goalData['amount'],
-                      startDate: goalData['startDate'].toDate(),
-                      endDate: goalData['endDate'].toDate(),
-                      //currency: currencySymbol,
+                    final dateKey = groupedGoals.keys.elementAt(index);
+                    final goalDocs = groupedGoals[dateKey]!;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 25, vertical: 7),
+                          child: Text(
+                            dateKey,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        Column(
+                          children: goalDocs.map((goalDoc) {
+                            final goalData =
+                                goalDoc.data() as Map<String, dynamic>;
+                            return MyGoal(
+                              userId: userId!,
+                              category: goalData['category'],
+                              amount: goalData['amount'],
+                              startDate: goalData['startDate'].toDate(),
+                              endDate: goalData['endDate'].toDate(),
+                            );
+                          }).toList(),
+                        ),
+                      ],
                     );
                   },
                 );

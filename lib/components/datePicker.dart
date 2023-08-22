@@ -20,7 +20,7 @@ class _DatePickState extends State<DatePick> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10.0),
-      child: Column(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           //SizedBox(height: 10),
