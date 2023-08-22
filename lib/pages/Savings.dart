@@ -24,9 +24,10 @@ String documentId = '';
 class _SavingsState extends State<Savings> {
   SharedPreferences? _prefs;
   String? selectedyear = "23";
-  int savingbalance = 0;
+  int savingbalance=0;
 
-  DateTime now = DateTime.now();
+  DateTime now=DateTime.now();
+
 
   final items = [
     '23',
@@ -99,6 +100,8 @@ class _SavingsState extends State<Savings> {
     }
   }
 
+
+
   Future<DateTime> loadLastMonth() async {
     _prefs = await SharedPreferences.getInstance();
     final storedMonth = _prefs?.getString('lastMonth');
@@ -116,44 +119,46 @@ class _SavingsState extends State<Savings> {
     _prefs = await SharedPreferences.getInstance();
     _prefs?.setString('lastMonth', formattedMonth);
   }
-
   Future<void> updateBalance() async {
+
     final currentMonth = DateTime.now();
 
-    // Update the balance for the current month
-    try {
-      final existingEntry = await getExistingEntry(
-          DateFormat('MMMM').format(currentMonth), int.parse(selectedyear!));
 
-      if (existingEntry != null) {
-        final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      // Update the balance for the current month
+      try {
+        final existingEntry = await getExistingEntry(
+            DateFormat('MMMM').format(currentMonth), int.parse(selectedyear!));
 
-        final DocumentReference documentReference = firestore
-            .collection('userDetails')
-            .doc(username)
-            .collection('Savings')
-            .doc(existingEntry);
+        if (existingEntry != null) {
+          final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-        // Use the update method to update the "Balance" field
-        await documentReference.update({
-          'Balance': await loadbalance(),
-        });
+          final DocumentReference documentReference = firestore
+              .collection('userDetails')
+              .doc(username)
+              .collection('Savings')
+              .doc(existingEntry);
 
-        print('Balance updated successfully!');
-      } else {
-        // No entry for the current month, add a new one
-        documentId = await addSavingsToFireStore(
-          await loadbalance(),
-          DateFormat('MMMM').format(currentMonth),
-          int.parse(selectedyear!),
-        ).toString();
+          // Use the update method to update the "Balance" field
+          await documentReference.update({
+            'Balance': await loadbalance(),
+          });
+
+          print('Balance updated successfully!');
+        } else {
+          // No entry for the current month, add a new one
+          documentId = await addSavingsToFireStore(
+            await loadbalance(),
+            DateFormat('MMMM').format(currentMonth),
+            int.parse(selectedyear!),
+          ).toString();
+        }
+      } catch (ex) {
+        print('Error updating balance: $ex');
       }
-    } catch (ex) {
-      print('Error updating balance: $ex');
-    }
     await saveLastMonth(currentMonth);
     setState(() {});
   }
+
 
   Future<String?> getExistingEntry(String month, int year) async {
     User? user = _auth.currentUser;
@@ -255,194 +260,188 @@ class _SavingsState extends State<Savings> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 60),
           ),
         );
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
           backgroundColor: Colors.grey[100],
-          appBar: AppBar(
-            backgroundColor: Colors.grey[100],
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              color: Colors.black,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(),
-                  ),
-                );
-              },
-            ),
-            title: const Text('S A V I N G S',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 20,
-                )),
-            centerTitle: true,
-            elevation: 0,
-          ),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  //alignment: Alignment.center,
-                  margin: EdgeInsets.only(top: 10, left: 20, right: 20),
-                  height: 700,
-                  width: 400,
-                  decoration: BoxDecoration(
-                    color: const Color(0xff86D5FF),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 80),
-                            height: 80,
-                            width: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                '20',
-                                style: TextStyle(
-                                  fontSize: 60,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 5),
-                            height: 80,
-                            width: 115,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 15),
-                              child: DropdownButton<String>(
-                                value: selectedyear,
-                                onChanged: (String? newValue) async {
-                                  setState(() {
-                                    selectedyear = newValue!;
-                                  });
-                                  _prefs?.setString(
-                                      'selectedYear', selectedyear!);
-                                },
-                                underline: Container(),
-                                //isExpanded: true, // Make the dropdown list take up the maximum available height
-                                itemHeight: 70,
-
-                                items: items.map(buildMenuItem).toList(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 20),
-                        height: 580,
-                        width: 320,
-                        decoration: BoxDecoration(
-                          color: Color(0xff90E0EF),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: FutureBuilder<List>(
-                          future: getthebalancefromDB(selectedyear!),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Text(
-                                'Fetching balance...',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
-                              );
-                            } else if (snapshot.hasError) {
-                              return Text(
-                                'Error: ${snapshot.error}',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
-                              );
-                            } else if (!snapshot.hasData ||
-                                snapshot.data?.isEmpty == true) {
-                              return const Text(
-                                'No data available.',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
-                              );
-                            } else {
-                              final balanceList = snapshot.data!;
-                              return RefreshIndicator(
-                                // Use RefreshIndicator to enable manual refresh
-                                onRefresh: () async {
-                                  // Implement the refresh logic (e.g., fetch updated data)
-                                  await updateBalance();
-                                },
-                                child: ListView.builder(
-                                  itemCount: balanceList.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        width: 100,
-                                        height: 60,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        padding: EdgeInsets.all(10.0),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              '${DateFormat('MMMM').format(DateTime.now())}',
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Container(
-                                              margin: EdgeInsets.only(left: 50),
-                                              width: 140,
-                                              height: 80,
-                                              decoration: BoxDecoration(
-                                                color: Colors.lightBlue,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  '\$ ${balanceList[index]}',
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomePage(),
                 ),
-              ],
-            ),
-          )),
-    );
+              );
+            },
+          ),
+          title: const Text('S A V I N G S',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: 20,
+              )),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                //alignment: Alignment.center,
+                margin: EdgeInsets.only(top: 10, left: 20, right: 20),
+                height: 700,
+                width: 400,
+                decoration: BoxDecoration(
+                  color: const Color(0xff86D5FF),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: 20, left: 80),
+                          height: 80,
+                          width: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              '20',
+                              style: TextStyle(
+                                fontSize: 60,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 20, left: 5),
+                          height: 80,
+                          width: 115,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 15),
+                            child: DropdownButton<String>(
+                              value: selectedyear,
+                              onChanged: (String? newValue) async {
+                                setState(() {
+                                  selectedyear = newValue!;
+                                });
+                                _prefs?.setString(
+                                    'selectedYear', selectedyear!);
+                              },
+                              underline: Container(),
+                              //isExpanded: true, // Make the dropdown list take up the maximum available height
+                              itemHeight: 70,
+
+                              items: items.map(buildMenuItem).toList(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      height: 580,
+                      width: 320,
+                      decoration: BoxDecoration(
+                        color: Color(0xff90E0EF),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: FutureBuilder<List>(
+                        future: getthebalancefromDB(selectedyear!),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Text(
+                              'Fetching balance...',
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.white),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text(
+                              'Error: ${snapshot.error}',
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.white),
+                            );
+                          } else if (!snapshot.hasData ||
+                              snapshot.data?.isEmpty == true) {
+                            return const Text(
+                              'No data available.',
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.white),
+                            );
+                          } else {
+                            final balanceList = snapshot.data!;
+                            return RefreshIndicator(
+                              // Use RefreshIndicator to enable manual refresh
+                              onRefresh: () async {
+                                // Implement the refresh logic (e.g., fetch updated data)
+                                await updateBalance();
+                              },
+                              child: ListView.builder(
+                                itemCount: balanceList.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Container(
+                                      margin:EdgeInsets.only(top:10),
+                                      width: 100,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: EdgeInsets.all(10.0),
+                                      child: Row(
+                                        children: [
+
+                                          Text(
+                                            '${DateFormat('MMMM').format(DateTime.now())}',
+
+                                            style: TextStyle(fontSize:20, color: Colors.black,fontWeight:FontWeight.bold),
+                                          ),
+                                          Container(
+                                            margin:EdgeInsets.only(left:50),
+                                            width: 140,
+                                            height:80,
+                                            decoration: BoxDecoration(
+                                              color: Colors.lightBlue,
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+
+                                                '\$ ${balanceList[index]}',
+
+                                                style: TextStyle(fontSize:20, color: Colors.black,fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }

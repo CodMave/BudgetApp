@@ -74,6 +74,7 @@ class _Profile extends State<Profile> {
   void saveImageToStorage(Uint8List image) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String imageData =
+
         base64Encode(image); //again encode the String to the image
     prefs.setString(_imagekey, imageData);
   }
@@ -91,8 +92,10 @@ class _Profile extends State<Profile> {
   }
 
   void
+
       TakePhoto() async //allows to user to set the profile image as taken photo fro camera
   {
+
     Uint8List img = await PickImage(ImageSource.camera);
     if (img != null) {
       saveImageToStorage(img); //save the image
@@ -136,13 +139,16 @@ class _Profile extends State<Profile> {
     }
   }
 
+
   static Future<String> getCurrency() async {
     //get the currency that user selected and show it as text
     User? user = _auth.currentUser;
     email = user!.email!;
     if (user != null) {
       QuerySnapshot qs = await FirebaseFirestore.instance.collection(
+
           //the query check wither the authentication email match with the email which is taken at the user details
+
           'userDetails').where('email', isEqualTo: email).limit(1).get();
 
       if (qs.docs.isNotEmpty) {
@@ -170,7 +176,10 @@ class _Profile extends State<Profile> {
     //show button sheet when the user click on the camera allows to set a new image
     return Container(
       height: 100,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
         children: [
@@ -202,8 +211,10 @@ class _Profile extends State<Profile> {
     );
   }
 
+
   Future<void> _signOut(BuildContext context) async {
     //when our user press on the sign out button then user has to sign in again
+
     try {
       await _auth.signOut(); // Sign out the current user
       Navigator.of(context).pushAndRemoveUntil(
@@ -216,6 +227,7 @@ class _Profile extends State<Profile> {
       print('Error while signing out: $e');
     }
   }
+
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -240,8 +252,20 @@ class _Profile extends State<Profile> {
             color: Colors.blue,
             fontSize: 20.0,
             //fontWeight: FontWeight.bold,
+
           ),
+          title: Text(
+            'P R O F I L E',
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: 20.0,
+              //fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+          elevation: 0,
         ),
+
         centerTitle: true,
         elevation: 0,
       ),
@@ -306,18 +330,20 @@ class _Profile extends State<Profile> {
                                       //camera icon allows user to set an image
                                       color: Colors.teal,
                                       size: 28.0,
+
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ]),
-                ],
+                    ]),
+                  ],
+                ),
               ),
+
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -333,10 +359,12 @@ class _Profile extends State<Profile> {
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
+
                         ),
                       ),
                     ),
                   ),
+
                 ),
                 Container(
                   //this container display the current user's name as text
@@ -349,35 +377,39 @@ class _Profile extends State<Profile> {
                     border: Border.all(
                       color: Colors.black,
                       width: 0.0,
+
                     ),
-                    borderRadius: BorderRadius.circular(10),
+                    child: FutureBuilder<String>(
+                        future: getUserName(),
+                        builder: (context, snapshot) {
+                          return Text(
+                            "${snapshot.data}",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                            ),
+                          );
+                        }),
                   ),
-                  child: FutureBuilder<String>(
-                      future: getUserName(),
-                      builder: (context, snapshot) {
-                        return Text(
-                          "${snapshot.data}",
+                  FractionallySizedBox(
+                    widthFactor: 1.0,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 60, top: 15),
+                        child: Text(
+                          'Currency',
                           style: TextStyle(
-                            color: Colors.black,
                             fontSize: 20,
+
+                            color: Colors.black,
+
+
                           ),
-                        );
-                      }),
-                ),
-                FractionallySizedBox(
-                  widthFactor: 1.0,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 60, top: 15),
-                      child: Text(
-                        'Currency',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
                         ),
                       ),
                     ),
+
                   ),
                 ),
                 Container(
@@ -393,44 +425,23 @@ class _Profile extends State<Profile> {
                       width: 0.0,
                     ),
                     borderRadius: BorderRadius.circular(10),
+
                   ),
-                  child: FutureBuilder<String>(
-                      future: getCurrency(),
-                      builder: (context, snapshot) {
-                        return Text(
-                          "${snapshot.data}",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                          ),
-                        );
-                      }),
-                ),
-                Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 30),
-                      child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => MyMenu()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            //a button set to allow the user to move to the settings page
-                            primary: Color(0xff181EAA),
-                            onPrimary: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 40, vertical: 12),
-                            textStyle: TextStyle(fontSize: 20),
-                            elevation: 3,
-                          ),
-                          child: Text('Settings')),
+                  Container(
+                    //this container displays the user's currency as the text
+                    width: 300,
+
+                    margin: EdgeInsets.only(left: 60, right: 60, top: 10),
+                    padding: EdgeInsets.only(
+                        top: 20.0, left: 10, right: 10, bottom: 20.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 0.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
+
                     Container(
                         //this button allows to user to log out from the account
                         margin: EdgeInsets.only(top: 10),
@@ -455,8 +466,9 @@ class _Profile extends State<Profile> {
               ],
             )
           ],
+
         ),
-      ),
-    );
+      );
+    }
   }
-}
+
