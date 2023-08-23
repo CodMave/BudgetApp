@@ -125,6 +125,13 @@ class _MyGoalState extends State<MyGoal> {
                             progressColor: progressColor,
                             backgroundColor: backgroundColor,
                             circularStrokeCap: CircularStrokeCap.round,
+                            center: Text(
+                              "${(progress * 100).toInt()}%",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                              ),
+                            ),
                           );
                         },
                       ),
