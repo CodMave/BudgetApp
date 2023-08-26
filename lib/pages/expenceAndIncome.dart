@@ -22,10 +22,10 @@ class Expence extends StatefulWidget {
 
   @override
   _ExpenceState createState() => _ExpenceState(
-    notificationList: notificationList,
-    nume: nume,
-    onDeleteNotification: onDeleteNotification,
-  );
+        notificationList: notificationList,
+        nume: nume,
+        onDeleteNotification: onDeleteNotification,
+      );
 // You need to replace this with the correct way to get the instance of the _ExpenceState class
 }
 
@@ -44,7 +44,7 @@ class _ExpenceState extends State<Expence> {
   List<MyTransaction> transactions = [];
 
   final TextEditingController transactionNameController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool is_income = false;
   final formKey = GlobalKey<FormState>();
@@ -95,20 +95,20 @@ class _ExpenceState extends State<Expence> {
     'Others',
   ];
 
-  //get document Ids
+  //get currency
 
-  Future getDocIds() async {
-    await FirebaseFirestore.instance
-        .collection('userDatails')
-        .get()
-        .then((snapshot) {
+  Future<void> getDocIds() async {
+    try {
+      var snapshot =
+          await FirebaseFirestore.instance.collection('userDatails').get();
       if (snapshot.docs.isNotEmpty) {
-        setState(() {
-          userSelecterCurrency = snapshot.docs[0].get('currency');
-        });
+        userSelecterCurrency = snapshot.docs[0].get('currency');
+        print('user selected currency: $userSelecterCurrency');
         currencySymbolAssign();
       }
-    });
+    } catch (e) {
+      print('Error fetching user details: $e');
+    }
   }
 
   void currencySymbolAssign() {
@@ -145,10 +145,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new expence to the expenceID collection
 
   Future<void> addExpenceToFireStore(
-      String userId,
-      String transactionName,
-      int transactionAmount,
-      ) async {
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -172,10 +172,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new income to the incomeID collection
 
   Future<void> addIncomeToFireStore(
-      String userId,
-      String transactionName,
-      int transactionAmount,
-      ) async {
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -366,7 +366,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('expenceID')
           .where('timestamp',
-          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -375,7 +375,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('incomeID')
           .where('timestamp',
-          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -560,23 +560,23 @@ class _ExpenceState extends State<Expence> {
                                 },
                                 items: is_income
                                     ? incomeCategories
-                                    .map<DropdownMenuItem<String>>(
-                                      (String category) =>
-                                      DropdownMenuItem<String>(
-                                        value: category,
-                                        child: Text(category),
-                                      ),
-                                )
-                                    .toList()
+                                        .map<DropdownMenuItem<String>>(
+                                          (String category) =>
+                                              DropdownMenuItem<String>(
+                                            value: category,
+                                            child: Text(category),
+                                          ),
+                                        )
+                                        .toList()
                                     : expenceCategories
-                                    .map<DropdownMenuItem<String>>(
-                                      (String category) =>
-                                      DropdownMenuItem<String>(
-                                        value: category,
-                                        child: Text(category),
-                                      ),
-                                )
-                                    .toList(),
+                                        .map<DropdownMenuItem<String>>(
+                                          (String category) =>
+                                              DropdownMenuItem<String>(
+                                            value: category,
+                                            child: Text(category),
+                                          ),
+                                        )
+                                        .toList(),
                               ),
                             ),
                           ],
@@ -609,9 +609,9 @@ class _ExpenceState extends State<Expence> {
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         String transactionType =
-                        is_income ? "Income" : "Expence";
+                            is_income ? "Income" : "Expence";
                         int transactionAmount =
-                        int.parse(amountController.text);
+                            int.parse(amountController.text);
 
                         String transactionName = transactionNameController.text;
                         print(transactionName);
@@ -675,7 +675,7 @@ class _ExpenceState extends State<Expence> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor:
-        Colors.grey[100], // Set the background color of the App Bar
+            Colors.grey[100], // Set the background color of the App Bar
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.black, // Set the color of the back arrow
@@ -812,7 +812,7 @@ class _ExpenceState extends State<Expence> {
                                       "${lastIncomeTransaction?.transactionAmount ?? '0'}",
                                       style: const TextStyle(
                                         color: Colors.black,
-                                        fontSize:18,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ],
