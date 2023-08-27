@@ -125,9 +125,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         elevation: 5.0,
                       ),
                       onPressed: () {
-                         Navigator.push(context,
-                 MaterialPageRoute(builder: (context) =>AuthPage()),//create the connection to the Uth page
-                          );
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context) =>AuthPage()),//create the connection to the Uth page
+                        );
                       },
                       child: Text("Get Started"),
                     ),

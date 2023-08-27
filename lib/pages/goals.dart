@@ -20,8 +20,6 @@ class _GoalsState extends State<Goals> {
   String? categoty;
   DateTime? startDate;
   DateTime? endDate;
-  String? userSelectedCurrency;
-  String? currencySymbol;
   final planTitleController = TextEditingController();
   final planAmountController = TextEditingController();
 
@@ -49,43 +47,6 @@ class _GoalsState extends State<Goals> {
     'Others',
   ];
 
-<<<<<<< HEAD
-=======
-  //Method to fetch user selected currency
-
-  Future getUserCurrency() async {
-    await FirebaseFirestore.instance
-        .collection('userDetails')
-        .get()
-        .then((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        userSelectedCurrency = snapshot.docs[0].data()['currency'];
-        currencySymbolAssign();
-      }
-    });
-  }
-
-  void currencySymbolAssign() {
-    if (userSelectedCurrency == 'USD') {
-      currencySymbol = '\$';
-    } else if (userSelectedCurrency == 'EUR') {
-      currencySymbol = '€';
-    } else if (userSelectedCurrency == 'INR') {
-      currencySymbol = '₹';
-    } else if (userSelectedCurrency == 'SLR') {
-      currencySymbol = 'Rs';
-    } else if (userSelectedCurrency == 'GBP') {
-      currencySymbol = '£';
-    } else if (userSelectedCurrency == 'AUD') {
-      currencySymbol = 'A\$';
-    } else if (userSelectedCurrency == 'CAD') {
-      currencySymbol = 'C\$';
-    }
-  }
-
-  //Method to get current user
-
->>>>>>> main
   Future<String> getCurrentUser() async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
@@ -123,247 +84,6 @@ class _GoalsState extends State<Goals> {
     }
   }
 
-<<<<<<< HEAD
-=======
-  //Dialog box to add new plan
-
-  void addNewPlan() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              title: const Center(
-                child: Text(
-                  'ADD NEW PLAN',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              content: SingleChildScrollView(
-                child: Form(
-                  key: formKey, // Use the defined formKey here
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      //Expence text
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Expence Category',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      //Expence category dropdown
-
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          height: 50,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: DropdownButton<String>(
-                              underline: const SizedBox(),
-                              icon: const Icon(Icons.arrow_downward_sharp),
-                              hint: const Text(
-                                'Select category',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                ),
-                              ),
-                              value: selectedCategory,
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedCategory = value;
-                                });
-                              },
-                              items: expenceCategories
-                                  .map<DropdownMenuItem<String>>(
-                                    (String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Row(
-                                      // Wrap text and icon in a Row
-                                      children: [
-                                        Text(value),
-                                        const SizedBox(width: 100),
-                                        //sconst Icon(Icons.arrow_downward_sharp),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 25),
-
-                      // plan amount title
-
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Amount',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            //fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      // plan amount text field
-
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          height: 50,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              controller: planAmountController,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                hintText: 'Enter Amount',
-                                border: InputBorder.none,
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter amount';
-                                }
-                                if (double.tryParse(value) == null) {
-                                  return 'Please enter a valid number';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 25),
-
-                      // Enter and Cancel Buttons
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          //Cancel button
-                          Container(
-                            height: 50,
-                            width: 100,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(color: Colors.black),
-                            ),
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text(
-                                'Cancel',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(width: 10),
-
-                          //Enter button
-
-                          Container(
-                            height: 50,
-                            width: 100,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(color: Colors.black),
-                            ),
-                            child: TextButton(
-                              onPressed: () async {
-                                String? userId = await getCurrentUser();
-
-                                amount = int.parse(planAmountController.text);
-
-                                setState(
-                                      () {
-                                    myGoals.add(MyGoal(
-                                      category: selectedCategory,
-                                      amount: amount,
-                                      startDate: startDate,
-                                      endDate: endDate,
-                                    ));
-                                  },
-                                );
-
-                                String? selectedCategoryCopy = selectedCategory;
-
-                                Navigator.of(context).pop();
-
-                                //Add the goals to the database
-
-                                print('goal amount is $amount');
-
-                                await addGoalsToFirestore(
-                                  userId,
-                                  selectedCategoryCopy!,
-                                  amount,
-                                  startDate!,
-                                  endDate!,
-                                );
-
-                                //selectedCategory = '';
-                                //planAmountController.clear();
-                              },
-                              child: const Text(
-                                'Enter',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
->>>>>>> main
   //Function to show the date picker for start date
 
   Future<void> _selectStartDate(BuildContext context) async {
@@ -505,7 +225,7 @@ class _GoalsState extends State<Goals> {
                               },
                               items: expenceCategories
                                   .map<DropdownMenuItem<String>>(
-                                (String value) {
+                                    (String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Row(
@@ -703,7 +423,7 @@ class _GoalsState extends State<Goals> {
                                 amount = int.parse(planAmountController.text);
 
                                 setState(
-                                  () {
+                                      () {
                                     myGoals.add(MyGoal(
                                       userId: userId,
                                       category: selectedCategory,
@@ -741,17 +461,17 @@ class _GoalsState extends State<Goals> {
                                     .snapshots();
 
                                 _plansStream.listen(
-                                    (DocumentSnapshot<Map<String, dynamic>>
-                                        snapshot) {
-                                  if (snapshot.exists) {
-                                    setState(() {
-                                      amount = snapshot.data()!['amount'];
-                                      categoty = snapshot.data()!['category'];
-                                      startDate = snapshot.data()!['startDate'];
-                                      endDate = snapshot.data()!['endDate'];
+                                        (DocumentSnapshot<Map<String, dynamic>>
+                                    snapshot) {
+                                      if (snapshot.exists) {
+                                        setState(() {
+                                          amount = snapshot.data()!['amount'];
+                                          categoty = snapshot.data()!['category'];
+                                          startDate = snapshot.data()!['startDate'];
+                                          endDate = snapshot.data()!['endDate'];
+                                        });
+                                      }
                                     });
-                                  }
-                                });
 
                                 //selectedCategory = '';
                                 //planAmountController.clear();
@@ -842,11 +562,7 @@ class _GoalsState extends State<Goals> {
 
                 // Add plan button
 
-<<<<<<< HEAD
                 const SizedBox(width: 105),
-=======
-                const SizedBox(width: 100),
->>>>>>> main
 
                 GestureDetector(
                   onTap: () {
@@ -854,11 +570,7 @@ class _GoalsState extends State<Goals> {
                   },
                   child: Container(
                     height: 50,
-<<<<<<< HEAD
                     width: 100,
-=======
-                    width: 110,
->>>>>>> main
                     decoration: BoxDecoration(
                       color: Colors.blue[300],
                       borderRadius: BorderRadius.circular(10),
@@ -886,7 +598,6 @@ class _GoalsState extends State<Goals> {
             ),
           ),
 
-<<<<<<< HEAD
           const SizedBox(height: 15),
 
           // underline
@@ -960,7 +671,7 @@ class _GoalsState extends State<Goals> {
                         Column(
                           children: goalDocs.map((goalDoc) {
                             final goalData =
-                                goalDoc.data() as Map<String, dynamic>;
+                            goalDoc.data() as Map<String, dynamic>;
                             return MyGoal(
                               userId: userId!,
                               category: goalData['category'],
@@ -977,151 +688,6 @@ class _GoalsState extends State<Goals> {
               },
             ),
           ),
-=======
-          const SizedBox(height: 20),
-
-          // plan starting date and ending date tiles
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Row(
-              children: [
-                // start date container
-
-                GestureDetector(
-                  child: Container(
-                    height: 170,
-                    width: 170,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff90E0EF),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.4),
-                          offset: const Offset(4.0, 4.0),
-                          blurRadius: 10.0,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.all(9.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Your current plan',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Starting Date',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 18,
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-                            InkWell(
-                              onTap: () => _selectStartDate(context),
-                              child: DatePick(
-                                selectedDate: startDate,
-                                hintText: 'Select start date',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 20),
-
-                // end date container
-
-                GestureDetector(
-                  child: Container(
-                    height: 170,
-                    width: 170,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff90E0EF),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.4),
-                          offset: const Offset(4.0, 4.0),
-                          blurRadius: 10.0,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.all(9.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Your current plan',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Ending Date',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 18,
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-                            InkWell(
-                              onTap: () => _selectEndDate(context),
-                              child: DatePick(
-                                selectedDate: endDate,
-                                hintText: 'Select end date',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 5),
-
-          //user plans tiles
-
-          Expanded(
-            child: Stack(
-              children: [
-                ListView.builder(
-                  itemCount: myGoals.length,
-                  itemBuilder: (context, index) {
-                    final myGoal = myGoals[index];
-                    return MyGoal(
-                      category: selectedCategory,
-                      amount: amount,
-                      startDate: startDate,
-                      endDate: endDate,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
->>>>>>> main
         ],
       ),
     );

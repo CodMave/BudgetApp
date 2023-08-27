@@ -95,21 +95,20 @@ class _ExpenceState extends State<Expence> {
     'Others',
   ];
 
-  //get document Ids
+  //get currency
 
-
-  Future getDocIds() async {
-    await FirebaseFirestore.instance
-        .collection('userDatails')
-        .get()
-        .then((snapshot) {
+  Future<void> getDocIds() async {
+    try {
+      var snapshot =
+      await FirebaseFirestore.instance.collection('userDatails').get();
       if (snapshot.docs.isNotEmpty) {
-        setState(() {
-          userSelecterCurrency = snapshot.docs[0].get('currency');
-        });
+        userSelecterCurrency = snapshot.docs[0].get('currency');
+        print('user selected currency: $userSelecterCurrency');
         currencySymbolAssign();
       }
-    });
+    } catch (e) {
+      print('Error fetching user details: $e');
+    }
   }
 
   void currencySymbolAssign() {
@@ -142,32 +141,33 @@ class _ExpenceState extends State<Expence> {
       return '';
     }
   }
-
   //method to add new expence to the expenceID collection
-    Future<void>addBalanceToFireStore(
-        String userId,
-        int balance,
-        int income,
-        int expence,
-        )async{
-      try {
-        final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  Future<void>addBalanceToFireStore(
+      String userId,
+      int balance,
+      int income,
+      int expence,
+      )async{
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-        final CollectionReference expenceCollection = firestore
-            .collection('userDetails')
-            .doc(userId)
-            .collection('Balance');
+      final CollectionReference expenceCollection = firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('Balance');
 
-        await expenceCollection.add({
-          'Balance': balance,
-          'timestamp': DateTime.now(),
-          'Income':income,
-          'Expences':expence,
-        });
-      } catch (ex) {
-        print('Balance adding failed');
-      }
+      await expenceCollection.add({
+        'Balance': balance,
+        'timestamp': DateTime.now(),
+        'Income':income,
+        'Expences':expence,
+      });
+    } catch (ex) {
+      print('Balance adding failed');
     }
+  }
+  //method to add new expence to the expenceID collection
+
   Future<void> addExpenceToFireStore(
       String userId,
       String transactionName,
@@ -254,8 +254,6 @@ class _ExpenceState extends State<Expence> {
     }
     setState(() {});
   }
-
-
   //method to add new income to the incomeID collection
 
   Future<void> addIncomeToFireStore(
@@ -569,7 +567,7 @@ class _ExpenceState extends State<Expence> {
         updateBalance(
           username,
           totalBalance,
-        await  calculateTotalIncome(userId),
+          await  calculateTotalIncome(userId),
           await getTotalExpence(userId),
 
         );
@@ -578,7 +576,6 @@ class _ExpenceState extends State<Expence> {
   }
 
 
-  //new transaction dialog box
 
   void newTransaction() {
     showDialog(
@@ -764,7 +761,6 @@ class _ExpenceState extends State<Expence> {
                           await getTotalExpence(userId),
                         );
                       }
-
                     },
                   ),
                 ],
@@ -923,7 +919,7 @@ class _ExpenceState extends State<Expence> {
                                       "${lastIncomeTransaction?.transactionAmount ?? '0'}",
                                       style: const TextStyle(
                                         color: Colors.black,
-                                        fontSize:18,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ],
