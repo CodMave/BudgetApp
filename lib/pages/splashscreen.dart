@@ -10,13 +10,21 @@ class SplashScreen extends StatefulWidget{
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-
     super.initState();
-    Timer(Duration(seconds:5),
-            ()=>Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => HomePage()
-            )
-        )
+
+    // Use a local variable to capture the context.
+    final currentContext = context;
+
+    Timer(
+      Duration(seconds: 5),
+          () {
+        if (mounted) {
+          Navigator.pushReplacement(
+            currentContext,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        }
+      },
     );
   }
   @override

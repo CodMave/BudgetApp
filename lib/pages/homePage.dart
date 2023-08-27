@@ -16,8 +16,8 @@ import 'expenceAndIncome.dart';
 import 'goals.dart';
 
 
-double expensevalue=0.0;
-double incomevalue=0.0;
+int expensevalue=0;
+int incomevalue=0;
 
 
 class HomePage extends StatelessWidget {
@@ -55,8 +55,6 @@ class Controller extends StatefulWidget {
   {
 
     newbalance=balance;
-    expensevalue=expense;
-    incomevalue=income;
     count=num;
     Listn=notificationList;
   }
@@ -115,132 +113,93 @@ class _ControllerState extends State<Controller> {
 
     }
   }
+  Future<int> getBalance() async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  void initState() {
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Balance')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Assuming 'Balance' is a field in your Firestore document
+         newbalance = querySnapshot.docs.first['Balance'];
+        return newbalance;
+      } else {
+        // No entry found
+        return 0;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return 0;
+    }
+  }
+  Future<int> getIncome() async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Balance')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Assuming 'Balance' is a field in your Firestore document
+       incomevalue = querySnapshot.docs.first['Income'];
+        return  incomevalue;
+      } else {
+        // No entry found
+        return 0;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return 0;
+    }
+  }
+  Future<int> getExpence() async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Balance')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Assuming 'Balance' is a field in your Firestore document
+        expensevalue = querySnapshot.docs.first['Expences'];
+        return expensevalue;
+      } else {
+        // No entry found
+        return 0;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return 0;
+    }
+  }
+ void initState() {
     super.initState();
-    saveBalance();
+    getBalance();
+    getIncome();
+    getExpence();
     countPercenntage(); //call to the countpercentage method
-    savePercent(); //call to the savethe percentage method
-    saveExpenses(); //call to the save the expense method
-    saveIncome(); //call to the countIncome method
-
-
-    loadPercent().then((
-        pqr) { //excutes when load the app and keep same percent value otherwise it set to 0.0
-      setState(() {
-        percent = pqr.toDouble();
-      });
-    });
-    loadexpence().then((
-        qwe) { //excutes when load the app and keep same expence value otherwise it set to 0.0
-      setState(() {
-        expensevalue = qwe.toDouble();
-      });
-    });
-    loadIncome().then((
-        lms) { //excutes when load the app and keep same income value otherwise it set to 0.0
-      setState(() {
-        incomevalue = lms.toDouble();
-      });
-    });
-    loadBalance().then((
-        val) { //excutes when load the app and keep same balance value otherwise it set to 0.0
-      setState(() {
-        newbalance = val;
-      });
-    });
-  }
-
-  Future<void> savePercent() async {
-    if (percent != 0.0) {
-      final newCount = percent;
-      _prefs = await SharedPreferences.getInstance();
-      _prefs?.setDouble('newPercent', newCount);
-      setState(() {
-        percent = newCount;
-      });
-    }
-    if (expensevalue > incomevalue) {
-      _prefs = await SharedPreferences.getInstance();
-      _prefs?.setDouble('newPercent', 0.0);
-      setState(() {
-        percent = 0.0;
-      });
-    }
-  }
-
-  Future<void> saveBalance() async {
-    if (newbalance != 0) {
-      final newCount = newbalance;
-      _prefs = await SharedPreferences.getInstance();
-      _prefs?.setInt('newBalance', newCount);
-      setState(() {
-        newbalance = newCount;
-
-      });
-
-    }
-  }
-
-
-
-
-  Future<void> saveExpenses() async {
-    if (expensevalue != 0.0) {
-      final newCount = expensevalue;
-      _prefs = await SharedPreferences.getInstance();
-      _prefs?.setDouble('newExpense', newCount);
-      setState(() {
-        expensevalue = newCount;
-
-      });
-
-    }
-  }
-
-
-  Future<void> saveIncome() async {
-
-    if (incomevalue != 0.0) {
-      final newCount = incomevalue;
-      _prefs = await SharedPreferences.getInstance();
-      _prefs?.setDouble('newIncome', newCount);
-      setState(() {
-        incomevalue = newCount;
-
-      });
-
-    }
-  }
-
-
-  Future<double> loadIncome() async {
-    _prefs = await SharedPreferences.getInstance();
-    print(_prefs?.getDouble('newIncome') );
-    return _prefs?.getDouble('newIncome') ?? 0.0;
 
   }
-
-  Future<double> loadPercent() async {
-    _prefs = await SharedPreferences.getInstance();
-
-    return _prefs?.getDouble('newPercent') ?? 0.0;
-  }
-
-  Future<int> loadBalance() async {
-    _prefs = await SharedPreferences.getInstance();
-    return _prefs?.getInt('newBalance') ?? 0;
-  }
-
-  Future<double> loadexpence() async {
-    _prefs = await SharedPreferences.getInstance();
-    return _prefs?.getDouble('newExpense') ?? 0.0;
-  }
-
-  double countPercenntage() {
+ Future<double> countPercenntage() async {
     //count the percentage by subtracting expense from income and divide it from the income value
-    double difference = incomevalue - expensevalue;
-    percent = difference / incomevalue;
+   double difference = (await getIncome() - await getExpence()).toDouble();
+    percent = difference /await getIncome();
     if (percent >= 0 && percent <= 100) {
       return percent;
     }
@@ -249,6 +208,8 @@ class _ControllerState extends State<Controller> {
       return percent;
     }
   }
+
+
 
 
   void ContainerVisibility() {
@@ -280,8 +241,8 @@ class _ControllerState extends State<Controller> {
 
                           Padding(
                             padding: const EdgeInsets.only(left:15.0),
-                            child: FutureBuilder<double>(
-                                future: loadIncome(),
+                            child: FutureBuilder<int>(
+                                future:getIncome(),
                                 builder: (context, snapshot) {
 
                                   return Text(
@@ -315,8 +276,8 @@ class _ControllerState extends State<Controller> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left:8.0),
-                            child:FutureBuilder<double>(
-                                future: loadexpence(),
+                            child:FutureBuilder<int>(
+                                future: getExpence(),
                                 builder: (context, snapshot) {
                                   return Text(
                                     '${snapshot.data}',
@@ -395,8 +356,8 @@ class _ControllerState extends State<Controller> {
 
                   MaterialPageRoute(builder: (context) => Holder(
                     totalBalance: newbalance,
-                    totalex: expensevalue,
-                    totalin: incomevalue,
+                    totalex: expensevalue.toDouble(),
+                    totalin: incomevalue.toDouble(),
                     notificationList: Listn,
                     onDeleteNotification: onDeleteNotification,)), //create a constructor to the Holder class to display the notification list
                 );
@@ -431,8 +392,8 @@ class _ControllerState extends State<Controller> {
                     context,
                     MaterialPageRoute(builder: (context) => Holder(
                       totalBalance: newbalance,
-                      totalex: expensevalue,
-                      totalin: incomevalue,
+                      totalex: expensevalue.toDouble(),
+                      totalin: incomevalue.toDouble(),
                       notificationList: Listn,
                       onDeleteNotification: onDeleteNotification,)),
                   );
@@ -476,16 +437,36 @@ class _ControllerState extends State<Controller> {
                           {
                             ContainerVisibility();
                           },
-                          child: Text(
+                          child:FutureBuilder<double>(
+                            future: countPercenntage(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                // Handle the case where the Future is still running
+                                return CircularProgressIndicator();
+                              } else if (snapshot.hasError) {
+                                // Handle any errors that occurred during the Future execution
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                // Perform a null check before using snapshot.data
+                                if (snapshot.data != null) {
+                                  final percentage = snapshot.data!.toStringAsFixed(0);
 
-                            '${(percent * 100).toStringAsFixed(0)}%',
-                            //display the percentage
-                            style: const TextStyle(
-                              fontSize: 60,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                                  return Text(
+                                    '$percentage%',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 60,
+                                      color: Colors.black,
+                                    ),
+                                  );
+                                } else {
+                                  // Handle the case where snapshot.data is null
+                                  return Text('Data is null');
+                                }
+                              }
+                            },
                           ),
+
                         ),
 
                       ),
@@ -570,14 +551,19 @@ class _ControllerState extends State<Controller> {
                             alignment: Alignment.center,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Text(
-                                '\$ ${newbalance.toString()}',
-                                //display the balance as String
-                                style: const TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
+                              child: FutureBuilder<int>(
+                                  future: getBalance(),
+                                  builder: (context, snapshot) {
+                                    return Text(
+                                      "\$${snapshot.data}",
+                                      //print the user name who are currently using with
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize:40,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  }
                               ),
                             ),
                           ),
@@ -743,16 +729,18 @@ class _ControllerState extends State<Controller> {
                         ),
                       ),
                       InkWell(
-                        onTap: () {
+                        onTap: ()  {
+                          print(newbalance);
 
-                          Navigator.push(
+                          // Now that cbalance is updated, navigate to the Savings screen
+                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => Savings(balance:newbalance),
                             ),
                           );
-                          //user can move to the Savings file
                         },
+
                         child: Container( //this container is for the bottom buttons for the Svaings,Summery profile and scanner
                           height: 120,
                           width: 140,

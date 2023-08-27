@@ -40,19 +40,7 @@ class _RegisterPage extends State<RegisterPage> {
 
   //user signup method
   void userSignUp() async {
-    if (usernameControll.text.isEmpty) {
-      wrongInputlAlert('Username can\'t empty Please add a valid username');
-      return;
-    }
-    else if( emailControll.text.isEmpty){
-      wrongInputlAlert('Email can\'t empty Please add a valid email');
-      return;
-    }
-    else if(passwordControll.text.isEmpty){
-      wrongInputlAlert('Password can\'t empty Please add a valid password');
-      return;
-    }
-
+    //loading circle
     showDialog(
       context: context,
       builder: (context) {
@@ -63,7 +51,6 @@ class _RegisterPage extends State<RegisterPage> {
     );
 
     try {
-
       if (passwordControll.text == confirmPasswordControll.text) {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailControll.text,
@@ -80,9 +67,10 @@ class _RegisterPage extends State<RegisterPage> {
 
         //loading circle end
         Navigator.pop(context);
+        print('this is working zzzzzzzzzzzzzzzzz');
 
         //navigate to email verification page
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => EmailVerification(),
@@ -94,7 +82,6 @@ class _RegisterPage extends State<RegisterPage> {
 
         // error
         wrongInputlAlert("Passwords don't match");
-        return ;
       }
     } on FirebaseAuthException catch (ex) {
       //loading circle end
@@ -102,7 +89,6 @@ class _RegisterPage extends State<RegisterPage> {
 
       // wrong mail
       wrongInputlAlert(ex.code);
-      return;
     }
   }
 
@@ -174,7 +160,7 @@ class _RegisterPage extends State<RegisterPage> {
 
             MyTextField(
               controller: usernameControll,
-              hintText: 'First Name',
+              hintText: 'Name',
               obsecureText: false,
             ),
 
