@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:percent_indicator/percent_indicator.dart'; // Import Firestore
 
 class MyGoal extends StatefulWidget {
   final String userId;
+=======
+
+class MyGoal extends StatelessWidget {
+>>>>>>> main
   final String? category;
   final int amount;
   final DateTime? startDate;
   final DateTime? endDate;
+<<<<<<< HEAD
 
   const MyGoal({
     Key? key,
     required this.userId,
+=======
+  //final String? currency;
+
+  const MyGoal({
+    super.key,
+>>>>>>> main
     required this.category,
     required this.amount,
     required this.startDate,
     required this.endDate,
+<<<<<<< HEAD
   }) : super(key: key);
 
   @override
@@ -24,6 +37,9 @@ class MyGoal extends StatefulWidget {
 
 class _MyGoalState extends State<MyGoal> {
   Map<String, double> categoryProgress = {}; // Store category progress values
+=======
+  });
+>>>>>>> main
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +51,7 @@ class _MyGoalState extends State<MyGoal> {
           color: Colors.grey[300],
           height: 100,
           child: Padding(
+<<<<<<< HEAD
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             child: Row(
               children: [
@@ -45,10 +62,30 @@ class _MyGoalState extends State<MyGoal> {
                       widget.category!,
                       style: TextStyle(
                         color: Colors.grey[800],
+=======
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  category!,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "\$",
+                      style: const TextStyle(
+                        color: Colors.black,
+>>>>>>> main
                         fontSize: 20,
                       ),
                     ),
                     Text(
+<<<<<<< HEAD
                       "${widget.amount}",
                       style: const TextStyle(
                         color: Colors.black,
@@ -138,6 +175,16 @@ class _MyGoalState extends State<MyGoal> {
                     ),
                   ),
                 ),
+=======
+                      "$amount",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                )
+>>>>>>> main
               ],
             ),
           ),
@@ -145,4 +192,8 @@ class _MyGoalState extends State<MyGoal> {
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> main

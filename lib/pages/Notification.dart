@@ -30,10 +30,22 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
+<<<<<<< HEAD
   var initializationsettingsAndroid =AndroidInitializationSettings('@mipmap/ic_launcher');
   var initializationsettings = InitializationSettings(android: initializationsettingsAndroid);
   flutterLocalNotificationsPlugin.initialize(initializationsettings);
   await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+=======
+  var initializationsettingsAndroid =
+  AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationsettings =
+  InitializationSettings(android: initializationsettingsAndroid);
+  flutterLocalNotificationsPlugin.initialize(initializationsettings);
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+>>>>>>> main
   runApp(MyWork());
 }
 
@@ -74,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
   double totalex = 0.0;
   double totalin = 0.0;
   int totalBalance = 0;
+<<<<<<< HEAD
   String? mtoken = " ";
   String titleText='';
   String bodyText=' ';
@@ -231,6 +244,8 @@ class _MyHomePageState extends State<MyHomePage> {
       print('User declined or has not accepted permission');
     }
   }
+=======
+>>>>>>> main
 
   void initState() {
     super.initState();
@@ -322,8 +337,11 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
 
+<<<<<<< HEAD
   }
 
+=======
+>>>>>>> main
   Future<int> getNewMessagesCount() async {
     _prefs = await SharedPreferences.getInstance();
     return _prefs?.getInt('newMessagesCount') ?? 0;
@@ -400,7 +418,13 @@ class _MyHomePageState extends State<MyHomePage> {
     print(notificationList.length);
   }
 
+<<<<<<< HEAD
 
+=======
+  getToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+  }
+>>>>>>> main
 
   @override
   Widget build(BuildContext context) {

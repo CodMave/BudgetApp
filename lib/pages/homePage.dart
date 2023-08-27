@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,13 +15,21 @@ import 'package:badges/badges.dart' as badges;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Profile.dart';
 import 'Savings.dart';
+<<<<<<< HEAD
 import 'Summery.dart';
+=======
+>>>>>>> main
 import 'expenceAndIncome.dart';
 import 'goals.dart';
 
 
+<<<<<<< HEAD
 int expensevalue=0;
 int incomevalue=0;
+=======
+double expensevalue=0.0;
+double incomevalue=0.0;
+>>>>>>> main
 
 
 class HomePage extends StatelessWidget {
@@ -28,7 +40,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(325, 812),
+<<<<<<< HEAD
       builder: (context, child) => MaterialApp(//remove the debug label
+=======
+      builder: (context, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,//remove the debug label
+>>>>>>> main
         home: MyWork(),//call to the class work
       ),
 
@@ -55,6 +72,11 @@ class Controller extends StatefulWidget {
   {
 
     newbalance=balance;
+<<<<<<< HEAD
+=======
+    expensevalue=expense;
+    incomevalue=income;
+>>>>>>> main
     count=num;
     Listn=notificationList;
   }
@@ -113,6 +135,7 @@ class _ControllerState extends State<Controller> {
 
     }
   }
+<<<<<<< HEAD
   Future<int> getBalance() async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -200,6 +223,134 @@ class _ControllerState extends State<Controller> {
     //count the percentage by subtracting expense from income and divide it from the income value
    double difference = (await getIncome() - await getExpence()).toDouble();
     percent = difference /await getIncome();
+=======
+
+  void initState() {
+    super.initState();
+    saveBalance();
+    countPercenntage(); //call to the countpercentage method
+    savePercent(); //call to the savethe percentage method
+    saveExpenses(); //call to the save the expense method
+    saveIncome(); //call to the countIncome method
+
+
+    loadPercent().then((
+        pqr) { //excutes when load the app and keep same percent value otherwise it set to 0.0
+      setState(() {
+        percent = pqr.toDouble();
+      });
+    });
+    loadexpence().then((
+        qwe) { //excutes when load the app and keep same expence value otherwise it set to 0.0
+      setState(() {
+        expensevalue = qwe.toDouble();
+      });
+    });
+    loadIncome().then((
+        lms) { //excutes when load the app and keep same income value otherwise it set to 0.0
+      setState(() {
+        incomevalue = lms.toDouble();
+      });
+    });
+    loadBalance().then((
+        val) { //excutes when load the app and keep same balance value otherwise it set to 0.0
+      setState(() {
+        newbalance = val;
+      });
+    });
+  }
+
+  Future<void> savePercent() async {
+    if (percent != 0.0) {
+      final newCount = percent;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setDouble('newPercent', newCount);
+      setState(() {
+        percent = newCount;
+      });
+    }
+    if (expensevalue > incomevalue) {
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setDouble('newPercent', 0.0);
+      setState(() {
+        percent = 0.0;
+      });
+    }
+  }
+
+  Future<void> saveBalance() async {
+    if (newbalance != 0) {
+      final newCount = newbalance;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setInt('newBalance', newCount);
+      setState(() {
+        newbalance = newCount;
+
+      });
+
+    }
+  }
+
+
+
+
+  Future<void> saveExpenses() async {
+    if (expensevalue != 0.0) {
+      final newCount = expensevalue;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setDouble('newExpense', newCount);
+      setState(() {
+        expensevalue = newCount;
+
+      });
+
+    }
+  }
+
+
+  Future<void> saveIncome() async {
+
+    if (incomevalue != 0.0) {
+      final newCount = incomevalue;
+      _prefs = await SharedPreferences.getInstance();
+      _prefs?.setDouble('newIncome', newCount);
+      setState(() {
+        incomevalue = newCount;
+
+      });
+
+    }
+  }
+
+
+  Future<double> loadIncome() async {
+    _prefs = await SharedPreferences.getInstance();
+    print(_prefs?.getDouble('newIncome') );
+    return _prefs?.getDouble('newIncome') ?? 0.0;
+
+  }
+
+  Future<double> loadPercent() async {
+    _prefs = await SharedPreferences.getInstance();
+
+    return _prefs?.getDouble('newPercent') ?? 0.0;
+  }
+
+  Future<int> loadBalance() async {
+    _prefs = await SharedPreferences.getInstance();
+    return _prefs?.getInt('newBalance') ?? 0;
+  }
+
+  Future<double> loadexpence() async {
+    _prefs = await SharedPreferences.getInstance();
+    return _prefs?.getDouble('newExpense') ?? 0.0;
+  }
+
+  double countPercenntage() {
+    //count the percentage by subtracting expense from income and divide it from the income value
+    double difference = incomevalue - expensevalue;
+    percent = difference / incomevalue;
+>>>>>>> main
     if (percent >= 0 && percent <= 100) {
       return percent;
     }
@@ -210,8 +361,11 @@ class _ControllerState extends State<Controller> {
   }
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> main
   void ContainerVisibility() {
 
     showDialog(context: context,
@@ -241,8 +395,13 @@ class _ControllerState extends State<Controller> {
 
                           Padding(
                             padding: const EdgeInsets.only(left:15.0),
+<<<<<<< HEAD
                             child: FutureBuilder<int>(
                                 future:getIncome(),
+=======
+                            child: FutureBuilder<double>(
+                                future: loadIncome(),
+>>>>>>> main
                                 builder: (context, snapshot) {
 
                                   return Text(
@@ -276,8 +435,13 @@ class _ControllerState extends State<Controller> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left:8.0),
+<<<<<<< HEAD
                             child:FutureBuilder<int>(
                                 future: getExpence(),
+=======
+                            child:FutureBuilder<double>(
+                                future: loadexpence(),
+>>>>>>> main
                                 builder: (context, snapshot) {
                                   return Text(
                                     '${snapshot.data}',
@@ -356,8 +520,13 @@ class _ControllerState extends State<Controller> {
 
                   MaterialPageRoute(builder: (context) => Holder(
                     totalBalance: newbalance,
+<<<<<<< HEAD
                     totalex: expensevalue.toDouble(),
                     totalin: incomevalue.toDouble(),
+=======
+                    totalex: expensevalue,
+                    totalin: incomevalue,
+>>>>>>> main
                     notificationList: Listn,
                     onDeleteNotification: onDeleteNotification,)), //create a constructor to the Holder class to display the notification list
                 );
@@ -392,8 +561,13 @@ class _ControllerState extends State<Controller> {
                     context,
                     MaterialPageRoute(builder: (context) => Holder(
                       totalBalance: newbalance,
+<<<<<<< HEAD
                       totalex: expensevalue.toDouble(),
                       totalin: incomevalue.toDouble(),
+=======
+                      totalex: expensevalue,
+                      totalin: incomevalue,
+>>>>>>> main
                       notificationList: Listn,
                       onDeleteNotification: onDeleteNotification,)),
                   );
@@ -437,6 +611,7 @@ class _ControllerState extends State<Controller> {
                           {
                             ContainerVisibility();
                           },
+<<<<<<< HEAD
                           child:FutureBuilder<double>(
                             future: countPercenntage(),
                             builder: (context, snapshot) {
@@ -465,6 +640,17 @@ class _ControllerState extends State<Controller> {
                                 }
                               }
                             },
+=======
+                          child: Text(
+
+                            '${(percent * 100).toStringAsFixed(0)}%',
+                            //display the percentage
+                            style: const TextStyle(
+                              fontSize: 60,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+>>>>>>> main
                           ),
 
                         ),
@@ -551,6 +737,7 @@ class _ControllerState extends State<Controller> {
                             alignment: Alignment.center,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
+<<<<<<< HEAD
                               child: FutureBuilder<int>(
                                   future: getBalance(),
                                   builder: (context, snapshot) {
@@ -564,6 +751,16 @@ class _ControllerState extends State<Controller> {
                                       ),
                                     );
                                   }
+=======
+                              child: Text(
+                                '\$ ${newbalance.toString()}',
+                                //display the balance as String
+                                style: const TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+>>>>>>> main
                               ),
                             ),
                           ),
@@ -729,18 +926,29 @@ class _ControllerState extends State<Controller> {
                         ),
                       ),
                       InkWell(
+<<<<<<< HEAD
                         onTap: ()  {
                           print(newbalance);
 
                           // Now that cbalance is updated, navigate to the Savings screen
                            Navigator.push(
+=======
+                        onTap: () {
+
+                          Navigator.push(
+>>>>>>> main
                             context,
                             MaterialPageRoute(
                               builder: (context) => Savings(balance:newbalance),
                             ),
                           );
+<<<<<<< HEAD
                         },
 
+=======
+                          //user can move to the Savings file
+                        },
+>>>>>>> main
                         child: Container( //this container is for the bottom buttons for the Svaings,Summery profile and scanner
                           height: 120,
                           width: 140,
