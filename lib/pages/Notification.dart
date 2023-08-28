@@ -153,38 +153,38 @@ class _MyHomePageState extends State<MyHomePage> {
       print("error push notification");
     }
   }
- void firstprocess(String token)async {
+  void firstprocess(String token)async {
 
-   User? user = _auth.currentUser;
-   String username = user!.uid;
-   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-   final incomeSnapshot = await firestore.collection('userDetails').doc(username).collection('Tokens').where('State',isEqualTo:'invalid').get();
-   print(token);
-   if (incomeSnapshot.docs.isNotEmpty) {
-     bodyText = 'Hello! Welcome back to have an great experiance on budget Managing';
-     titleText = 'Welcome!';
+    final incomeSnapshot = await firestore.collection('userDetails').doc(username).collection('Tokens').where('State',isEqualTo:'invalid').get();
+    print(token);
+    if (incomeSnapshot.docs.isNotEmpty) {
+      bodyText = 'Hello! Welcome back to have an great experiance on budget Managing';
+      titleText = 'Welcome!';
 
-     final existingEntry = await getExistingEntry('invalid');
+      final existingEntry = await getExistingEntry('invalid');
 
-     if (existingEntry != null) {
-       final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      if (existingEntry != null) {
+        final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-       final DocumentReference documentReference = firestore
-           .collection('userDetails')
-           .doc(username)
-           .collection('Tokens')
-           .doc(existingEntry);
+        final DocumentReference documentReference = firestore
+            .collection('userDetails')
+            .doc(username)
+            .collection('Tokens')
+            .doc(existingEntry);
 
-       // Use the update method to update the "Balance" field
-       await documentReference.update({
-         'State':'valid',
-       });
-       sendPushMessage(token,bodyText,titleText );
-     }
-}
+        // Use the update method to update the "Balance" field
+        await documentReference.update({
+          'State':'valid',
+        });
+        sendPushMessage(token,bodyText,titleText );
+      }
+    }
 
- }
+  }
   Future<String?> getExistingEntry(String state) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -253,8 +253,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // Show local notification
 
-          // Now you can use the token as needed
-          // ...
+        // Now you can use the token as needed
+        // ...
 
         flutterLocalNotificationsPlugin.show(
           notification.hashCode,

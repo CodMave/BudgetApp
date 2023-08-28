@@ -13,10 +13,28 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+<<<<<<< HEAD
     Timer(
         Duration(seconds: 5),
         () => Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => BottomNavigation())));
+=======
+
+    // Use a local variable to capture the context.
+    final currentContext = context;
+
+    Timer(
+      Duration(seconds: 5),
+          () {
+        if (mounted) {
+          Navigator.pushReplacement(
+            currentContext,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        }
+      },
+    );
+>>>>>>> edba0451ccf784baa02a58e68f13be75e7083be9
   }
 
   @override
@@ -30,10 +48,16 @@ class _SplashScreenState extends State<SplashScreen> {
             gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
+<<<<<<< HEAD
                 colors: [
                   Color(0xFFFF800B),
                   Color(0xFFCE1010),
                 ]),
+=======
+
+                colors: [Color(0xFFFF800B),Color(0xFFCE1010),]
+            ),
+>>>>>>> edba0451ccf784baa02a58e68f13be75e7083be9
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,9 +70,13 @@ class _SplashScreenState extends State<SplashScreen> {
                     height: 200.0,
                     width: 200.0,
                   ),
+<<<<<<< HEAD
                   Text(
                     "\n \n \n Hello!!!\n Take control of your finances\n like never before with our powerful budget\ntracking app.Whether you're a seasoned\npro or just stating uour financial journey.\nBudget tracker is here to simplify your money \n management and help you achieve your\nfinancial goals",
                     textAlign: TextAlign.center,
+=======
+                  Text("\n \n \n Hello!!!\n Take control of your finances\n like never before with our powerful budget\ntracking app.Whether you're a seasoned\npro or just stating uour financial journey.\nBudget tracker is here to simplify your money \n management and help you achieve your\nfinancial goals",textAlign:TextAlign.center,
+>>>>>>> edba0451ccf784baa02a58e68f13be75e7083be9
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -57,8 +85,14 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ],
               ),
+<<<<<<< HEAD
               CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+=======
+
+              CircularProgressIndicator(
+                valueColor:  AlwaysStoppedAnimation<Color>(Colors.red),
+>>>>>>> edba0451ccf784baa02a58e68f13be75e7083be9
               ),
             ],
           ),

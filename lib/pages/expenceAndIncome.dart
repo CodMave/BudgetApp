@@ -23,10 +23,10 @@ class Expence extends StatefulWidget {
 
   @override
   _ExpenceState createState() => _ExpenceState(
-        notificationList: notificationList,
-        nume: nume,
-        onDeleteNotification: onDeleteNotification,
-      );
+    notificationList: notificationList,
+    nume: nume,
+    onDeleteNotification: onDeleteNotification,
+  );
 // You need to replace this with the correct way to get the instance of the _ExpenceState class
 }
 
@@ -45,7 +45,7 @@ class _ExpenceState extends State<Expence> {
   List<MyTransaction> transactions = [];
 
   final TextEditingController transactionNameController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool is_income = false;
   final formKey = GlobalKey<FormState>();
@@ -101,7 +101,7 @@ class _ExpenceState extends State<Expence> {
   Future<void> getDocIds() async {
     try {
       var snapshot =
-          await FirebaseFirestore.instance.collection('userDatails').get();
+      await FirebaseFirestore.instance.collection('userDatails').get();
       if (snapshot.docs.isNotEmpty) {
         userSelecterCurrency = snapshot.docs[0].get('currency');
         print('user selected currency: $userSelecterCurrency');
@@ -142,14 +142,38 @@ class _ExpenceState extends State<Expence> {
       return '';
     }
   }
+  //method to add new expence to the expenceID collection
+  Future<void>addBalanceToFireStore(
+      String userId,
+      int balance,
+      int income,
+      int expence,
+      )async{
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+      final CollectionReference expenceCollection = firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('Balance');
+
+      await expenceCollection.add({
+        'Balance': balance,
+        'timestamp': DateTime.now(),
+        'Income':income,
+        'Expences':expence,
+      });
+    } catch (ex) {
+      print('Balance adding failed');
+    }
+  }
   //method to add new expence to the expenceID collection
 
   Future<void> addExpenceToFireStore(
-    String userId,
-    String transactionName,
-    int transactionAmount,
-  ) async {
+      String userId,
+      String transactionName,
+      int transactionAmount,
+      ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -169,14 +193,75 @@ class _ExpenceState extends State<Expence> {
       print('expence adding failed');
     }
   }
+  Future<String?> getBalance(String userId) async {
 
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('Balance')
+          .where('Balance')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.id;
+      } else {
+        // No entry found
+        return null;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return null;
+    }
+  }
+  Future<void> updateBalance(
+      String userId,
+      int balance,
+      int income,
+      int expence,
+      ) async {
+    // Define the 'username' variable
+
+    // Update the balance for the current month
+    try {
+      final existingEntry = await getBalance(userId);
+
+      if (existingEntry != null) {
+        final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+        final DocumentReference documentReference = firestore
+            .collection('userDetails')
+            .doc(userId) // Use the 'username' variable
+            .collection('Balance')
+            .doc(existingEntry);
+
+        // Use the update method to update the "Balance" field
+        await documentReference.update({
+          'Balance': balance,
+          'Income':income,
+          'Expences':expence,
+        });
+
+        print('Balance updated successfully!');
+      } else {
+        // No entry for the current month, add a new one
+        addBalanceToFireStore(userId, balance,income,expence);
+      }
+    } catch (ex) {
+      print('Error updating balance: $ex');
+    }
+    setState(() {});
+  }
   //method to add new income to the incomeID collection
 
   Future<void> addIncomeToFireStore(
-    String userId,
-    String transactionName,
-    int transactionAmount,
-  ) async {
+      String userId,
+      String transactionName,
+      int transactionAmount,
+      ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -367,7 +452,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('expenceID')
           .where('timestamp',
-              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -376,7 +461,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('incomeID')
           .where('timestamp',
-              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -418,64 +503,80 @@ class _ExpenceState extends State<Expence> {
 
   @override
   void initState() {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    print(username);
     super.initState();
+
     getDocIds();
 
     //fetch and set the total balance
     getCurrentUserId().then((userId) {
-      getTotalBalance(userId).then((Balance) {
+      getTotalBalance(userId).then((Balance) async {
         setState(() {
           totalBalance = Balance;
         });
-      });
 
-      // Fetch and set the latest transactions
-      fetchLatestTransactions(userId);
+        // Fetch and set the latest transactions
+        fetchLatestTransactions(userId);
 
-      //Fetch and set the transactions for the current day
-      fetchTransactionsForCurrentDay(userId).then((currentDayTransactions) {
-        setState(() {
-          transactions = currentDayTransactions;
+        // Fetch and set the transactions for the current day
+        fetchTransactionsForCurrentDay(userId).then((currentDayTransactions) {
+          setState(() {
+            transactions = currentDayTransactions;
+          });
         });
-      });
 
-      // Listen for real-time changes to balance, income, and expense
-      balanceStream = getBalanceStream(userId);
-      balanceStream.listen((sanpshot) {
-        if (isBalanceStreamInitialized) {
-          getTotalBalance(userId).then((balance) {
-            setState(() {
-              totalBalance = balance;
+        // Listen for real-time changes to balance, income, and expense
+        balanceStream = getBalanceStream(userId);
+        balanceStream.listen((sanpshot) {
+          if (isBalanceStreamInitialized) {
+            getTotalBalance(userId).then((balance) {
+              setState(() {
+                totalBalance = balance;
+              });
             });
-          });
-        } else {
-          setState(() {
-            isBalanceStreamInitialized = true;
-          });
-        }
-      });
+          } else {
+            setState(() {
+              isBalanceStreamInitialized = true;
+            });
+          }
+        });
 
-      getExpenceStream(userId).listen((snapshot) {
-        if (snapshot.docs.isNotEmpty) {
-          final expence = snapshot.docs[0];
-          setState(() {
-            lastExpenseTransaction = MyTransaction(
-              transactionName: expence.get('transactionName'),
-              transactionAmount: expence.get('transactionAmount'),
-              transactionType: 'Expence',
-              timestamp: expence.get('timestamp').toDate(),
-            );
-          });
-        } else {
-          setState(() {
-            lastExpenseTransaction = null;
-          });
-        }
+        getExpenceStream(userId).listen((snapshot) {
+          if (snapshot.docs.isNotEmpty) {
+            final expence = snapshot.docs[0];
+            setState(() {
+              lastExpenseTransaction = MyTransaction(
+                transactionName: expence.get('transactionName'),
+                transactionAmount: expence.get('transactionAmount'),
+                transactionType: 'Expense',
+                timestamp: expence.get('timestamp').toDate(),
+              );
+            });
+          } else {
+            setState(() {
+              lastExpenseTransaction = null;
+            });
+          }
+          // Print totalBalance here after all asynchronous operations are done.
+          print(totalBalance);
+        });
+
+        // Move the updateBalance call inside this callback if it depends on the updated totalBalance.
+        updateBalance(
+          username,
+          totalBalance,
+          await  calculateTotalIncome(userId),
+          await getTotalExpence(userId),
+
+        );
       });
     });
   }
 
-  //new transaction dialog box
+
 
   void newTransaction() {
     showDialog(
@@ -561,23 +662,23 @@ class _ExpenceState extends State<Expence> {
                                 },
                                 items: is_income
                                     ? incomeCategories
-                                        .map<DropdownMenuItem<String>>(
-                                          (String category) =>
-                                              DropdownMenuItem<String>(
-                                            value: category,
-                                            child: Text(category),
-                                          ),
-                                        )
-                                        .toList()
+                                    .map<DropdownMenuItem<String>>(
+                                      (String category) =>
+                                      DropdownMenuItem<String>(
+                                        value: category,
+                                        child: Text(category),
+                                      ),
+                                )
+                                    .toList()
                                     : expenceCategories
-                                        .map<DropdownMenuItem<String>>(
-                                          (String category) =>
-                                              DropdownMenuItem<String>(
-                                            value: category,
-                                            child: Text(category),
-                                          ),
-                                        )
-                                        .toList(),
+                                    .map<DropdownMenuItem<String>>(
+                                      (String category) =>
+                                      DropdownMenuItem<String>(
+                                        value: category,
+                                        child: Text(category),
+                                      ),
+                                )
+                                    .toList(),
                               ),
                             ),
                           ],
@@ -610,9 +711,9 @@ class _ExpenceState extends State<Expence> {
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         String transactionType =
-                            is_income ? "Income" : "Expence";
+                        is_income ? "Income" : "Expence";
                         int transactionAmount =
-                            int.parse(amountController.text);
+                        int.parse(amountController.text);
 
                         String transactionName = transactionNameController.text;
                         print(transactionName);
@@ -654,6 +755,12 @@ class _ExpenceState extends State<Expence> {
                             transactionAmount,
                           );
                         }
+                        updateBalance(
+                          userId,
+                          await getTotalBalance(userId),
+                          await calculateTotalIncome(userId),
+                          await getTotalExpence(userId),
+                        );
                       }
                     },
                   ),
@@ -676,7 +783,7 @@ class _ExpenceState extends State<Expence> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor:
-            Colors.grey[100], // Set the background color of the App Bar
+        Colors.grey[100], // Set the background color of the App Bar
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.black, // Set the color of the back arrow

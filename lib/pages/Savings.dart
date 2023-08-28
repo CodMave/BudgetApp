@@ -16,8 +16,8 @@ class Savings extends StatefulWidget {
 
   @override
   State<Savings> createState() => _SavingsState(
-        savingbalance: balance,
-      );
+    savingbalance: balance,
+  );
 }
 
 String documentId = '';
@@ -25,9 +25,10 @@ String documentId = '';
 class _SavingsState extends State<Savings> {
   SharedPreferences? _prefs;
   String? selectedyear = "23";
-  int savingbalance = 0;
+  int savingbalance=0;
 
-  DateTime now = DateTime.now();
+  DateTime now=DateTime.now();
+
 
   final items = [
     '23',
@@ -68,7 +69,6 @@ class _SavingsState extends State<Savings> {
 
   void initState() {
     super.initState();
-    loadbalance();
     loadYear();
     loadLastMonth();
     updateBalance();
@@ -100,6 +100,7 @@ class _SavingsState extends State<Savings> {
     }
   }
 
+
   Future<DateTime> loadLastMonth() async {
     _prefs = await SharedPreferences.getInstance();
     final storedMonth = _prefs?.getString('lastMonth');
@@ -117,9 +118,10 @@ class _SavingsState extends State<Savings> {
     _prefs = await SharedPreferences.getInstance();
     _prefs?.setString('lastMonth', formattedMonth);
   }
-
   Future<void> updateBalance() async {
+
     final currentMonth = DateTime.now();
+
 
     // Update the balance for the current month
     try {
@@ -137,14 +139,15 @@ class _SavingsState extends State<Savings> {
 
         // Use the update method to update the "Balance" field
         await documentReference.update({
-          'Balance': await loadbalance(),
+          'Balance': savingbalance,
         });
 
         print('Balance updated successfully!');
       } else {
         // No entry for the current month, add a new one
         documentId = await addSavingsToFireStore(
-          await loadbalance(),
+          savingbalance,
+          // await loadbalance(),
           DateFormat('MMMM').format(currentMonth),
           int.parse(selectedyear!),
         ).toString();
@@ -155,6 +158,7 @@ class _SavingsState extends State<Savings> {
     await saveLastMonth(currentMonth);
     setState(() {});
   }
+
 
   Future<String?> getExistingEntry(String month, int year) async {
     User? user = _auth.currentUser;
@@ -184,12 +188,6 @@ class _SavingsState extends State<Savings> {
     }
   }
 
-  Future<int> loadbalance() async {
-    _prefs = await SharedPreferences.getInstance();
-    final savedbalancelist = _prefs?.getInt('newBalance') ?? 0;
-
-    return savedbalancelist;
-  }
 
   Future<int> loadYear() async {
     _prefs = await SharedPreferences.getInstance();
@@ -205,21 +203,16 @@ class _SavingsState extends State<Savings> {
 
   Future<void> saveBalance() async {
     if (savingbalance != 0) {
-      final newCount = savingbalance;
-      _prefs = await SharedPreferences.getInstance();
-      _prefs?.setInt('newBalance', newCount);
-      setState(() {
-        savingbalance = newCount;
-      });
+
       await saveLastMonth(DateTime.now());
     }
   }
 
   Future<String> addSavingsToFireStore(
-    int balance,
-    String Day,
-    int year,
-  ) async {
+      int balance,
+      String Day,
+      int year,
+      ) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
 
@@ -250,14 +243,14 @@ class _SavingsState extends State<Savings> {
   @override
   Widget build(BuildContext context) {
     DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
-          value: item,
-          child: Text(
-            item,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 60),
-          ),
-        );
+      value: item,
+      child: Text(
+        item,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 60),
+      ),
+    );
     return Scaffold(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.grey[100],
           leading: IconButton(
@@ -360,21 +353,21 @@ class _SavingsState extends State<Savings> {
                               ConnectionState.waiting) {
                             return const Text(
                               'Fetching balance...',
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.white),
                             );
                           } else if (snapshot.hasError) {
                             return Text(
                               'Error: ${snapshot.error}',
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.white),
                             );
                           } else if (!snapshot.hasData ||
                               snapshot.data?.isEmpty == true) {
                             return const Text(
                               'No data available.',
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.white),
                             );
                           } else {
                             final balanceList = snapshot.data!;
@@ -389,40 +382,37 @@ class _SavingsState extends State<Savings> {
                                 itemBuilder: (context, index) {
                                   return ListTile(
                                     title: Container(
-                                      margin: EdgeInsets.only(top: 10),
+                                      margin:EdgeInsets.only(top:10),
                                       width: 100,
                                       height: 60,
                                       decoration: BoxDecoration(
+
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       padding: EdgeInsets.all(10.0),
                                       child: Row(
                                         children: [
+
                                           Text(
                                             '${DateFormat('MMMM').format(DateTime.now())}',
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold),
+
+                                            style: TextStyle(fontSize:20, color: Colors.black,fontWeight:FontWeight.bold),
                                           ),
                                           Container(
-                                            margin: EdgeInsets.only(left: 50),
+                                            margin:EdgeInsets.only(left:50),
                                             width: 140,
-                                            height: 80,
+                                            height:80,
                                             decoration: BoxDecoration(
                                               color: Colors.lightBlue,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
+                                              borderRadius: BorderRadius.circular(10),
                                             ),
                                             child: Center(
                                               child: Text(
+
                                                 '\$ ${balanceList[index]}',
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                        FontWeight.bold),
+
+                                                style: TextStyle(fontSize:20, color: Colors.black,fontWeight: FontWeight.bold),
                                               ),
                                             ),
                                           )

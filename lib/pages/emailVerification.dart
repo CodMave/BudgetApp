@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:budgettrack/components/button.dart';
+import 'package:budgettrack/pages/LoginPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,7 @@ class _EmailVerification extends State<EmailVerification> {
   void Function()? onTap;
   bool isEmailVerified = false;
   bool canResendEmail = false;
+  bool _mounted=true;
   Timer? timer;
 
   @override
@@ -31,7 +33,14 @@ class _EmailVerification extends State<EmailVerification> {
 
       timer = Timer.periodic(
         const Duration(seconds: 3),
-            (_) => checkIsEmailVerified(),
+            (_) {
+          if (_mounted) { // Check if the widget is still mounted
+            checkIsEmailVerified();
+          }
+          else{
+            timer?.cancel();
+          }
+        },
       );
     }
   }
@@ -39,19 +48,23 @@ class _EmailVerification extends State<EmailVerification> {
   @override
   void dispose() {
     timer?.cancel();
-
+    _mounted = false;
     super.dispose();
   }
 
   Future checkIsEmailVerified() async {
-    // call after mail verification
-    await FirebaseAuth.instance.currentUser!.reload();
+    // Check if there is a current user
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Reload the user to get the latest email verification status
+      await user.reload();
 
-    setState(() {
-      isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-    });
-
+      setState(() {
+        isEmailVerified = user.emailVerified;
+      });
+    }
   }
+
 
   Future sendVerificationEmail() async {
     try {
@@ -75,12 +88,14 @@ class _EmailVerification extends State<EmailVerification> {
   @override
   Widget build(BuildContext context) {
     if (isEmailVerified) {
-      return HomePage();
-    } else {
+      return const HomePage();
+    }
+    else {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.grey[300],
           elevation: 1,
+          automaticallyImplyLeading: false,
         ),
         backgroundColor: Colors.grey[300],
         body: Center(
@@ -140,8 +155,22 @@ class _EmailVerification extends State<EmailVerification> {
                 const SizedBox(height: 15),
 
                 //cancel button
+                //cancel button
                 GestureDetector(
-                  onTap: () => FirebaseAuth.instance.signOut(),
+                  onTap: () {
+                    // Check if there is a current user before signing out
+                    if (FirebaseAuth.instance.currentUser != null) {
+                      FirebaseAuth.instance.signOut();
+                    }
+
+                    // You may also choose to navigate back to the previous screen instead of signing out directly.
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginPage(onTap: onTap),
+                      ),
+                    );
+                  },
                   child: Text(
                     "Cancel",
                     style: TextStyle(
@@ -150,6 +179,7 @@ class _EmailVerification extends State<EmailVerification> {
                     ),
                   ),
                 ),
+
               ],
             ),
           ),
@@ -158,3 +188,4 @@ class _EmailVerification extends State<EmailVerification> {
     }
   }
 }
+

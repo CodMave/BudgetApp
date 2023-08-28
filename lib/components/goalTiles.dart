@@ -70,11 +70,11 @@ class _MyGoalState extends State<MyGoal> {
                             .doc(widget.userId)
                             .collection('expenceID')
                             .where('transactionName',
-                                isEqualTo: widget.category)
+                            isEqualTo: widget.category)
                             .where('timestamp',
-                                isGreaterThanOrEqualTo: widget.startDate)
+                            isGreaterThanOrEqualTo: widget.startDate)
                             .where('timestamp',
-                                isLessThanOrEqualTo: widget.endDate)
+                            isLessThanOrEqualTo: widget.endDate)
                             .snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
@@ -89,7 +89,7 @@ class _MyGoalState extends State<MyGoal> {
                           double totalAmount = 0;
                           snapshot.data!.docs.forEach((expenseDoc) {
                             int transactionAmount =
-                                expenseDoc['transactionAmount'];
+                            expenseDoc['transactionAmount'];
                             totalAmount += transactionAmount.toDouble();
                           });
 

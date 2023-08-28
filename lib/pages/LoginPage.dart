@@ -74,12 +74,8 @@ class _LoginPageState extends State<LoginPage> {
       return null;
     }
   }
- void userSignIn() async {
-
-  if (usernameControll.text.isEmpty || passwordControll.text.isEmpty) {
-      wrongInputlAlert();
-      return;
-    }
+  void userSignIn() async {
+    //loading circle
     showDialog(
       context: context,
       builder: (context) {
@@ -96,34 +92,22 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordControll.text,
       );
     } on FirebaseAuthException catch (ex) {
-
-
       if (mounted) {
-
-            Navigator.pop(context);
+        Navigator.pop(context);
       }
-
       // wrong mail
       if (ex.code == 'user-not-found') {
         wrongInputlAlert();
-        return;
       }
       //wrong password
       else if (ex.code == 'wrong-password') {
         wrongInputlAlert();
-        return ;
       }
     }
 
     //loading circle end
     if (mounted) {
-      setvalidity();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
-      );
+      Navigator.pop(context);
     }
   }
 
