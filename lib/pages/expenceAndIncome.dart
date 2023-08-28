@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../components/bottomNav.dart';
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
 import 'Notification.dart';
@@ -704,6 +705,7 @@ class _ExpenceState extends State<Expence> {
         centerTitle: true, // Center the title
         elevation: 0.0, // Removes the shadow
       ),
+      //bottomNavigationBar: BottomNavigation(),
       body: Column(
         children: [
           const SizedBox(height: 20),

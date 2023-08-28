@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:budgettrack/pages/Notification.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../components/bottomNav.dart';
 import 'Profile.dart';
 import 'Savings.dart';
 import 'Summery.dart';
@@ -328,6 +329,7 @@ class _ControllerState extends State<Controller> {
       child: Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
+          backgroundColor: Colors.grey[100],
           title: FutureBuilder<String>(
               future: getUserName(),
               builder: (context, snapshot) {
@@ -409,105 +411,11 @@ class _ControllerState extends State<Controller> {
                     ),
                   ),
           ],
+          elevation: 0,
         ),
 
         //bottom navigation bar
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 3,
-            ),
-            child: GNav(
-              backgroundColor: Colors.grey.shade300,
-              color: const Color(0xFF85B6FF),
-              activeColor: const Color.fromARGB(255, 31, 96, 192),
-              tabBackgroundColor: Colors.grey.shade400,
-              gap: 8,
-              onTabChange: (Index) {
-                //if the user click on the bottom navigation bar then it will move to the following pages
-                if (Index == 0) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Controller(
-                              balance: 0,
-                              expense: 0,
-                              income: 0,
-                              notificationList: [],
-                              num: 0,
-                              onDeleteNotification: (int index) {},
-                            )),
-                  );
-                } else if (Index == 1) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Expence(
-                              notificationList: [],
-                              nume: 0,
-                              onDeleteNotification: (int index) {},
-                            )),
-                  );
-                } else if (Index == 2) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Pro()),
-                  );
-                } else if (Index == 3) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Savings(
-                              balance: 0,
-                            )),
-                  );
-                } else if (Index == 4) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Goals()),
-                  );
-                } else if (Index == 5) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Profile()),
-                  );
-                }
-              },
-              padding: const EdgeInsets.all(15),
-              tabs: const [
-                GButton(
-                  icon: Icons.home,
-                  //text: 'Home',
-                ),
-                GButton(
-                  icon: Icons.add_circle_outline_sharp,
-                  //text: 'New',
-                ),
-                GButton(
-                  icon: Icons.align_vertical_bottom_outlined,
-                  //text: 'Summary',
-                ),
-                GButton(
-                  icon: Icons.account_balance_wallet_outlined,
-                  //text: 'Savings',
-                ),
-                GButton(
-                  icon: Icons.track_changes_rounded,
-                  //text: 'Plans',
-                ),
-                GButton(
-                  icon: Icons.document_scanner_outlined,
-                  //text: 'Scan',
-                ),
-              ],
-            ),
-          ),
-        ),
+        //bottomNavigationBar: BottomNavigation(),
         body: SingleChildScrollView(
           //user allows to scrolldown
           child: Container(

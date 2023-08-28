@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../components/bottomNav.dart';
 import 'homePage.dart';
 
 class Savings extends StatefulWidget {
@@ -279,6 +280,7 @@ class _SavingsState extends State<Savings> {
           centerTitle: true,
           elevation: 0,
         ),
+        //bottomNavigationBar: BottomNavigation(),
         body: SingleChildScrollView(
           child: Column(
             children: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../components/bottomNav.dart';
 import '../components/datePicker.dart';
 import 'package:intl/intl.dart';
 //import 'addPlanPage.dart';
@@ -521,6 +522,7 @@ class _GoalsState extends State<Goals> {
         centerTitle: true,
         elevation: 0.0,
       ),
+      //bottomNavigationBar: BottomNavigation(),
       body: Column(
         children: [
           const SizedBox(height: 5),
