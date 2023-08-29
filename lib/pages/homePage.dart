@@ -17,9 +17,9 @@ import 'Summery.dart';
 import 'expenceAndIncome.dart';
 import 'goals.dart';
 
+int expensevalue = 0;
+int incomevalue = 0;
 
-int expensevalue=0;
-int incomevalue=0;
 class HomePage extends StatelessWidget {
   const HomePage({Key? key});
 
@@ -57,8 +57,8 @@ class Controller extends StatefulWidget {
     required this.num,
     required this.onDeleteNotification,
   }) : super(
-      key:
-      key) //one of the constructor to get the following values from Menu,Notification files
+            key:
+                key) //one of the constructor to get the following values from Menu,Notification files
   {
     newbalance = balance;
     count = num;
@@ -67,10 +67,10 @@ class Controller extends StatefulWidget {
 
   @override
   _ControllerState createState() => _ControllerState(
-    newbalance: newbalance,
-    onDeleteNotification:
-    onDeleteNotification, //pass the values to the _ControllerState private class
-  );
+        newbalance: newbalance,
+        onDeleteNotification:
+            onDeleteNotification, //pass the values to the _ControllerState private class
+      );
 }
 
 class _ControllerState extends State<Controller> {
@@ -115,6 +115,7 @@ class _ControllerState extends State<Controller> {
       return ''; // Return an empty string or null based on your requirements
     }
   }
+
   Future<int> getBalance() async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -140,6 +141,7 @@ class _ControllerState extends State<Controller> {
       return 0;
     }
   }
+
   Future<int> getIncome() async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -155,7 +157,7 @@ class _ControllerState extends State<Controller> {
       if (querySnapshot.docs.isNotEmpty) {
         // Assuming 'Balance' is a field in your Firestore document
         incomevalue = querySnapshot.docs.first['Income'];
-        return  incomevalue;
+        return incomevalue;
       } else {
         // No entry found
         return 0;
@@ -165,6 +167,7 @@ class _ControllerState extends State<Controller> {
       return 0;
     }
   }
+
   Future<int> getExpence() async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -190,60 +193,55 @@ class _ControllerState extends State<Controller> {
       return 0;
     }
   }
+
   void initState() {
     super.initState();
     getBalance();
     getIncome();
     getExpence();
     countPercenntage(); //call to the countpercentage method
-
   }
+
   Future<double> countPercenntage() async {
     //count the percentage by subtracting expense from income and divide it from the income value
     double difference = (await getIncome() - await getExpence()).toDouble();
-    percent = difference /(await getIncome()).toDouble();
+    percent = difference / (await getIncome()).toDouble();
     if (percent >= 0 && percent <= 1) {
       return percent;
-    }
-    else {
+    } else {
       percent = 0.0;
       return percent;
     }
   }
 
   void ContainerVisibility() {
-
-    showDialog(context: context,
-        builder: (BuildContext context){
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
           return Stack(
             children: [
               AlertDialog(
                 content: Container(
                   alignment: Alignment.center,
-                  height:100,
-                  width:400,
+                  height: 100,
+                  width: 400,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-
                     children: [
                       Row(
-
                         children: [
-
                           Text(
                             'Total Income:',
                             style: TextStyle(
-                              fontSize:15,
+                              fontSize: 15,
                               color: Colors.black,
                             ),
                           ),
-
                           Padding(
-                            padding: const EdgeInsets.only(left:15.0),
+                            padding: const EdgeInsets.only(left: 15.0),
                             child: FutureBuilder<int>(
-                                future:getIncome(),
+                                future: getIncome(),
                                 builder: (context, snapshot) {
-
                                   return Text(
                                     '${snapshot.data}',
                                     style: TextStyle(
@@ -252,9 +250,7 @@ class _ControllerState extends State<Controller> {
                                       color: Colors.black,
                                     ),
                                   );
-                                }
-                            ),
-
+                                }),
                           ),
                           Icon(
                             Icons.arrow_upward,
@@ -263,19 +259,19 @@ class _ControllerState extends State<Controller> {
                           ),
                         ],
                       ),
-                      SizedBox(height:5),
+                      SizedBox(height: 5),
                       Row(
                         children: [
                           Text(
                             'Total Expense:',
                             style: TextStyle(
-                              fontSize:15,
+                              fontSize: 15,
                               color: Colors.black,
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left:8.0),
-                            child:FutureBuilder<int>(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: FutureBuilder<int>(
                                 future: getExpence(),
                                 builder: (context, snapshot) {
                                   return Text(
@@ -286,10 +282,7 @@ class _ControllerState extends State<Controller> {
                                       color: Colors.black,
                                     ),
                                   );
-                                }
-
-                            ),
-
+                                }),
                           ),
                           Icon(
                             Icons.arrow_downward,
@@ -298,17 +291,28 @@ class _ControllerState extends State<Controller> {
                           ),
                         ],
                       )
-
                     ],
                   ),
                 ),
               ),
             ],
-
           );
-        }
-    );
+        });
+  }
 
+  int currentIndex = 0;
+
+  final List<Widget> pages = [
+    HomePage(),
+    Pro(),
+    Goals(),
+    Profile(),
+  ];
+
+  void onTap(int index) {
+    setState(() {
+      currentIndex = index;
+    });
   }
 
   @override
@@ -349,162 +353,59 @@ class _ControllerState extends State<Controller> {
           actions: [
             count == 0
                 ? IconButton(
-              //if the count value is 0 then badge won't show otherwise it dissplays the unseen notification count
-              onPressed: () {
-                Navigator.push(
-                  context,
+                    //if the count value is 0 then badge won't show otherwise it dissplays the unseen notification count
+                    onPressed: () {
+                      Navigator.push(
+                        context,
 
-                  MaterialPageRoute(
-                      builder: (context) => Holder(
-                        totalBalance: newbalance,
-                        totalex: expensevalue.toDouble(),
-                        totalin: incomevalue.toDouble(),
-                        notificationList: Listn,
-                        onDeleteNotification: onDeleteNotification,
-                      )), //create a constructor to the Holder class to display the notification list
-                );
-              },
-              icon: Icon(
-                Icons.notifications_active_outlined,
-                size: 40,
-              ),
-            )
+                        MaterialPageRoute(
+                            builder: (context) => Holder(
+                                  totalBalance: newbalance,
+                                  totalex: expensevalue.toDouble(),
+                                  totalin: incomevalue.toDouble(),
+                                  notificationList: Listn,
+                                  onDeleteNotification: onDeleteNotification,
+                                )), //create a constructor to the Holder class to display the notification list
+                      );
+                    },
+                    icon: Icon(
+                      Icons.notifications_active_outlined,
+                      size: 40,
+                    ),
+                  )
                 : badges.Badge(
-              badgeContent: Text('${count}'),
-              position: badges.BadgePosition.topEnd(top: 2, end: 0),
-              badgeAnimation: badges.BadgeAnimation.slide(),
-              badgeStyle: badges.BadgeStyle(
-                shape: badges.BadgeShape.circle,
-                padding: EdgeInsets.all(8.0),
-                badgeColor: Colors.red,
-              ),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Holder(
-                          totalBalance: newbalance,
-                          totalex: expensevalue.toDouble(),
-                          totalin: incomevalue.toDouble(),
-                          notificationList: Listn,
-                          onDeleteNotification: onDeleteNotification,
-                        )),
-                  );
-                },
-                icon: Icon(
-                  Icons.notifications_active_outlined,
-                  size: 40,
-                ),
-              ),
-            ),
+                    badgeContent: Text('${count}'),
+                    position: badges.BadgePosition.topEnd(top: 2, end: 0),
+                    badgeAnimation: badges.BadgeAnimation.slide(),
+                    badgeStyle: badges.BadgeStyle(
+                      shape: badges.BadgeShape.circle,
+                      padding: EdgeInsets.all(8.0),
+                      badgeColor: Colors.red,
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Holder(
+                                    totalBalance: newbalance,
+                                    totalex: expensevalue.toDouble(),
+                                    totalin: incomevalue.toDouble(),
+                                    notificationList: Listn,
+                                    onDeleteNotification: onDeleteNotification,
+                                  )),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.notifications_active_outlined,
+                        size: 40,
+                      ),
+                    ),
+                  ),
           ],
           elevation: 0,
         ),
-
-        //bottom navigation bar
-<<<<<<< HEAD
-        //bottomNavigationBar: BottomNavigation(),
-=======
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 3,
-            ),
-            child: GNav(
-              backgroundColor: Colors.grey.shade300,
-              color: const Color(0xFF85B6FF),
-              activeColor: const Color.fromARGB(255, 31, 96, 192),
-              tabBackgroundColor: Colors.grey.shade400,
-              gap: 8,
-              onTabChange: (Index) {
-                //if the user click on the bottom navigation bar then it will move to the following pages
-                if (Index == 0) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Controller(
-                          balance: newbalance,
-                          expense:expensevalue.toDouble(),
-                          income: incomevalue.toDouble(),
-                          notificationList: [],
-                          num: 0,
-                          onDeleteNotification: (int index) {},
-                        )),
-                  );
-                } else if (Index == 1) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Expence(
-                          notificationList: [],
-                          nume: 0,
-                          onDeleteNotification: (int index) {},
-                        )),
-                  );
-                } else if (Index == 2) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Pro()),
-                  );
-                } else if (Index == 3) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Savings(
-                          balance: newbalance,
-                        )),
-                  );
-                } else if (Index == 4) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Goals()),
-                  );
-                } else if (Index == 5) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Profile()),
-                  );
-                }
-              },
-              padding: const EdgeInsets.all(15),
-              tabs: const [
-                GButton(
-                  icon: Icons.home,
-                  //text: 'Home',
-                ),
-                GButton(
-                  icon: Icons.add_circle_outline_sharp,
-                  //text: 'New',
-                ),
-                GButton(
-                  icon: Icons.align_vertical_bottom_outlined,
-                  //text: 'Summary',
-                ),
-                GButton(
-                  icon: Icons.account_balance_wallet_outlined,
-                  //text: 'Savings',
-                ),
-                GButton(
-                  icon: Icons.track_changes_rounded,
-                  //text: 'Plans',
-                ),
-                GButton(
-                  icon: Icons.document_scanner_outlined,
-                  //text: 'Scan',
-                ),
-              ],
-            ),
-          ),
-        ),
->>>>>>> edba0451ccf784baa02a58e68f13be75e7083be9
         body: SingleChildScrollView(
-          //user allows to scrolldown
           child: Container(
             alignment: Alignment.topCenter,
             child: Column(
@@ -519,7 +420,7 @@ class _ControllerState extends State<Controller> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   margin:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -533,10 +434,11 @@ class _ControllerState extends State<Controller> {
                           onPressed: () {
                             ContainerVisibility();
                           },
-                          child:FutureBuilder<double>(
+                          child: FutureBuilder<double>(
                             future: countPercenntage(),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
                                 // Handle the case where the Future is still running
                                 return CircularProgressIndicator();
                               } else if (snapshot.hasError) {
@@ -545,7 +447,8 @@ class _ControllerState extends State<Controller> {
                               } else {
                                 // Perform a null check before using snapshot.data
                                 if (snapshot.data != null) {
-                                  final percentage = (snapshot.data!*100).toStringAsFixed(0);
+                                  final percentage =
+                                      (snapshot.data! * 100).toStringAsFixed(0);
 
                                   return Text(
                                     '${percentage}%',
@@ -655,12 +558,11 @@ class _ControllerState extends State<Controller> {
                                       //print the user name who are currently using with
                                       style: TextStyle(
                                         color: Colors.black,
-                                        fontSize:40,
+                                        fontSize: 40,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     );
-                                  }
-                              ),
+                                  }),
                             ),
                           ),
                         ),
@@ -719,7 +621,7 @@ class _ControllerState extends State<Controller> {
                                 width: 60.0,
                                 height: 60.0,
                                 margin:
-                                const EdgeInsets.only(top: 35, left: 10),
+                                    const EdgeInsets.only(top: 35, left: 10),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
@@ -747,7 +649,7 @@ class _ControllerState extends State<Controller> {
                                             nume: count,
                                             notificationList: Listn,
                                             onDeleteNotification:
-                                            onDeleteNotification,
+                                                onDeleteNotification,
                                           ),
                                         ),
                                       );
@@ -759,7 +661,7 @@ class _ControllerState extends State<Controller> {
                                 width: 60.0,
                                 height: 60.0,
                                 margin:
-                                const EdgeInsets.only(top: 35, left: 10),
+                                    const EdgeInsets.only(top: 35, left: 10),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
@@ -787,7 +689,7 @@ class _ControllerState extends State<Controller> {
                                                 nume: count,
                                                 notificationList: Listn,
                                                 onDeleteNotification:
-                                                onDeleteNotification)),
+                                                    onDeleteNotification)),
                                       );
                                     },
                                   ),
@@ -797,7 +699,7 @@ class _ControllerState extends State<Controller> {
                                 width: 50.0,
                                 height: 50.0,
                                 margin:
-                                const EdgeInsets.only(top: 35, left: 20),
+                                    const EdgeInsets.only(top: 35, left: 20),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
@@ -819,7 +721,7 @@ class _ControllerState extends State<Controller> {
                                               nume: count,
                                               notificationList: Listn,
                                               onDeleteNotification:
-                                              onDeleteNotification)),
+                                                  onDeleteNotification)),
                                     );
                                   },
                                 ),
