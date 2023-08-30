@@ -24,16 +24,21 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 );
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
-  var initializationsettingsAndroid =AndroidInitializationSettings('@mipmap/ic_launcher');
-  var initializationsettings = InitializationSettings(android: initializationsettingsAndroid);
+  var initializationsettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationsettings =
+      InitializationSettings(android: initializationsettingsAndroid);
   flutterLocalNotificationsPlugin.initialize(initializationsettings);
-  await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
   runApp(MyWork());
 }
 
@@ -75,9 +80,9 @@ class _MyHomePageState extends State<MyHomePage> {
   double totalin = 0.0;
   int totalBalance = 0;
   String? mtoken = " ";
-  String titleText='';
-  String bodyText=' ';
-  String sts=' ';
+  String titleText = '';
+  String bodyText = ' ';
+  String sts = ' ';
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -85,22 +90,19 @@ class _MyHomePageState extends State<MyHomePage> {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     User? user = _auth.currentUser;
     String username = user!.uid;
-    final CollectionReference incomeCollection = firestore.collection('userDetails')
-        .doc(username)
-        .collection('Tokens');
+    final CollectionReference incomeCollection =
+        firestore.collection('userDetails').doc(username).collection('Tokens');
 
     // Check if the token already exists in the database
-    final existingToken = await incomeCollection.where('token', isEqualTo: token).get();
+    final existingToken =
+        await incomeCollection.where('token', isEqualTo: token).get();
 
     if (existingToken.docs.isEmpty) {
       // Token does not exist, so save it
-      final DocumentReference newDocument = await incomeCollection.add({
-        'token': token,
-        'State':'invalid'
-      });
+      final DocumentReference newDocument =
+          await incomeCollection.add({'token': token, 'State': 'invalid'});
 
       // Perform any additional actions you need
-
     } else {
       // Token already exists, no need to save it again
       print("Token already exists in the database");
@@ -131,14 +133,12 @@ class _MyHomePageState extends State<MyHomePage> {
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization': 'key=AAAALO2Ssv8:APA91bFhhtJX7mwqMVxY4A4FYnDIrXNARvnH_ZmkasaXMwGuUkNBqiqphhLbHbnoB1OlmJnV3yQ1wX08FIT_X4RxCxBRdsvQLT_dVk1BONVlzg1IeJZnJboH3qgssZVMoMJlVEQoqVHb',
+          'Authorization':
+              'key=AAAALO2Ssv8:APA91bFhhtJX7mwqMVxY4A4FYnDIrXNARvnH_ZmkasaXMwGuUkNBqiqphhLbHbnoB1OlmJnV3yQ1wX08FIT_X4RxCxBRdsvQLT_dVk1BONVlzg1IeJZnJboH3qgssZVMoMJlVEQoqVHb',
         },
         body: jsonEncode(
           <String, dynamic>{
-            'notification': <String, dynamic>{
-              'body': body,
-              'title': title
-            },
+            'notification': <String, dynamic>{'body': body, 'title': title},
             'priority': 'high',
             'data': <String, dynamic>{
               'click_action': 'FLUTTER_NOTIFICATION_CLICK',
@@ -153,16 +153,22 @@ class _MyHomePageState extends State<MyHomePage> {
       print("error push notification");
     }
   }
-  void firstprocess(String token)async {
 
+  void firstprocess(String token) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    final incomeSnapshot = await firestore.collection('userDetails').doc(username).collection('Tokens').where('State',isEqualTo:'invalid').get();
+    final incomeSnapshot = await firestore
+        .collection('userDetails')
+        .doc(username)
+        .collection('Tokens')
+        .where('State', isEqualTo: 'invalid')
+        .get();
     print(token);
     if (incomeSnapshot.docs.isNotEmpty) {
-      bodyText = 'Hello! Welcome back to have an great experiance on budget Managing';
+      bodyText =
+          'Hello! Welcome back to have an great experiance on budget Managing';
       titleText = 'Welcome!';
 
       final existingEntry = await getExistingEntry('invalid');
@@ -178,13 +184,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // Use the update method to update the "Balance" field
         await documentReference.update({
-          'State':'valid',
+          'State': 'valid',
         });
-        sendPushMessage(token,bodyText,titleText );
+        sendPushMessage(token, bodyText, titleText);
       }
     }
-
   }
+
   Future<String?> getExistingEntry(String state) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -195,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
           .collection('userDetails')
           .doc(username)
           .collection('Tokens')
-          .where('State',isEqualTo: state)
+          .where('State', isEqualTo: state)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -225,7 +231,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
       print('User granted provisional permission');
     } else {
       print('User declined or has not accepted permission');
@@ -237,8 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
     requestPermission();
     getToken();
 
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message)async {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       if (notification != null && android != null) {
@@ -271,7 +277,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         );
-
 
         counter();
 
@@ -321,7 +326,6 @@ class _MyHomePageState extends State<MyHomePage> {
         flag = value;
       });
     });
-
   }
 
   Future<int> getNewMessagesCount() async {
@@ -361,7 +365,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _prefs!.remove('times');
     } else {
       final messages =
-      notificationList.map((notification) => notification.message).toList();
+          notificationList.map((notification) => notification.message).toList();
       final times = notificationList
           .map((notification) => notification.receivedDateTime.toString())
           .toList();
@@ -400,18 +404,10 @@ class _MyHomePageState extends State<MyHomePage> {
     print(notificationList.length);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Controller(
-          balance: totalBalance,
-          expense: totalex,
-          income: totalin,
-          notificationList: notificationList,
-          num: flag,
-          onDeleteNotification: (int index) => _onDeleteNotification(index)),
+      home: HomePage(),
     );
   }
 }
@@ -476,75 +472,75 @@ class _HolderState extends State<Holder> {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       children: List.generate(widget.notificationList.length,
-                              (index) {
-                            final notificationData = widget.notificationList[index];
+                          (index) {
+                        final notificationData = widget.notificationList[index];
 
-                            return Dismissible(
-                              key: UniqueKey(),
-                              background: Container(
-                                color: Colors.blue,
-                              ),
-                              onDismissed: (direction) {
-                                if (direction == DismissDirection.startToEnd) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text('$index item deleted')));
+                        return Dismissible(
+                          key: UniqueKey(),
+                          background: Container(
+                            color: Colors.blue,
+                          ),
+                          onDismissed: (direction) {
+                            if (direction == DismissDirection.startToEnd) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('$index item deleted')));
 
-                                  widget.onDeleteNotification(index);
-                                }
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffADE8F4),
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                    ), // Background color for the notification
-                                    padding: EdgeInsets.all(
-                                        10), // Padding around the notification
-                                    margin: EdgeInsets.all(
-                                        20), // Margin between notifications
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          notificationData.message,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Color(0xff181EAA),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Align(
-                                          alignment: Alignment.bottomRight,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                DateFormat('dd/MM/yyyy   h:mm a')
-                                                    .format(notificationData
-                                                    .receivedDateTime),
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.grey,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                              widget.onDeleteNotification(index);
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xffADE8F4),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10),
                                   ),
-                                ],
+                                ), // Background color for the notification
+                                padding: EdgeInsets.all(
+                                    10), // Padding around the notification
+                                margin: EdgeInsets.all(
+                                    20), // Margin between notifications
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      notificationData.message,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Color(0xff181EAA),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            DateFormat('dd/MM/yyyy   h:mm a')
+                                                .format(notificationData
+                                                    .receivedDateTime),
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            );
-                          }),
+                            ],
+                          ),
+                        );
+                      }),
                     )
                   ],
                 ),

@@ -36,11 +36,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return Scaffold(
       body: pages[currentIndex],
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
         child: Container(
-          decoration: BoxDecoration(color: Colors.white, boxShadow: [
-            BoxShadow(blurRadius: 20, color: Colors.black.withOpacity(0.1))
-          ]),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: SafeArea(
             child: Padding(
               padding:
@@ -49,12 +50,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 rippleColor: Colors.grey[300]!,
                 hoverColor: Colors.grey[100]!,
                 gap: 8,
-                activeColor: Colors.blue,
+                activeColor: Color.fromARGB(255, 11, 126, 221),
                 iconSize: 24,
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 duration: Duration(milliseconds: 400),
-                tabBackgroundColor: Colors.grey[800]!,
-                color: Colors.black,
+                tabBackgroundColor: Colors.grey[500]!,
+                color: Colors.blue,
                 tabs: const [
                   GButton(
                     icon: Icons.home,

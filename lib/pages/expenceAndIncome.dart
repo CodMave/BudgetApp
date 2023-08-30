@@ -282,7 +282,7 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
-  //fettching latest exoence and income from firestore
+  //fettching latest expence and income from firestore
 
   Future<void> fetchLatestTransactions(String userId) async {
     try {
@@ -787,14 +787,7 @@ class _ExpenceState extends State<Expence> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Controller(
-                  balance: totalBalance,
-                  expense: totalex,
-                  income: totalin,
-                  notificationList: notificationList,
-                  num: nume,
-                  onDeleteNotification: onDeleteNotification,
-                ),
+                builder: (context) => HomePage(),
               ),
             );
           },

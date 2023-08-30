@@ -66,6 +66,8 @@ class _SavingsState extends State<Savings> {
   DateTime lastDate = DateTime.now();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  String? get username => null;
+
   void initState() {
     super.initState();
     loadYear();
@@ -77,7 +79,7 @@ class _SavingsState extends State<Savings> {
     List<int> currentBalance = [];
     User? user = _auth
         .currentUser; //created an instance to the User of Firebase authorized
-    username = user!.uid;
+    var username = user!.uid;
 
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
