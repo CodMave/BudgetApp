@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class HomePage extends StatefulWidget {
@@ -86,10 +87,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   //method to get the percentage
+  int totalBalance = 0;
   Future<double> getPercentage(String userId) async {
     try {
       int totalIncome = await calculateTotalIncome(userId);
       int totalExpence = await getTotalExpence(userId);
+
+      totalBalance = totalIncome - totalExpence;
 
       double maxProgress = 1.0;
       double progress = maxProgress - (totalExpence / totalIncome);
@@ -103,9 +107,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.grey[200],
         appBar: AppBar(
-          backgroundColor: Colors.grey[100],
+          backgroundColor: Colors.grey[200],
           title: FutureBuilder(
             future: getUsername(),
             builder: (context, snapshot) {
@@ -147,49 +151,155 @@ class _HomePageState extends State<HomePage> {
             children: [
               //circular indicator
               Container(
-                color: Colors.grey[300],
-                height: 280,
-                width: double.infinity,
+                color: Colors.grey[200],
+                height: 300,
+                width: 420,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: Colors.blueGrey.shade200,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.shade400,
+                        color: Colors.grey.shade300,
                         blurRadius: 10,
                         spreadRadius: 5,
-                        offset: const Offset(5, 0),
+                        offset: const Offset(0, 10),
                       ),
                     ],
                   ),
                   margin: const EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(25),
-                        child: FutureBuilder<double>(
-                          future: getPercentage(
-                              FirebaseAuth.instance.currentUser!.uid),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const CircularProgressIndicator();
-                            }
+                  child: Padding(
+                    padding: const EdgeInsets.all(25),
+                    child: FutureBuilder<double>(
+                      future:
+                          getPercentage(FirebaseAuth.instance.currentUser!.uid),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
 
-                            return CircularPercentIndicator(
-                              radius: 100,
-                              lineWidth: 15,
-                              percent: snapshot.data!,
-                              progressColor: Colors.blue,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                        Color progressColor;
+                        if (snapshot.data! >= 0.5) {
+                          progressColor = Colors.green;
+                        } else if (snapshot.data! >= 0.2) {
+                          progressColor = Colors.yellow;
+                        } else {
+                          progressColor = Colors.red;
+                        }
+
+                        Color backgroundColor;
+                        if (snapshot.data! >= 0.5) {
+                          backgroundColor = Colors.green[100]!;
+                        } else if (snapshot.data! >= 0.2) {
+                          backgroundColor = Colors.yellow[100]!;
+                        } else {
+                          backgroundColor = Colors.red[100]!;
+                        }
+
+                        return CircularPercentIndicator(
+                          radius: 115,
+                          lineWidth: 15,
+                          percent: snapshot.data!,
+                          progressColor: progressColor,
+                          backgroundColor: backgroundColor,
+                          circularStrokeCap: CircularStrokeCap.round,
+                          center: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(50),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    DateFormat('MMMM dd')
+                                        .format(DateTime.now()),
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  // remaining percentage
+                                  Text(
+                                    '${(snapshot.data! * 100).toInt()}%',
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 65,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  const Text(
+                                    'Remaining',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
-              )
+              ),
+
+              //Blance card
+
+              Container(
+                height: 220,
+                width: 380,
+                //color: Colors.black,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey.shade100,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade400,
+                            blurRadius: 10,
+                            spreadRadius: 5,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 140,
+                            width: 380,
+                            decoration: const BoxDecoration(
+                              color: Color.fromARGB(255, 107, 149, 170),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Rs. $totalBalance',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 50,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ));
