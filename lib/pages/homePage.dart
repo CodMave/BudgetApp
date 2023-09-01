@@ -19,6 +19,9 @@ class _HomePageState extends State<HomePage> {
   double finalTotalIncome = 0.0;
   double finalTotalExpense = 0.0;
   double percentage = 0.0;
+  int totalBalance = 0;
+  String userSelectedCurrency = '';
+  String currencySymbol = '';
 
   //get username from the firestore
   Future<String> getUsername() async {
@@ -40,6 +43,46 @@ class _HomePageState extends State<HomePage> {
     }
 
     return username;
+  }
+
+  //get the user selected currency from firestore
+  Future<String> getUserSelectedCurrency() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      var email = user.email!;
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('userDetails')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        userSelectedCurrency = doc.get('currency');
+        currencySymbolAssign(userSelectedCurrency);
+        print('user selected currency is $userSelectedCurrency');
+      }
+    }
+
+    print('user selected currency is $userSelectedCurrency');
+    return userSelectedCurrency;
+  }
+
+  //method to calculate the total balance
+
+  Future<int> getTotalBalance(String userId) async {
+    double totalIncome = (await calculateTotalIncome(userId)).toDouble();
+    double totalExpence = (await getTotalExpence(userId)).toDouble();
+
+    int balance = (totalIncome - totalExpence).toInt();
+
+    setState(() {
+      totalBalance = balance;
+    });
+
+    return totalBalance;
   }
 
   //method to get the total income from firestore
@@ -87,13 +130,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   //method to get the percentage
-  int totalBalance = 0;
   Future<double> getPercentage(String userId) async {
     try {
       int totalIncome = await calculateTotalIncome(userId);
       int totalExpence = await getTotalExpence(userId);
-
-      totalBalance = totalIncome - totalExpence;
 
       double maxProgress = 1.0;
       double progress = maxProgress - (totalExpence / totalIncome);
@@ -105,198 +145,249 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void currencySymbolAssign(String userSelecterCurrency) {
+    if (userSelecterCurrency == 'USD') {
+      currencySymbol = '\$';
+    } else if (userSelecterCurrency == 'EUR') {
+      currencySymbol = '€';
+    } else if (userSelecterCurrency == 'INR') {
+      currencySymbol = '₹';
+    } else if (userSelecterCurrency == 'SLR') {
+      currencySymbol = 'Rs';
+    } else if (userSelecterCurrency == 'GBP') {
+      currencySymbol = '£';
+    } else if (userSelecterCurrency == 'AUD') {
+      currencySymbol = 'A\$';
+    } else if (userSelecterCurrency == 'CAD') {
+      currencySymbol = 'C\$';
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Firebase.initializeApp().whenComplete(() {
+      print('completed');
+      setState(() {});
+    });
+
+    //get the user selected currency
+    getUserSelectedCurrency();
+
+    //get the total balance
+    getTotalBalance(FirebaseAuth.instance.currentUser!.uid);
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.grey[200],
-          title: FutureBuilder(
-            future: getUsername(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return Text(
-                  'Hi, $username',
-                  style: const TextStyle(
-                    color: Colors.black,
+          backgroundColor: const Color.fromARGB(255, 25, 86, 143),
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 0),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Check()),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.menu,
+                    color: Colors.grey.shade300,
+                    size: 40,
                   ),
-                );
-              } else {
-                return const Text(
-                  'Welcome',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                );
-              }
-            },
+                ),
+              ),
+              const SizedBox(width: 10),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: FutureBuilder(
+                  future: getUsername(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return Text(
+                        'Hi, $username',
+                        style: TextStyle(
+                          color: Colors.grey.shade300,
+                          fontSize: 30,
+                        ),
+                      );
+                    } else {
+                      return Text(
+                        'Welcome',
+                        style: TextStyle(
+                          color: Colors.grey.shade300,
+                          fontSize: 30,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
-          centerTitle: true,
+          //centerTitle: true,
           elevation: 0,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Check()),
-              );
-            },
-            icon: const Icon(
-              Icons.menu,
-              color: Colors.black,
-              size: 35,
-            ),
-          ),
         ),
         body: SingleChildScrollView(
           child: Column(
             children: [
-              //circular indicator
               Container(
-                color: Colors.grey[200],
-                height: 300,
-                width: 420,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey.shade200,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade300,
-                        blurRadius: 10,
-                        spreadRadius: 5,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  margin: const EdgeInsets.all(10),
-                  child: Padding(
-                    padding: const EdgeInsets.all(25),
-                    child: FutureBuilder<double>(
-                      future:
-                          getPercentage(FirebaseAuth.instance.currentUser!.uid),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        }
-
-                        Color progressColor;
-                        if (snapshot.data! >= 0.5) {
-                          progressColor = Colors.green;
-                        } else if (snapshot.data! >= 0.2) {
-                          progressColor = Colors.yellow;
-                        } else {
-                          progressColor = Colors.red;
-                        }
-
-                        Color backgroundColor;
-                        if (snapshot.data! >= 0.5) {
-                          backgroundColor = Colors.green[100]!;
-                        } else if (snapshot.data! >= 0.2) {
-                          backgroundColor = Colors.yellow[100]!;
-                        } else {
-                          backgroundColor = Colors.red[100]!;
-                        }
-
-                        return CircularPercentIndicator(
-                          radius: 115,
-                          lineWidth: 15,
-                          percent: snapshot.data!,
-                          progressColor: progressColor,
-                          backgroundColor: backgroundColor,
-                          circularStrokeCap: CircularStrokeCap.round,
-                          center: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(50),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    DateFormat('MMMM dd')
-                                        .format(DateTime.now()),
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  // remaining percentage
-                                  Text(
-                                    '${(snapshot.data! * 100).toInt()}%',
-                                    style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 65,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  const Text(
-                                    'Remaining',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
+                height: 220,
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 25, 86, 143),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    )),
+              ),
+              SizedBox(
+                height: 220,
+                width: 380,
+                //color: Colors.black,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blueGrey.shade100,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade400,
+                          blurRadius: 10,
+                          spreadRadius: 5,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 140,
+                          width: 380,
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 25, 86, 143),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '$currencySymbol $totalBalance',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 50,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                        );
-                      },
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Balance',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Icon(
+                                Icons.account_balance_wallet,
+                                size: 35,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ),
               ),
 
-              //Blance card
-
+              const SizedBox(height: 10),
+              //card to move to expnece and savings page
               Container(
-                height: 220,
-                width: 380,
-                //color: Colors.black,
-                child: Container(
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blueGrey.shade100,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade400,
-                            blurRadius: 10,
-                            spreadRadius: 5,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
+                //color: Colors.grey.shade100,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Featured',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 25,
+                          //fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 140,
-                            width: 380,
-                            decoration: const BoxDecoration(
-                              color: Color.fromARGB(255, 107, 149, 170),
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 120,
+                              width: 200,
+                              decoration: BoxDecoration(
+                                color: Colors.blueGrey.shade100,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 80,
+                                    width: 200,
+                                    decoration: const BoxDecoration(
+                                      color: Color.fromARGB(255, 107, 149, 170),
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                            child: Center(
-                              child: Text(
-                                'Rs. $totalBalance',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 50,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            const SizedBox(width: 20),
+                            Container(
+                              height: 120,
+                              width: 165,
+                              decoration: BoxDecoration(
+                                color: Colors.blueGrey.shade100,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 80,
+                                    width: 165,
+                                    decoration: const BoxDecoration(
+                                      color: Color.fromARGB(255, 107, 149, 170),
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                          )
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),
