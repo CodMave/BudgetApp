@@ -16,8 +16,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String username = '';
-  double finalTotalIncome = 0.0;
-  double finalTotalExpense = 0.0;
   double percentage = 0.0;
   int totalBalance = 0;
   String userSelectedCurrency = '';
@@ -71,7 +69,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   //method to calculate the total balance
-
   Future<int> getTotalBalance(String userId) async {
     double totalIncome = (await calculateTotalIncome(userId)).toDouble();
     double totalExpence = (await getTotalExpence(userId)).toDouble();
@@ -83,6 +80,104 @@ class _HomePageState extends State<HomePage> {
     });
 
     return totalBalance;
+  }
+
+  //method to calculate the total remaining goals percentage for the month
+  Future<double> getTotalGoalsPercent(String userId) async {
+    //var date = DateTime.now();
+    DateTime now = DateTime.now();
+    int currentYear = now.year;
+    int currentMonth = now.month;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    final goalsQuery = await firestore
+        .collection('userDetails')
+        .doc(userId)
+        .collection('goalsID')
+        .where('timestamp',
+            isGreaterThanOrEqualTo:
+                Timestamp.fromDate(DateTime(currentYear, currentMonth, 1)),
+            isLessThan:
+                Timestamp.fromDate(DateTime(currentYear, currentMonth + 1, 1)))
+        .get();
+
+    int totalGoalsAmount = 0;
+    goalsQuery.docs.forEach((goalsDoc) {
+      totalGoalsAmount += (goalsDoc.get('amount') as num).toInt();
+    });
+
+    final monthExpenceSnapshot = await firestore
+        .collection('userDetails')
+        .doc(userId)
+        .collection('expenceID')
+        .where('timestamp',
+            isGreaterThanOrEqualTo:
+                Timestamp.fromDate(DateTime(currentYear, currentMonth, 1)),
+            isLessThan:
+                Timestamp.fromDate(DateTime(currentYear, currentMonth + 1, 1)))
+        .get();
+
+    int totalMonthExpence = 0;
+    monthExpenceSnapshot.docs.forEach((expenceDoc) {
+      totalMonthExpence += (expenceDoc.get('transactionAmount') as num).toInt();
+    });
+
+    int totalGoalsAmountLeft = totalGoalsAmount - totalMonthExpence;
+
+    double maxProgress = 1.0;
+    double progressGoal =
+        maxProgress - (totalGoalsAmountLeft / totalGoalsAmount);
+    progressGoal = progressGoal.clamp(1.0, maxProgress);
+
+    return progressGoal;
+  }
+
+  //method to get the total remaing goals amount from firestore
+  Future<int> getTotalGoalsAmountLeft(String userId) async {
+    DateTime now = DateTime.now();
+    int currentYear = now.year;
+    int currentMonth = now.month;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    final goalsQuery = await firestore
+        .collection('userDetails')
+        .doc(userId)
+        .collection('goalsID')
+        .where('timestamp',
+            isGreaterThanOrEqualTo:
+                Timestamp.fromDate(DateTime(currentYear, currentMonth, 1)),
+            isLessThan:
+                Timestamp.fromDate(DateTime(currentYear, currentMonth + 1, 1)))
+        .get();
+
+    int totalGoalsAmount = 0;
+    goalsQuery.docs.forEach((goalsDoc) {
+      totalGoalsAmount += (goalsDoc.get('amount') as num).toInt();
+    });
+
+    final monthExpenceSnapshot = await firestore
+        .collection('userDetails')
+        .doc(userId)
+        .collection('expenceID')
+        .where('timestamp',
+            isGreaterThanOrEqualTo:
+                Timestamp.fromDate(DateTime(currentYear, currentMonth, 1)),
+            isLessThan:
+                Timestamp.fromDate(DateTime(currentYear, currentMonth + 1, 1)))
+        .get();
+
+    int totalMonthExpence = 0;
+    monthExpenceSnapshot.docs.forEach((expenceDoc) {
+      totalMonthExpence += (expenceDoc.get('transactionAmount') as num).toInt();
+    });
+
+    print('total goals amount is $totalGoalsAmount');
+    print('total month expence is $totalMonthExpence');
+
+    int totalGoalsAmountLeft = totalGoalsAmount - totalMonthExpence;
+    print('total goals amount left is $totalGoalsAmountLeft');
+
+    return totalGoalsAmountLeft;
   }
 
   //method to get the total income from firestore
@@ -204,7 +299,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(width: 10),
               Padding(
-                padding: const EdgeInsets.only(top: 5),
+                padding: const EdgeInsets.only(top: 8),
                 child: FutureBuilder(
                   future: getUsername(),
                   builder: (context, snapshot) {
@@ -245,71 +340,139 @@ class _HomePageState extends State<HomePage> {
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20),
                     )),
-              ),
-              SizedBox(
-                height: 220,
-                width: 380,
-                //color: Colors.black,
                 child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey.shade100,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.shade400,
-                          blurRadius: 10,
-                          spreadRadius: 5,
-                          offset: const Offset(0, 10),
+                  padding: const EdgeInsets.only(top: 60, left: 27),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Your Current Balace',
+                        style: TextStyle(
+                          color: Colors.grey.shade300,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 140,
-                          width: 380,
-                          decoration: const BoxDecoration(
-                            color: Color.fromARGB(255, 25, 86, 143),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
+                      ),
+                      const SizedBox(height: 15),
+                      Text(
+                        '$currencySymbol$totalBalance',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 70,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+              //card to show the remaining goals amout
+              Container(
+                height: 180,
+                width: 400,
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.shade100,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Monthly Plans Progress',
+                            style: TextStyle(
+                              color: Colors.grey.shade800,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          child: Center(
-                            child: Text(
-                              '$currencySymbol $totalBalance',
+                          Icon(
+                            Icons.arrow_forward,
+                            color: Colors.grey.shade800,
+                            size: 30,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      //remaining goals amount
+                      FutureBuilder(
+                        future: getTotalGoalsAmountLeft(
+                            FirebaseAuth.instance.currentUser!.uid),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return Text(
+                              '$currencySymbol${snapshot.data}',
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 50,
+                                color: Colors.black,
+                                fontSize: 40,
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Balance',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 30,
+                            );
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        },
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      FutureBuilder(
+                        future: getTotalGoalsPercent(
+                            FirebaseAuth.instance.currentUser!.uid),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            Color progressColor;
+                            if (percentage > 0.5) {
+                              progressColor = Colors.red;
+                            } else if (percentage > 0.8) {
+                              progressColor = Colors.orange;
+                            } else if (percentage > 0.6) {
+                              progressColor = Colors.yellow;
+                            } else {
+                              progressColor = Colors.green;
+                            }
+
+                            Color progressBackgroundColor;
+                            if (percentage > 0.5) {
+                              progressBackgroundColor = Colors.red.shade100;
+                            } else if (percentage > 0.8) {
+                              progressBackgroundColor = Colors.orange.shade100;
+                            } else if (percentage > 0.6) {
+                              progressBackgroundColor = Colors.yellow.shade100;
+                            } else {
+                              progressBackgroundColor = Colors.green.shade100;
+                            }
+
+                            return LinearPercentIndicator(
+                              width: 370,
+                              lineHeight: 35,
+                              percent: snapshot.data as double,
+                              backgroundColor: progressBackgroundColor,
+                              progressColor: progressColor,
+                              linearStrokeCap: LinearStrokeCap.roundAll,
+                              center: Text(
+                                '${(snapshot.data! * 100).toInt()}%',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Icon(
-                                Icons.account_balance_wallet,
-                                size: 35,
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                            );
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
