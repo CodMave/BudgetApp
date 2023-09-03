@@ -1,4 +1,5 @@
 import 'package:budgettrack/pages/Profile.dart';
+import 'package:budgettrack/pages/goals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,10 +17,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String username = '';
-  double percentage = 0.0;
   int totalBalance = 0;
   String userSelectedCurrency = '';
   String currencySymbol = '';
+  double? goalPercentage;
 
   //get username from the firestore
   Future<String> getUsername() async {
@@ -123,13 +124,13 @@ class _HomePageState extends State<HomePage> {
     });
 
     int totalGoalsAmountLeft = totalGoalsAmount - totalMonthExpence;
+    print('total goals amount left is $totalGoalsAmountLeft');
+    //double maxProgress = 1.0;
+    double percentage = (totalGoalsAmountLeft / totalGoalsAmount);
+    //percentage = percentage.clamp(0.0, maxProgress);
+    print('percentage before passing is $percentage');
 
-    double maxProgress = 1.0;
-    double progressGoal =
-        maxProgress - (totalGoalsAmountLeft / totalGoalsAmount);
-    progressGoal = progressGoal.clamp(1.0, maxProgress);
-
-    return progressGoal;
+    return percentage;
   }
 
   //method to get the total remaing goals amount from firestore
@@ -171,11 +172,7 @@ class _HomePageState extends State<HomePage> {
       totalMonthExpence += (expenceDoc.get('transactionAmount') as num).toInt();
     });
 
-    print('total goals amount is $totalGoalsAmount');
-    print('total month expence is $totalMonthExpence');
-
     int totalGoalsAmountLeft = totalGoalsAmount - totalMonthExpence;
-    print('total goals amount left is $totalGoalsAmountLeft');
 
     return totalGoalsAmountLeft;
   }
@@ -224,7 +221,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  //method to get the percentage
+  //method to get the percentage of the total income and total expence
   Future<double> getPercentage(String userId) async {
     try {
       int totalIncome = await calculateTotalIncome(userId);
@@ -331,6 +328,7 @@ class _HomePageState extends State<HomePage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              //card to show the total balance
               Container(
                 height: 220,
                 width: double.infinity,
@@ -368,6 +366,7 @@ class _HomePageState extends State<HomePage> {
               ),
 
               const SizedBox(height: 20),
+
               //card to show the remaining goals amout
               Container(
                 height: 180,
@@ -385,17 +384,26 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Monthly Plans Progress',
+                            'Monthly Plan Remaining',
                             style: TextStyle(
                               color: Colors.grey.shade800,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Icon(
-                            Icons.arrow_forward,
-                            color: Colors.grey.shade800,
-                            size: 30,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Goals()),
+                              );
+                            },
+                            child: Icon(
+                              Icons.arrow_forward,
+                              color: Colors.grey.shade800,
+                              size: 30,
+                            ),
                           ),
                         ],
                       ),
@@ -430,34 +438,33 @@ class _HomePageState extends State<HomePage> {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
                             Color progressColor;
-                            if (percentage > 0.5) {
-                              progressColor = Colors.red;
-                            } else if (percentage > 0.8) {
-                              progressColor = Colors.orange;
-                            } else if (percentage > 0.6) {
+
+                            goalPercentage = snapshot.data;
+
+                            print('goal percentage is $goalPercentage');
+                            if (goalPercentage! >= 0.5) {
+                              progressColor = Colors.green;
+                            } else if (goalPercentage! >= 0.2) {
                               progressColor = Colors.yellow;
                             } else {
-                              progressColor = Colors.green;
+                              progressColor = Colors.red;
                             }
 
                             Color progressBackgroundColor;
-                            if (percentage > 0.5) {
-                              progressBackgroundColor = Colors.red.shade100;
-                            } else if (percentage > 0.8) {
-                              progressBackgroundColor = Colors.orange.shade100;
-                            } else if (percentage > 0.6) {
+                            if (goalPercentage! >= 0.5) {
+                              progressBackgroundColor = Colors.green.shade100;
+                            } else if (goalPercentage! >= 0.2) {
                               progressBackgroundColor = Colors.yellow.shade100;
                             } else {
-                              progressBackgroundColor = Colors.green.shade100;
+                              progressBackgroundColor = Colors.red.shade100;
                             }
 
                             return LinearPercentIndicator(
                               width: 370,
                               lineHeight: 35,
-                              percent: snapshot.data as double,
+                              percent: goalPercentage!,
                               backgroundColor: progressBackgroundColor,
                               progressColor: progressColor,
-                              linearStrokeCap: LinearStrokeCap.roundAll,
                               center: Text(
                                 '${(snapshot.data! * 100).toInt()}%',
                                 style: const TextStyle(
@@ -466,6 +473,7 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
+                              barRadius: const Radius.circular(20),
                             );
                           } else {
                             return CircularProgressIndicator();
@@ -478,12 +486,12 @@ class _HomePageState extends State<HomePage> {
               ),
 
               const SizedBox(height: 10),
+
               //card to move to expnece and savings page
               Container(
                 //color: Colors.grey.shade100,
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -498,54 +506,50 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 5),
-                        child: Row(
+                        child: Column(
                           children: [
-                            Container(
-                              height: 120,
-                              width: 200,
-                              decoration: BoxDecoration(
-                                color: Colors.blueGrey.shade100,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 80,
-                                    width: 200,
-                                    decoration: const BoxDecoration(
-                                      color: Color.fromARGB(255, 107, 149, 170),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(20),
-                                        topRight: Radius.circular(20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
+                            Row(
+                              children: [
+                                Container(
+                                  height: 120,
+                                  width: 190,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blueGrey.shade100,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Container(
+                                  height: 120,
+                                  width: 190,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blueGrey.shade100,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 20),
-                            Container(
-                              height: 120,
-                              width: 165,
-                              decoration: BoxDecoration(
-                                color: Colors.blueGrey.shade100,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 80,
-                                    width: 165,
-                                    decoration: const BoxDecoration(
-                                      color: Color.fromARGB(255, 107, 149, 170),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(20),
-                                        topRight: Radius.circular(20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Container(
+                                  height: 120,
+                                  width: 190,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blueGrey.shade100,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Container(
+                                  height: 120,
+                                  width: 190,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blueGrey.shade100,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

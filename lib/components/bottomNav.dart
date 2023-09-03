@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 import '../pages/Profile.dart';
-import '../pages/Savings.dart';
 import '../pages/Summery.dart';
-import '../pages/expenceAndIncome.dart';
 import '../pages/goals.dart';
 import '../pages/homePage.dart';
 
@@ -54,7 +52,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 iconSize: 24,
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 duration: Duration(milliseconds: 400),
-                tabBackgroundColor: Colors.grey[500]!,
+                tabBackgroundColor: Colors.grey[400]!,
                 color: Colors.blue,
                 tabs: const [
                   GButton(

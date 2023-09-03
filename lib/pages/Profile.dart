@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../components/bottomNav.dart';
 import 'LoginPage.dart';
 import 'authPage.dart';
 import 'homePage.dart';
@@ -229,7 +230,7 @@ class _Profile extends State<Profile> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const HomePage(),
+                builder: (context) => const BottomNavigation(),
               ),
             );
           },
