@@ -14,33 +14,14 @@ import 'authPage.dart';
 import 'homePage.dart';
 import 'loginOrReg.dart';
 
-class Check extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: Size(300, 812),
-      builder: (context, child) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Profile(), //routes to the Profile class
-      ),
-    );
-  }
-}
-
-class Profile extends StatefulWidget {
-  FirebaseAuth auth = FirebaseAuth.instance;
-  Profile({
-    Key? key,
-    this.title,
-  }) : super(key: key);
-
-  final String? title;
+class Check extends StatefulWidget {
+  const Check({Key? key}) : super(key: key);
 
   @override
-  _Profile createState() => _Profile();
+  _CheckState createState() => _CheckState();
 }
 
-class _Profile extends State<Profile> {
+class _CheckState extends State<Check> {
   //private class of the Profile class
 
   Uint8List? _image; //initialize the image variable
@@ -227,12 +208,7 @@ class _Profile extends State<Profile> {
           icon: Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const BottomNavigation(),
-              ),
-            );
+            Navigator.pop(context);
           },
         ),
         title: Text(

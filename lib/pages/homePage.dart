@@ -5,8 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+
+import 'expenceAndIncome.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -221,22 +224,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  //method to get the percentage of the total income and total expence
-  Future<double> getPercentage(String userId) async {
-    try {
-      int totalIncome = await calculateTotalIncome(userId);
-      int totalExpence = await getTotalExpence(userId);
-
-      double maxProgress = 1.0;
-      double progress = maxProgress - (totalExpence / totalIncome);
-      progress = progress.clamp(0.0, maxProgress);
-      return progress;
-    } catch (ex) {
-      print('calculating percentage failed');
-      return 0.0;
-    }
-  }
-
   void currencySymbolAssign(String userSelecterCurrency) {
     if (userSelecterCurrency == 'USD') {
       currencySymbol = '\$';
@@ -288,7 +275,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                   icon: Icon(
-                    Icons.menu,
+                    Icons.account_circle_outlined,
                     color: Colors.grey.shade300,
                     size: 40,
                   ),
@@ -368,119 +355,123 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 20),
 
               //card to show the remaining goals amout
-              Container(
-                height: 180,
-                width: 400,
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey.shade100,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Monthly Plan Remaining',
-                            style: TextStyle(
-                              color: Colors.grey.shade800,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Goals()),
-                              );
-                            },
-                            child: Icon(
-                              Icons.arrow_forward,
-                              color: Colors.grey.shade800,
-                              size: 30,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      //remaining goals amount
-                      FutureBuilder(
-                        future: getTotalGoalsAmountLeft(
-                            FirebaseAuth.instance.currentUser!.uid),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return Text(
-                              '$currencySymbol${snapshot.data}',
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 40,
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Container(
+                  height: 180,
+                  width: 400,
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey.shade100,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Monthly Plan Remaining',
+                              style: TextStyle(
+                                color: Colors.grey.shade800,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
-                            );
-                          } else {
-                            return const CircularProgressIndicator();
-                          }
-                        },
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      FutureBuilder(
-                        future: getTotalGoalsPercent(
-                            FirebaseAuth.instance.currentUser!.uid),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            Color progressColor;
-
-                            goalPercentage = snapshot.data;
-
-                            print('goal percentage is $goalPercentage');
-                            if (goalPercentage! >= 0.5) {
-                              progressColor = Colors.green;
-                            } else if (goalPercentage! >= 0.2) {
-                              progressColor = Colors.yellow;
-                            } else {
-                              progressColor = Colors.red;
-                            }
-
-                            Color progressBackgroundColor;
-                            if (goalPercentage! >= 0.5) {
-                              progressBackgroundColor = Colors.green.shade100;
-                            } else if (goalPercentage! >= 0.2) {
-                              progressBackgroundColor = Colors.yellow.shade100;
-                            } else {
-                              progressBackgroundColor = Colors.red.shade100;
-                            }
-
-                            return LinearPercentIndicator(
-                              width: 370,
-                              lineHeight: 35,
-                              percent: goalPercentage!,
-                              backgroundColor: progressBackgroundColor,
-                              progressColor: progressColor,
-                              center: Text(
-                                '${(snapshot.data! * 100).toInt()}%',
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Goals()),
+                                );
+                              },
+                              child: Icon(
+                                Icons.arrow_forward,
+                                color: Colors.grey.shade800,
+                                size: 30,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        //remaining goals amount
+                        FutureBuilder(
+                          future: getTotalGoalsAmountLeft(
+                              FirebaseAuth.instance.currentUser!.uid),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return Text(
+                                '$currencySymbol${snapshot.data}',
                                 style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
+                                  color: Colors.black,
+                                  fontSize: 40,
                                   fontWeight: FontWeight.bold,
                                 ),
-                              ),
-                              barRadius: const Radius.circular(20),
-                            );
-                          } else {
-                            return CircularProgressIndicator();
-                          }
-                        },
-                      ),
-                    ],
+                              );
+                            } else {
+                              return const CircularProgressIndicator();
+                            }
+                          },
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        FutureBuilder(
+                          future: getTotalGoalsPercent(
+                              FirebaseAuth.instance.currentUser!.uid),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              Color progressColor;
+
+                              goalPercentage = snapshot.data;
+
+                              print('goal percentage is $goalPercentage');
+                              if (goalPercentage! >= 0.5) {
+                                progressColor = Colors.green;
+                              } else if (goalPercentage! >= 0.2) {
+                                progressColor = Colors.yellow;
+                              } else {
+                                progressColor = Colors.red;
+                              }
+
+                              Color progressBackgroundColor;
+                              if (goalPercentage! >= 0.5) {
+                                progressBackgroundColor = Colors.green.shade100;
+                              } else if (goalPercentage! >= 0.2) {
+                                progressBackgroundColor =
+                                    Colors.yellow.shade100;
+                              } else {
+                                progressBackgroundColor = Colors.red.shade100;
+                              }
+
+                              return LinearPercentIndicator(
+                                width: 360,
+                                lineHeight: 35,
+                                percent: goalPercentage!,
+                                backgroundColor: progressBackgroundColor,
+                                progressColor: progressColor,
+                                center: Text(
+                                  '${(snapshot.data! * 100).toInt()}%',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                barRadius: const Radius.circular(20),
+                              );
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -516,6 +507,149 @@ class _HomePageState extends State<HomePage> {
                                   decoration: BoxDecoration(
                                     color: Colors.blueGrey.shade100,
                                     borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 12),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Text(
+                                              'Recent',
+                                              style: TextStyle(
+                                                color: Colors.grey.shade800,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Expence(
+                                                            notificationList: [],
+                                                            nume: 0,
+                                                            //onDeleteNotification:
+                                                            //onDeleteNotification
+                                                          )),
+                                                );
+                                              },
+                                              child: Icon(
+                                                Icons.arrow_forward,
+                                                color: Colors.grey.shade800,
+                                                size: 30,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              width: 50,
+                                              height: 50,
+                                              margin: const EdgeInsets.only(
+                                                  left: 15, top: 10),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.grey.shade800,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.grey.shade100,
+                                                ),
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    FontAwesomeIcons.car,
+                                                    size: 30,
+                                                    color: Colors.black,
+                                                  ),
+                                                  onPressed: () {},
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Container(
+                                              width: 50,
+                                              height: 50,
+                                              margin: const EdgeInsets.only(
+                                                  left: 3, top: 10),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.grey.shade800,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.grey.shade100,
+                                                ),
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    FontAwesomeIcons.burger,
+                                                    size: 30,
+                                                    color: Colors.black,
+                                                  ),
+                                                  onPressed: () {},
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Container(
+                                              width: 50,
+                                              height: 50,
+                                              margin: const EdgeInsets.only(
+                                                  left: 3, top: 10),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.grey.shade800,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.grey.shade100,
+                                                ),
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    FontAwesomeIcons.plus,
+                                                    size: 30,
+                                                    color: Colors.black,
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              Expence(
+                                                                notificationList: [],
+                                                                nume: 0,
+                                                                //onDeleteNotification:
+                                                                //onDeleteNotification,
+                                                              )),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 10),

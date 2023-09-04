@@ -1,3 +1,4 @@
+import 'package:budgettrack/pages/expenceAndIncome.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
@@ -18,9 +19,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   List<Widget> pages = [
     HomePage(),
+    Expence(notificationList: [], nume: 0),
     Pro(),
     Goals(),
-    Profile(),
+    Check(),
   ];
 
   void onTap(int index) {
@@ -57,19 +59,23 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 tabs: const [
                   GButton(
                     icon: Icons.home,
-                    text: 'Home',
+                    //text: 'Home',
+                  ),
+                  GButton(
+                    icon: Icons.add_circle,
+                    //text: 'Add',
                   ),
                   GButton(
                     icon: Icons.align_vertical_bottom_outlined,
-                    text: 'Summary',
+                    //text: 'Summary',
                   ),
                   GButton(
                     icon: Icons.track_changes_rounded,
-                    text: 'Goals',
+                    //text: 'Goals',
                   ),
                   GButton(
                     icon: Icons.document_scanner_outlined,
-                    text: 'Scan',
+                    //text: 'Scan',
                   ),
                 ],
                 selectedIndex: currentIndex,

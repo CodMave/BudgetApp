@@ -12,20 +12,20 @@ class Expence extends StatefulWidget {
   final List<NotificationData> notificationList; //initialize a list
   final int nume;
 
-  final void Function(int index) onDeleteNotification;
+  //final void Function(int index) onDeleteNotification;
 
   Expence({
     Key? key,
     required this.notificationList,
     required this.nume,
-    required this.onDeleteNotification,
+    //required this.onDeleteNotification,
   }) : super(key: key);
 
   @override
   _ExpenceState createState() => _ExpenceState(
         notificationList: notificationList,
         nume: nume,
-        onDeleteNotification: onDeleteNotification,
+        //onDeleteNotification: onDeleteNotification,
       );
 // You need to replace this with the correct way to get the instance of the _ExpenceState class
 }
@@ -33,11 +33,11 @@ class Expence extends StatefulWidget {
 class _ExpenceState extends State<Expence> {
   final List<NotificationData> notificationList;
   final int nume;
-  final void Function(int index) onDeleteNotification;
+  //final void Function(int index) onDeleteNotification;
   _ExpenceState({
     required this.notificationList,
     required this.nume,
-    required this.onDeleteNotification,
+    //required this.onDeleteNotification,
   });
   double totalex = 0.0;
   double totalin = 0.0;
@@ -784,12 +784,7 @@ class _ExpenceState extends State<Expence> {
           icon: const Icon(Icons.arrow_back),
           color: Colors.black, // Set the color of the back arrow
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(),
-              ),
-            );
+            Navigator.pop(context);
           },
         ),
         title: const Text(
