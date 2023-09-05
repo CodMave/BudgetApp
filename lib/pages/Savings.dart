@@ -69,7 +69,6 @@ class _SavingsState extends State<Savings> {
   void initState() {
     super.initState();
     loadYear();
-    loadLastMonth();
     updateBalance();
   }
 
@@ -89,7 +88,7 @@ class _SavingsState extends State<Savings> {
           .get();
 
       incomeSnapshot.docs.forEach((cDoc) {
-        currentBalance.add(cDoc.get('Balance'));
+        currentBalance.insert(0,cDoc.get('Balance'));
       });
 
       return currentBalance;
@@ -98,25 +97,33 @@ class _SavingsState extends State<Savings> {
       return [];
     }
   }
+  Future<List> gettheMonthfromDB(String year) async {
+    List<String> currentMonth = [];
+    User? user = _auth
+        .currentUser; //created an instance to the User of Firebase authorized
+    username = user!.uid;
 
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Savings')
+          .where('Year', isEqualTo: int.parse(year))
+          .get();
 
-  Future<DateTime> loadLastMonth() async {
-    _prefs = await SharedPreferences.getInstance();
-    final storedMonth = _prefs?.getString('lastMonth');
+      incomeSnapshot.docs.forEach((dDoc) {
+      currentMonth.insert(0,dDoc.get('Month'));
+      });
 
-    if (storedMonth != null) {
-      return DateFormat('MMMM').parse(storedMonth);
-    } else {
-      // No stored date, use the current date
-      return DateTime(now.month);
+      return  currentMonth;
+    } catch (ex) {
+      print('Getting the month failed');
+      return [];
     }
   }
 
-  Future<void> saveLastMonth(DateTime Month) async {
-    final formattedMonth = DateFormat('MMMM').format(Month);
-    _prefs = await SharedPreferences.getInstance();
-    _prefs?.setString('lastMonth', formattedMonth);
-  }
+
   Future<void> updateBalance() async {
 
     final currentMonth = DateTime.now();
@@ -146,7 +153,6 @@ class _SavingsState extends State<Savings> {
         // No entry for the current month, add a new one
         documentId = await addSavingsToFireStore(
           savingbalance,
-          // await loadbalance(),
           DateFormat('MMMM').format(currentMonth),
           int.parse(selectedyear!),
         ).toString();
@@ -154,7 +160,6 @@ class _SavingsState extends State<Savings> {
     } catch (ex) {
       print('Error updating balance: $ex');
     }
-    await saveLastMonth(currentMonth);
     setState(() {});
   }
 
@@ -200,12 +205,7 @@ class _SavingsState extends State<Savings> {
     return int.parse(selectedyear!);
   }
 
-  Future<void> saveBalance() async {
-    if (savingbalance != 0) {
 
-      await saveLastMonth(DateTime.now());
-    }
-  }
 
   Future<String> addSavingsToFireStore(
       int balance,
@@ -380,9 +380,9 @@ class _SavingsState extends State<Savings> {
                                 itemBuilder: (context, index) {
                                   return ListTile(
                                     title: Container(
-                                      margin:EdgeInsets.only(top:10),
+                                      margin:EdgeInsets.only(left:10),
                                       width: 100,
-                                      height: 60,
+                                      height:60,
                                       decoration: BoxDecoration(
 
                                         color: Colors.white,
@@ -391,16 +391,34 @@ class _SavingsState extends State<Savings> {
                                       padding: EdgeInsets.all(10.0),
                                       child: Row(
                                         children: [
+                                          Container(
+                                            margin:EdgeInsets.only(top:10),
+                                            width: 120,
+                                            height:40,
+                                            decoration: BoxDecoration(
 
-                                          Text(
-                                            '${DateFormat('MMMM').format(DateTime.now())}',
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: FutureBuilder<List>(
+                                                future: gettheMonthfromDB(selectedyear!),
+                                                builder: (context, snapshot) {
+                                                  final MonthList = snapshot.data;
+                                                  return Text(
 
-                                            style: TextStyle(fontSize:20, color: Colors.black,fontWeight:FontWeight.bold),
+                                                    '${MonthList?[index]}',
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 20,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  );
+                                                }),
                                           ),
                                           Container(
-                                            margin:EdgeInsets.only(left:50),
-                                            width: 140,
-                                            height:80,
+
+                                            width: 135,
+                                            height:40,
                                             decoration: BoxDecoration(
                                               color: Colors.lightBlue,
                                               borderRadius: BorderRadius.circular(10),

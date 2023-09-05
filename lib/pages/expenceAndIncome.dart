@@ -8,35 +8,29 @@ import 'Notification.dart';
 import 'homePage.dart';
 
 class Expence extends StatefulWidget {
-  final List<NotificationData> notificationList; //initialize a list
+
   final int nume;
 
-  final void Function(int index) onDeleteNotification;
+
 
   Expence({
     Key? key,
-    required this.notificationList,
     required this.nume,
-    required this.onDeleteNotification,
   }) : super(key: key);
 
   @override
   _ExpenceState createState() => _ExpenceState(
-    notificationList: notificationList,
     nume: nume,
-    onDeleteNotification: onDeleteNotification,
   );
 // You need to replace this with the correct way to get the instance of the _ExpenceState class
 }
 
 class _ExpenceState extends State<Expence> {
-  final List<NotificationData> notificationList;
+
   final int nume;
-  final void Function(int index) onDeleteNotification;
   _ExpenceState({
-    required this.notificationList,
     required this.nume,
-    required this.onDeleteNotification,
+
   });
   double totalex = 0.0;
   double totalin = 0.0;
@@ -770,11 +764,6 @@ class _ExpenceState extends State<Expence> {
         });
   }
 
-  void updateTotalBalance(int newBalance) {
-    setState(() {
-      totalBalance = newBalance;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -790,13 +779,8 @@ class _ExpenceState extends State<Expence> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Controller(
-                  balance: totalBalance,
-                  expense: totalex,
-                  income: totalin,
-                  notificationList: notificationList,
-                  num: nume,
-                  onDeleteNotification: onDeleteNotification,
+                builder: (context) =>HomePage(
+
                 ),
               ),
             );

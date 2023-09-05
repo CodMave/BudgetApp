@@ -9,11 +9,22 @@ import 'goals.dart';
 import 'homePage.dart';
 
 class Pro extends StatefulWidget {
+  int balance=0;
+  Pro({
+    required int balance
+}){
+    this.balance=balance;
+  }
+
   @override
-  _ProState createState() => _ProState();
+  _ProState createState() => _ProState(
+      savingbalance:balance,
+  );
 }
 
 class _ProState extends State<Pro> {
+  int savingbalance=0;
+  _ProState({required this.savingbalance});
   bool showContainer1 = false;
   bool showContainer2 = false;
   bool showContainer3 = false;
@@ -75,36 +86,28 @@ class _ProState extends State<Pro> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Controller(
-                              balance: 0,
-                              expense: 0,
-                              income: 0,
-                              notificationList: [],
-                              num: 0,
-                              onDeleteNotification: (int index) {},
-                            )),
+                        builder: (context) =>HomePage()),
                   );
                 } else if (Index == 1) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => Expence(
-                              notificationList: [],
+
                               nume: 0,
-                              onDeleteNotification: (int index) {},
-                            )),
+                             )),
                   );
                 } else if (Index == 2) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Pro()),
+                    MaterialPageRoute(builder: (context) => Pro(balance: savingbalance,)),
                   );
                 } else if (Index == 3) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => Savings(
-                              balance: 0,
+                              balance:savingbalance,
                             )),
                   );
                 } else if (Index == 4) {

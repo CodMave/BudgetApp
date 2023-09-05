@@ -3,12 +3,16 @@ import 'dart:typed_data';
 import 'package:budgettrack/pages/MyMenu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../firebase_options.dart';
+import '../main.dart';
 import 'LoginPage.dart';
+import 'Startup.dart';
 import 'authPage.dart';
 import 'homePage.dart';
 import 'loginOrReg.dart';
@@ -206,17 +210,17 @@ class _Profile extends State<Profile> {
       ),
     );
   }
-
-  Future<void> _signOut(BuildContext context) async {//when our user press on the sign out button then user has to sign in again
+  Future<void> _signOut(BuildContext context) async {
     try {
       await _auth.signOut(); // Sign out the current user
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) =>LoginOrRegiter()), // Replace LoginPage with your app's login page
-              (Route<dynamic> route) => false); // Clear the navigation stack
+      Navigator.of(context).popUntil((route) => route.isFirst); // Clear the navigation stack
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Myclass())); // Navigate to the initial route
     } catch (e) {
       print('Error while signing out: $e');
     }
   }
+
+
 
   Widget build(BuildContext context) {
     return Scaffold(

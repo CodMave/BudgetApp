@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:budgettrack/components/textfield.dart';
 import 'package:budgettrack/pages/homePage.dart';
+import 'package:budgettrack/pages/splashscreen.dart';
 import 'package:budgettrack/services/authService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -75,7 +76,11 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
   void userSignIn() async {
-    //loading circle
+
+    if (usernameControll.text.isEmpty || passwordControll.text.isEmpty) {
+      wrongInputlAlert();
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -92,22 +97,29 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordControll.text,
       );
     } on FirebaseAuthException catch (ex) {
-      if (mounted) {
-        Navigator.pop(context);
-      }
+
+
       // wrong mail
       if (ex.code == 'user-not-found') {
         wrongInputlAlert();
+        return;
       }
       //wrong password
       else if (ex.code == 'wrong-password') {
         wrongInputlAlert();
+        return ;
       }
     }
 
     //loading circle end
     if (mounted) {
-      Navigator.pop(context);
+      setvalidity();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SplashScreen(),
+        ),
+      );
     }
   }
 
@@ -257,15 +269,15 @@ class _LoginPageState extends State<LoginPage> {
                 //google
 
                 MyTitle(
-                  imagePath: 'lib/images/google.png',
-                  onTap: () => {
-                    if(AuthService().signInWithGoodle()!=null){
-                    Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => HomePage()
-                    )
-                    ),
+                    imagePath: 'lib/images/google.png',
+                    onTap: () => {
+                      if(AuthService().signInWithGoodle()!=null){
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => HomePage()
+                            )
+                        ),
+                      }
                     }
-                  }
                 ),
 
                 const SizedBox(width: 25),

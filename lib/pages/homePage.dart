@@ -19,6 +19,7 @@ import 'goals.dart';
 
 int expensevalue=0;
 int incomevalue=0;
+double percentage1=0.0;
 class HomePage extends StatelessWidget {
   const HomePage({Key? key});
 
@@ -38,47 +39,38 @@ String username = '';
 String email = '';
 int count = 0;
 double percent = 0.0;
-List<NotificationData> Listn = [];
+
+
 
 class Controller extends StatefulWidget {
-  int newbalance = 0;
+  int newbalance=0;
 
-  final List<NotificationData> notificationList;
+
+
   final int num;
-  final void Function(int index) onDeleteNotification;
 
-  Controller({
-    Key? key,
-    required int balance,
-    required double expense,
-    required double income,
-    required this.notificationList,
-    required this.num,
-    required this.onDeleteNotification,
-  }) : super(
-      key:
-      key) //one of the constructor to get the following values from Menu,Notification files
+
+  Controller({Key? key, required int balance,required this.num, }) : super(key: key) //one of the constructor to get the following values from Menu,Notification files
   {
-    newbalance = balance;
-    count = num;
-    Listn = notificationList;
+    newbalance=balance;
+    count=num;
+
   }
 
   @override
   _ControllerState createState() => _ControllerState(
     newbalance: newbalance,
-    onDeleteNotification:
-    onDeleteNotification, //pass the values to the _ControllerState private class
+
+     //pass the values to the _ControllerState private class
   );
 }
 
 class _ControllerState extends State<Controller> {
   bool isContainerVisible = false;
-  final void Function(int index) onDeleteNotification;
   int newbalance = 0;
 
   _ControllerState(
-      {required this.newbalance, required this.onDeleteNotification});
+      {required this.newbalance});
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -194,21 +186,32 @@ class _ControllerState extends State<Controller> {
     getBalance();
     getIncome();
     getExpence();
-    countPercenntage(); //call to the countpercentage method
+  countPercenntage();
+    updatePercentage();//call to the countpercentage method
+   }
 
+  Future<void> updatePercentage() async {
+    double percentage = await countPercenntage();
+    setState(() {
+      percentage1 = percentage;
+    });
   }
+
   Future<double> countPercenntage() async {
     //count the percentage by subtracting expense from income and divide it from the income value
     double difference = (await getIncome() - await getExpence()).toDouble();
     percent = difference /(await getIncome()).toDouble();
     if (percent >= 0 && percent <= 1) {
+
       return percent;
     }
     else {
       percent = 0.0;
       return percent;
     }
+
   }
+
 
   void ContainerVisibility() {
 
@@ -355,11 +358,7 @@ class _ControllerState extends State<Controller> {
                   MaterialPageRoute(
                       builder: (context) => Holder(
                         totalBalance: newbalance,
-                        totalex: expensevalue.toDouble(),
-                        totalin: incomevalue.toDouble(),
-                        notificationList: Listn,
-                        onDeleteNotification: onDeleteNotification,
-                      )), //create a constructor to the Holder class to display the notification list
+              )), //create a constructor to the Holder class to display the notification list
                 );
               },
               icon: Icon(
@@ -383,10 +382,6 @@ class _ControllerState extends State<Controller> {
                     MaterialPageRoute(
                         builder: (context) => Holder(
                           totalBalance: newbalance,
-                          totalex: expensevalue.toDouble(),
-                          totalin: incomevalue.toDouble(),
-                          notificationList: Listn,
-                          onDeleteNotification: onDeleteNotification,
                         )),
                   );
                 },
@@ -423,12 +418,8 @@ class _ControllerState extends State<Controller> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => Controller(
-                          balance: newbalance,
-                          expense:expensevalue.toDouble(),
-                          income: incomevalue.toDouble(),
-                          notificationList: [],
+                           balance: newbalance,
                           num: 0,
-                          onDeleteNotification: (int index) {},
                         )),
                   );
                 } else if (Index == 1) {
@@ -436,15 +427,15 @@ class _ControllerState extends State<Controller> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => Expence(
-                          notificationList: [],
+
                           nume: 0,
-                          onDeleteNotification: (int index) {},
+
                         )),
                   );
                 } else if (Index == 2) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Pro()),
+                    MaterialPageRoute(builder: (context) => Pro(balance: newbalance,)),
                   );
                 } else if (Index == 3) {
                   Navigator.push(
@@ -511,15 +502,15 @@ class _ControllerState extends State<Controller> {
                     color: const Color(0xffEDF2FB),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  margin:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
+
                       CircularPercentIndicator(
-                        radius: 120,
-                        lineWidth: 30,
-                        percent: percent,
+                        radius: 130,
+                        lineWidth:30,
+                       percent:percentage1,
                         progressColor: const Color(0xff039EF0),
                         backgroundColor: const Color(0xff181EAA),
                         center: TextButton(
@@ -538,6 +529,7 @@ class _ControllerState extends State<Controller> {
                               } else {
                                 // Perform a null check before using snapshot.data
                                 if (snapshot.data != null) {
+
                                   final percentage = (snapshot.data!*100).toStringAsFixed(0);
 
                                   return Text(
@@ -556,6 +548,7 @@ class _ControllerState extends State<Controller> {
                             },
                           ),
                         ),
+
                       ),
                       FractionallySizedBox(
                         //this is for display the current date and time
@@ -568,7 +561,7 @@ class _ControllerState extends State<Controller> {
                               DateFormat('MMMM dd').format(DateTime.now()),
                               //time and date format
                               style: const TextStyle(
-                                fontSize: 25,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
@@ -738,9 +731,7 @@ class _ControllerState extends State<Controller> {
                                         MaterialPageRoute(
                                           builder: (context) => Expence(
                                             nume: count,
-                                            notificationList: Listn,
-                                            onDeleteNotification:
-                                            onDeleteNotification,
+
                                           ),
                                         ),
                                       );
@@ -778,9 +769,7 @@ class _ControllerState extends State<Controller> {
                                         MaterialPageRoute(
                                             builder: (context) => Expence(
                                                 nume: count,
-                                                notificationList: Listn,
-                                                onDeleteNotification:
-                                                onDeleteNotification)),
+                                               )),
                                       );
                                     },
                                   ),
@@ -810,9 +799,7 @@ class _ControllerState extends State<Controller> {
                                       MaterialPageRoute(
                                           builder: (context) => Expence(
                                               nume: count,
-                                              notificationList: Listn,
-                                              onDeleteNotification:
-                                              onDeleteNotification)),
+                                          )),
                                     );
                                   },
                                 ),
@@ -886,7 +873,7 @@ class _ControllerState extends State<Controller> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Pro()),
+                          MaterialPageRoute(builder: (context) => Pro(balance: newbalance,)),
                         );
                       },
                       child: Container(
