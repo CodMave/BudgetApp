@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
+import 'Savings.dart';
 import 'expenceAndIncome.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,7 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String username = '';
-  int totalBalance = 0;
+  int? totalBalance;
   String userSelectedCurrency = '';
   String currencySymbol = '';
   double? goalPercentage;
@@ -83,7 +84,7 @@ class _HomePageState extends State<HomePage> {
       totalBalance = balance;
     });
 
-    return totalBalance;
+    return totalBalance!;
   }
 
   //method to calculate the total remaining goals percentage for the month
@@ -249,6 +250,9 @@ class _HomePageState extends State<HomePage> {
       print('completed');
       setState(() {});
     });
+
+    //get the username
+    getUsername();
 
     //get the user selected currency
     getUserSelectedCurrency();
@@ -450,6 +454,8 @@ class _HomePageState extends State<HomePage> {
                               }
 
                               return LinearPercentIndicator(
+                                animation: true,
+                                animationDuration: 800,
                                 width: 360,
                                 lineHeight: 35,
                                 percent: goalPercentage!,
@@ -503,7 +509,7 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Container(
                                   height: 120,
-                                  width: 190,
+                                  width: 210,
                                   decoration: BoxDecoration(
                                     color: Colors.blueGrey.shade100,
                                     borderRadius: BorderRadius.circular(20),
@@ -517,14 +523,14 @@ class _HomePageState extends State<HomePage> {
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text(
-                                              'Recent',
+                                              'Add New',
                                               style: TextStyle(
                                                 color: Colors.grey.shade800,
                                                 fontSize: 25,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            const SizedBox(width: 10),
+                                            const SizedBox(width: 5),
                                             GestureDetector(
                                               onTap: () {
                                                 Navigator.push(
@@ -555,7 +561,7 @@ class _HomePageState extends State<HomePage> {
                                               width: 50,
                                               height: 50,
                                               margin: const EdgeInsets.only(
-                                                  left: 15, top: 10),
+                                                  left: 20, top: 10),
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 border: Border.all(
@@ -655,32 +661,122 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(width: 10),
                                 Container(
                                   height: 120,
-                                  width: 190,
+                                  width: 170,
                                   decoration: BoxDecoration(
                                     color: Colors.blueGrey.shade100,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Container(
-                                  height: 120,
-                                  width: 190,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blueGrey.shade100,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Container(
-                                  height: 120,
-                                  width: 190,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blueGrey.shade100,
-                                    borderRadius: BorderRadius.circular(20),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 12),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Text(
+                                              'Savings',
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                                color: Colors.grey.shade800,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        Savings(
+                                                            balance:
+                                                                totalBalance!),
+                                                  ),
+                                                );
+                                              },
+                                              child: Icon(
+                                                Icons.arrow_forward,
+                                                size: 30,
+                                                color: Colors.grey.shade800,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 22, top: 3),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                height: 50,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: Colors.grey.shade800,
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey.shade100,
+                                                  ),
+                                                  child: IconButton(
+                                                    icon: const Icon(
+                                                      FontAwesomeIcons.wallet,
+                                                      size: 30,
+                                                      color: Colors.black,
+                                                    ),
+                                                    onPressed: () {},
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                height: 50,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: Colors.grey.shade800,
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey.shade100,
+                                                  ),
+                                                  child: IconButton(
+                                                    icon: const Icon(
+                                                      FontAwesomeIcons.plus,
+                                                      size: 30,
+                                                      color: Colors.black,
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              Savings(
+                                                                  balance:
+                                                                      totalBalance!),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

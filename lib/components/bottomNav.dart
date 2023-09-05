@@ -19,7 +19,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   List<Widget> pages = [
     HomePage(),
-    Expence(notificationList: [], nume: 0),
     Pro(),
     Goals(),
     Check(),
@@ -59,23 +58,19 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 tabs: const [
                   GButton(
                     icon: Icons.home,
-                    //text: 'Home',
-                  ),
-                  GButton(
-                    icon: Icons.add_circle,
-                    //text: 'Add',
+                    text: 'Home',
                   ),
                   GButton(
                     icon: Icons.align_vertical_bottom_outlined,
-                    //text: 'Summary',
+                    text: 'Summary',
                   ),
                   GButton(
                     icon: Icons.track_changes_rounded,
-                    //text: 'Goals',
+                    text: 'Goals',
                   ),
                   GButton(
                     icon: Icons.document_scanner_outlined,
-                    //text: 'Scan',
+                    text: 'Scan',
                   ),
                 ],
                 selectedIndex: currentIndex,

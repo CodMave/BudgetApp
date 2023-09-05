@@ -514,7 +514,7 @@ class _GoalsState extends State<Goals> {
           color: Colors.black,
         ),
         title: const Text(
-          'P L A N S',
+          'G O A L S',
           style: TextStyle(
             color: Colors.blue,
             fontSize: 20,

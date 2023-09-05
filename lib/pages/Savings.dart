@@ -246,19 +246,14 @@ class _SavingsState extends State<Savings> {
           ),
         );
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey[100],
         appBar: AppBar(
           backgroundColor: Colors.grey[100],
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             color: Colors.black,
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const BottomNavigation(),
-                ),
-              );
+              Navigator.pop(context);
             },
           ),
           title: const Text('S A V I N G S',
