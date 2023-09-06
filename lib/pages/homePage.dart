@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   int? totalBalance;
   String userSelectedCurrency = '';
   String currencySymbol = '';
-  double? goalPercentage;
+  double? percentage;
 
   //get username from the firestore
   Future<String> getUsername() async {
@@ -87,98 +87,43 @@ class _HomePageState extends State<HomePage> {
     return totalBalance!;
   }
 
-  //method to calculate the total remaining goals percentage for the month
-  Future<double> getTotalGoalsPercent(String userId) async {
-    //var date = DateTime.now();
-    DateTime now = DateTime.now();
-    int currentYear = now.year;
-    int currentMonth = now.month;
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //methd to calculate the remaining balance percentage from firestore
+  Future<double> calculateRemainingBalancePercentage(String userId) async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('incomeID')
+          .get();
 
-    final goalsQuery = await firestore
-        .collection('userDetails')
-        .doc(userId)
-        .collection('goalsID')
-        .where('timestamp',
-            isGreaterThanOrEqualTo:
-                Timestamp.fromDate(DateTime(currentYear, currentMonth, 1)),
-            isLessThan:
-                Timestamp.fromDate(DateTime(currentYear, currentMonth + 1, 1)))
-        .get();
+      int totalIncome = 0;
+      incomeSnapshot.docs.forEach((incomeDoc) {
+        totalIncome += (incomeDoc.get('transactionAmount') as num).toInt();
+      });
 
-    int totalGoalsAmount = 0;
-    goalsQuery.docs.forEach((goalsDoc) {
-      totalGoalsAmount += (goalsDoc.get('amount') as num).toInt();
-    });
+      final expenceSnapshot = await firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('expenceID')
+          .get();
 
-    final monthExpenceSnapshot = await firestore
-        .collection('userDetails')
-        .doc(userId)
-        .collection('expenceID')
-        .where('timestamp',
-            isGreaterThanOrEqualTo:
-                Timestamp.fromDate(DateTime(currentYear, currentMonth, 1)),
-            isLessThan:
-                Timestamp.fromDate(DateTime(currentYear, currentMonth + 1, 1)))
-        .get();
+      int totalExpence = 0;
+      expenceSnapshot.docs.forEach((expenceDoc) {
+        totalExpence += (expenceDoc.get('transactionAmount') as num).toInt();
+      });
 
-    int totalMonthExpence = 0;
-    monthExpenceSnapshot.docs.forEach((expenceDoc) {
-      totalMonthExpence += (expenceDoc.get('transactionAmount') as num).toInt();
-    });
+      int balance = totalIncome - totalExpence;
 
-    int totalGoalsAmountLeft = totalGoalsAmount - totalMonthExpence;
-    print('total goals amount left is $totalGoalsAmountLeft');
-    //double maxProgress = 1.0;
-    double percentage = (totalGoalsAmountLeft / totalGoalsAmount);
-    //percentage = percentage.clamp(0.0, maxProgress);
-    print('percentage before passing is $percentage');
+      percentage = (balance / totalIncome) * 100;
 
-    return percentage;
-  }
+      print('percentage is $percentage');
 
-  //method to get the total remaing goals amount from firestore
-  Future<int> getTotalGoalsAmountLeft(String userId) async {
-    DateTime now = DateTime.now();
-    int currentYear = now.year;
-    int currentMonth = now.month;
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    final goalsQuery = await firestore
-        .collection('userDetails')
-        .doc(userId)
-        .collection('goalsID')
-        .where('timestamp',
-            isGreaterThanOrEqualTo:
-                Timestamp.fromDate(DateTime(currentYear, currentMonth, 1)),
-            isLessThan:
-                Timestamp.fromDate(DateTime(currentYear, currentMonth + 1, 1)))
-        .get();
-
-    int totalGoalsAmount = 0;
-    goalsQuery.docs.forEach((goalsDoc) {
-      totalGoalsAmount += (goalsDoc.get('amount') as num).toInt();
-    });
-
-    final monthExpenceSnapshot = await firestore
-        .collection('userDetails')
-        .doc(userId)
-        .collection('expenceID')
-        .where('timestamp',
-            isGreaterThanOrEqualTo:
-                Timestamp.fromDate(DateTime(currentYear, currentMonth, 1)),
-            isLessThan:
-                Timestamp.fromDate(DateTime(currentYear, currentMonth + 1, 1)))
-        .get();
-
-    int totalMonthExpence = 0;
-    monthExpenceSnapshot.docs.forEach((expenceDoc) {
-      totalMonthExpence += (expenceDoc.get('transactionAmount') as num).toInt();
-    });
-
-    int totalGoalsAmountLeft = totalGoalsAmount - totalMonthExpence;
-
-    return totalGoalsAmountLeft;
+      return percentage!;
+    } catch (ex) {
+      print('calculating total income failed');
+      return 0;
+    }
   }
 
   //method to get the total income from firestore
@@ -359,123 +304,81 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 20),
 
               //card to show the remaining goals amout
+              //card to show the remaining goals amout
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: Container(
-                  height: 180,
+                  height: 260,
                   width: 400,
                   decoration: BoxDecoration(
                     color: Colors.blueGrey.shade100,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.only(top: 10),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Monthly Plan Remaining',
-                              style: TextStyle(
-                                color: Colors.grey.shade800,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Text(
+                            'Total Remaining',
+                            style: TextStyle(
+                              color: Colors.grey.shade800,
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Goals()),
-                                );
-                              },
-                              child: Icon(
-                                Icons.arrow_forward,
-                                color: Colors.grey.shade800,
-                                size: 30,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                         const SizedBox(height: 10),
-                        //remaining goals amount
                         FutureBuilder(
-                          future: getTotalGoalsAmountLeft(
-                              FirebaseAuth.instance.currentUser!.uid),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              return Text(
-                                '$currencySymbol${snapshot.data}',
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              );
-                            } else {
-                              return const CircularProgressIndicator();
-                            }
-                          },
-                        ),
+                            future: calculateRemainingBalancePercentage(
+                                FirebaseAuth.instance.currentUser!.uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              }
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              }
 
-                        const SizedBox(height: 15),
-
-                        FutureBuilder(
-                          future: getTotalGoalsPercent(
-                              FirebaseAuth.instance.currentUser!.uid),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
                               Color progressColor;
-
-                              goalPercentage = snapshot.data;
-
-                              print('goal percentage is $goalPercentage');
-                              if (goalPercentage! >= 0.5) {
+                              if (percentage! / 100 >= 0.5) {
                                 progressColor = Colors.green;
-                              } else if (goalPercentage! >= 0.2) {
+                              } else if (percentage! / 100 >= 0.2) {
                                 progressColor = Colors.yellow;
                               } else {
                                 progressColor = Colors.red;
                               }
 
-                              Color progressBackgroundColor;
-                              if (goalPercentage! >= 0.5) {
-                                progressBackgroundColor = Colors.green.shade100;
-                              } else if (goalPercentage! >= 0.2) {
-                                progressBackgroundColor =
-                                    Colors.yellow.shade100;
+                              Color backgroundColor;
+                              if (percentage! / 100 >= 0.5) {
+                                backgroundColor = Colors.green[200]!;
+                              } else if (percentage! / 100 >= 0.2) {
+                                backgroundColor = Colors.yellow[200]!;
                               } else {
-                                progressBackgroundColor = Colors.red.shade100;
+                                backgroundColor = Colors.red[200]!;
                               }
 
-                              return LinearPercentIndicator(
+                              return CircularPercentIndicator(
                                 animation: true,
-                                animationDuration: 800,
-                                width: 360,
-                                lineHeight: 35,
-                                percent: goalPercentage!,
-                                backgroundColor: progressBackgroundColor,
+                                animationDuration: 1000,
+                                radius: 100,
+                                lineWidth: 15,
+                                percent: percentage! / 100,
                                 progressColor: progressColor,
+                                backgroundColor: backgroundColor,
+                                circularStrokeCap: CircularStrokeCap.round,
                                 center: Text(
-                                  '${(snapshot.data! * 100).toInt()}%',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
+                                  '${percentage!.toStringAsFixed(0)}%',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade800,
+                                    fontSize: 40,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                barRadius: const Radius.circular(20),
                               );
-                            } else {
-                              return CircularProgressIndicator();
-                            }
-                          },
-                        ),
+                            }),
                       ],
                     ),
                   ),
@@ -485,83 +388,231 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 10),
 
               //card to move to expnece and savings page
-              Container(
-                //color: Colors.grey.shade100,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Featured',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 25,
-                          //fontWeight: FontWeight.bold,
-                        ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Featured',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 25,
+                        //fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  height: 120,
-                                  width: 210,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blueGrey.shade100,
-                                    borderRadius: BorderRadius.circular(20),
+                    ),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                height: 120,
+                                width: 210,
+                                decoration: BoxDecoration(
+                                  color: Colors.blueGrey.shade100,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Text(
+                                            'Add New',
+                                            style: TextStyle(
+                                              color: Colors.grey.shade800,
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        Expence(
+                                                          notificationList: [],
+                                                          nume: 0,
+                                                          //onDeleteNotification:
+                                                          //onDeleteNotification
+                                                        )),
+                                              );
+                                            },
+                                            child: Icon(
+                                              Icons.arrow_forward,
+                                              color: Colors.grey.shade800,
+                                              size: 30,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: 50,
+                                            height: 50,
+                                            margin: const EdgeInsets.only(
+                                                left: 20, top: 10),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.grey.shade800,
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.grey.shade100,
+                                              ),
+                                              child: IconButton(
+                                                icon: const Icon(
+                                                  FontAwesomeIcons.car,
+                                                  size: 30,
+                                                  color: Colors.black,
+                                                ),
+                                                onPressed: () {},
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Container(
+                                            width: 50,
+                                            height: 50,
+                                            margin: const EdgeInsets.only(
+                                                left: 3, top: 10),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.grey.shade800,
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.grey.shade100,
+                                              ),
+                                              child: IconButton(
+                                                icon: const Icon(
+                                                  FontAwesomeIcons.burger,
+                                                  size: 30,
+                                                  color: Colors.black,
+                                                ),
+                                                onPressed: () {},
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Container(
+                                            width: 50,
+                                            height: 50,
+                                            margin: const EdgeInsets.only(
+                                                left: 3, top: 10),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.grey.shade800,
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.grey.shade100,
+                                              ),
+                                              child: IconButton(
+                                                icon: const Icon(
+                                                  FontAwesomeIcons.plus,
+                                                  size: 30,
+                                                  color: Colors.black,
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            Expence(
+                                                              notificationList: [],
+                                                              nume: 0,
+                                                              //onDeleteNotification:
+                                                              //onDeleteNotification,
+                                                            )),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 12),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Text(
-                                              'Add New',
-                                              style: TextStyle(
-                                                color: Colors.grey.shade800,
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Container(
+                                height: 120,
+                                width: 170,
+                                decoration: BoxDecoration(
+                                  color: Colors.blueGrey.shade100,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Text(
+                                            'Savings',
+                                            style: TextStyle(
+                                              fontSize: 25,
+                                              color: Colors.grey.shade800,
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            const SizedBox(width: 5),
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          Expence(
-                                                            notificationList: [],
-                                                            nume: 0,
-                                                            //onDeleteNotification:
-                                                            //onDeleteNotification
-                                                          )),
-                                                );
-                                              },
-                                              child: Icon(
-                                                Icons.arrow_forward,
-                                                color: Colors.grey.shade800,
-                                                size: 30,
-                                              ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => Savings(
+                                                      balance: totalBalance!),
+                                                ),
+                                              );
+                                            },
+                                            child: Icon(
+                                              Icons.arrow_forward,
+                                              size: 30,
+                                              color: Colors.grey.shade800,
                                             ),
-                                          ],
-                                        ),
-                                        Row(
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 22, top: 3),
+                                        child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
                                             Container(
-                                              width: 50,
                                               height: 50,
-                                              margin: const EdgeInsets.only(
-                                                  left: 20, top: 10),
+                                              width: 50,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 border: Border.all(
@@ -576,7 +627,7 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                                 child: IconButton(
                                                   icon: const Icon(
-                                                    FontAwesomeIcons.car,
+                                                    FontAwesomeIcons.wallet,
                                                     size: 30,
                                                     color: Colors.black,
                                                   ),
@@ -584,40 +635,10 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                               ),
                                             ),
-                                            const SizedBox(width: 5),
+                                            const SizedBox(width: 8),
                                             Container(
-                                              width: 50,
                                               height: 50,
-                                              margin: const EdgeInsets.only(
-                                                  left: 3, top: 10),
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: Colors.grey.shade800,
-                                                  width: 1,
-                                                ),
-                                              ),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: Colors.grey.shade100,
-                                                ),
-                                                child: IconButton(
-                                                  icon: const Icon(
-                                                    FontAwesomeIcons.burger,
-                                                    size: 30,
-                                                    color: Colors.black,
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Container(
                                               width: 50,
-                                              height: 50,
-                                              margin: const EdgeInsets.only(
-                                                  left: 3, top: 10),
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 border: Border.all(
@@ -640,13 +661,11 @@ class _HomePageState extends State<HomePage> {
                                                     Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              Expence(
-                                                                notificationList: [],
-                                                                nume: 0,
-                                                                //onDeleteNotification:
-                                                                //onDeleteNotification,
-                                                              )),
+                                                        builder: (context) =>
+                                                            Savings(
+                                                                balance:
+                                                                    totalBalance!),
+                                                      ),
                                                     );
                                                   },
                                                 ),
@@ -654,138 +673,17 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 10),
-                                Container(
-                                  height: 120,
-                                  width: 170,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blueGrey.shade100,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 12),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Text(
-                                              'Savings',
-                                              style: TextStyle(
-                                                fontSize: 25,
-                                                color: Colors.grey.shade800,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Savings(
-                                                            balance:
-                                                                totalBalance!),
-                                                  ),
-                                                );
-                                              },
-                                              child: Icon(
-                                                Icons.arrow_forward,
-                                                size: 30,
-                                                color: Colors.grey.shade800,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 22, top: 3),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                height: 50,
-                                                width: 50,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: Colors.grey.shade800,
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.grey.shade100,
-                                                  ),
-                                                  child: IconButton(
-                                                    icon: const Icon(
-                                                      FontAwesomeIcons.wallet,
-                                                      size: 30,
-                                                      color: Colors.black,
-                                                    ),
-                                                    onPressed: () {},
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Container(
-                                                height: 50,
-                                                width: 50,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: Colors.grey.shade800,
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.grey.shade100,
-                                                  ),
-                                                  child: IconButton(
-                                                    icon: const Icon(
-                                                      FontAwesomeIcons.plus,
-                                                      size: 30,
-                                                      color: Colors.black,
-                                                    ),
-                                                    onPressed: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              Savings(
-                                                                  balance:
-                                                                      totalBalance!),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],

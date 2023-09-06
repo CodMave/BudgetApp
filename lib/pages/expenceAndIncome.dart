@@ -2,11 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../components/bottomNav.dart';
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
 import 'Notification.dart';
-import 'homePage.dart';
 
 class Expence extends StatefulWidget {
   final List<NotificationData> notificationList; //initialize a list
@@ -72,6 +70,8 @@ class _ExpenceState extends State<Expence> {
   //variables to store the selected category
   String selectedCategory = 'Others';
 
+  String? userSelectedCurrency;
+
   //list Expence categories
   List<String> expenceCategories = [
     'Food',
@@ -96,23 +96,7 @@ class _ExpenceState extends State<Expence> {
     'Others',
   ];
 
-  //get currency
-
-  Future<void> getDocIds() async {
-    try {
-      var snapshot =
-          await FirebaseFirestore.instance.collection('userDatails').get();
-      if (snapshot.docs.isNotEmpty) {
-        userSelecterCurrency = snapshot.docs[0].get('currency');
-        print('user selected currency: $userSelecterCurrency');
-        currencySymbolAssign();
-      }
-    } catch (e) {
-      print('Error fetching user details: $e');
-    }
-  }
-
-  void currencySymbolAssign() {
+  void currencySymbolAssign(String userSelecterCurrency) {
     if (userSelecterCurrency == 'USD') {
       currencySymbol = '\$';
     } else if (userSelecterCurrency == 'EUR') {
@@ -128,6 +112,31 @@ class _ExpenceState extends State<Expence> {
     } else if (userSelecterCurrency == 'CAD') {
       currencySymbol = 'C\$';
     }
+  }
+
+  //get the user selected currency from firestore
+  Future<String> getUserSelectedCurrency() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      var email = user.email!;
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('userDetails')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        userSelectedCurrency = doc.get('currency');
+        currencySymbolAssign(userSelectedCurrency!);
+        print('user selected currency is $userSelectedCurrency');
+      }
+    }
+
+    print('user selected currency is $userSelectedCurrency');
+    return userSelectedCurrency!;
   }
 
   //method to get currently signed in user's uid
@@ -282,7 +291,7 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
-  //fettching latest expence and income from firestore
+  //fettching latest expence and income from firestore *************
 
   Future<void> fetchLatestTransactions(String userId) async {
     try {
@@ -305,6 +314,7 @@ class _ExpenceState extends State<Expence> {
             transactionAmount: income.get('transactionAmount'),
             transactionType: 'Income',
             timestamp: income.get('timestamp').toDate(),
+            currencySymbol: currencySymbol,
           );
         });
       }
@@ -326,6 +336,7 @@ class _ExpenceState extends State<Expence> {
             transactionAmount: expence.get('transactionAmount'),
             transactionType: 'Expence',
             timestamp: expence.get('timestamp').toDate(),
+            currencySymbol: currencySymbol,
           );
         });
       }
@@ -436,7 +447,7 @@ class _ExpenceState extends State<Expence> {
         .snapshots();
   }
 
-  //Feth transactions for the current day
+  //Feth transactions for the current day  ***************
   Future<List<MyTransaction>> fetchTransactionsForCurrentDay(
       String userId) async {
     try {
@@ -474,6 +485,7 @@ class _ExpenceState extends State<Expence> {
             transactionAmount: expenceDoc.get('transactionAmount'),
             transactionType: 'Expence',
             timestamp: expenceDoc.get('timestamp').toDate(),
+            currencySymbol: currencySymbol,
           ),
         );
       });
@@ -486,6 +498,7 @@ class _ExpenceState extends State<Expence> {
             transactionAmount: incomeDoc.get('transactionAmount'),
             transactionType: 'Income',
             timestamp: incomeDoc.get('timestamp').toDate(),
+            currencySymbol: currencySymbol,
           ),
         );
       });
@@ -500,6 +513,7 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
+  //*****************
   @override
   void initState() {
     final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -507,8 +521,6 @@ class _ExpenceState extends State<Expence> {
     String username = user!.uid;
     print(username);
     super.initState();
-
-    getDocIds();
 
     //fetch and set the total balance
     getCurrentUserId().then((userId) {
@@ -552,6 +564,7 @@ class _ExpenceState extends State<Expence> {
                 transactionAmount: expence.get('transactionAmount'),
                 transactionType: 'Expense',
                 timestamp: expence.get('timestamp').toDate(),
+                currencySymbol: currencySymbol,
               );
             });
           } else {
@@ -572,8 +585,12 @@ class _ExpenceState extends State<Expence> {
         );
       });
     });
+
+    //assign user selected currency
+    getUserSelectedCurrency();
   }
 
+  //**************************/
   void newTransaction() {
     showDialog(
         barrierDismissible: false,
@@ -730,6 +747,7 @@ class _ExpenceState extends State<Expence> {
                               transactionAmount: transactionAmount,
                               transactionType: transactionType,
                               timestamp: DateTime.now(),
+                              currencySymbol: currencySymbol,
                             ),
                           );
                         });
@@ -806,175 +824,14 @@ class _ExpenceState extends State<Expence> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
-              //color: Colors.grey[100],
-              height: 190,
-              // ignore: sort_child_properties_last
-              child: Column(
-                children: [
-                  // Balance text
-
-                  const SizedBox(height: 20),
-
-                  Text(
-                    "B A L A N C E",
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 16,
-                    ),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // Balance amount
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // currency symbol
-                      Text(
-                        currencySymbol,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 34,
-                        ),
-                      ),
-
-                      const SizedBox(width: 3),
-
-                      // amount
-
-                      Text(
-                        totalBalance.toString(),
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 34,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Show expence and income
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 70),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        //income
-
-                        Row(
-                          children: [
-                            // up icon
-                            const Icon(
-                              Icons.arrow_upward,
-                              color: Colors.green,
-                              size: 28,
-                            ),
-
-                            const SizedBox(width: 5),
-
-                            // income
-                            Column(
-                              children: [
-                                //income text
-                                Text(
-                                  "Income",
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 18,
-                                  ),
-                                ),
-
-                                //income amount
-                                Row(
-                                  children: [
-                                    //currency symbol
-                                    Text(
-                                      currencySymbol,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-
-                                    // amount
-                                    Text(
-                                      "${lastIncomeTransaction?.transactionAmount ?? '0'}",
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        //expence
-
-                        Row(
-                          children: [
-                            // down icon
-                            const Icon(
-                              Icons.arrow_downward,
-                              color: Colors.red,
-                              size: 28,
-                            ),
-
-                            // expence
-                            Column(
-                              children: [
-                                //expence text
-                                Text(
-                                  "Expence",
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 18,
-                                  ),
-                                ),
-
-                                //expence amount
-                                Row(
-                                  children: [
-                                    //currency symbol
-                                    Text(
-                                      currencySymbol,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-
-                                    // amount
-                                    Text(
-                                      "${lastExpenseTransaction?.transactionAmount ?? '0'}",
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              height: 222,
+              width: 400,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: const Color(0xff90E0EF),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
+                    color: Colors.grey.withOpacity(1),
                     offset: const Offset(4.0, 4.0),
                     blurRadius: 10.0,
                     spreadRadius: 1,
@@ -985,18 +842,197 @@ class _ExpenceState extends State<Expence> {
                     blurRadius: 10.0,
                     spreadRadius: 0.25,
                   ),
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.7),
-                    offset: const Offset(4.0, -4.0),
-                    blurRadius: 10.0,
-                    spreadRadius: 0.25,
+                ],
+              ),
+              // ignore: sort_child_properties_last
+              child: Column(
+                children: [
+                  // Balance text
+                  Container(
+                    height: 70,
+                    width: 400,
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 25, 86, 143),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 75),
+                      child: Row(
+                        children: [
+                          Text(
+                            "B A L A N C E",
+                            style: TextStyle(
+                              color: Colors.grey[100],
+                              fontSize: 30,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Icon(
+                            Icons.account_balance_wallet_outlined,
+                            size: 35,
+                            color: Colors.grey[100],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 1,
+                    width: 400,
+                    color: Colors.grey[500],
+                  ),
+
+                  // Balance amount
+                  Container(
+                    height: 70,
+                    width: 400,
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 71, 148, 221),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "$currencySymbol$totalBalance",
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 50,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    height: 1,
+                    width: 400,
+                    color: Colors.grey[500],
+                  ),
+
+                  // Show expence and income
+                  Container(
+                    height: 80,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Colors.blueGrey[100],
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          //Income
+                          Column(
+                            children: [
+                              const Row(
+                                children: [
+                                  Icon(
+                                    Icons.add_card_rounded,
+                                    size: 22,
+                                    color: Colors.green,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Income',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 7),
+                              Row(
+                                children: [
+                                  Text(
+                                    currencySymbol,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 25,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${lastIncomeTransaction?.transactionAmount ?? '0'}",
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 25,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2, bottom: 8),
+                            child: Container(
+                              height: 70,
+                              width: 1,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          //expence
+                          Column(
+                            children: [
+                              const Row(
+                                children: [
+                                  Icon(
+                                    Icons.add_card_rounded,
+                                    size: 22,
+                                    color: Colors.red,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Expence',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 7),
+                              Row(
+                                children: [
+                                  Text(
+                                    currencySymbol,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 25,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${lastExpenseTransaction?.transactionAmount ?? '0'}",
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 25,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
 
-          const SizedBox(height: 5),
+          const SizedBox(height: 20),
+
+          Container(
+            height: 1,
+            width: double.infinity,
+            color: Colors.grey[300],
+          ),
+
+          const SizedBox(height: 15),
 
           // Show recent transactions
 
@@ -1012,6 +1048,7 @@ class _ExpenceState extends State<Expence> {
                       transactionAmount: transactions[index].transactionAmount,
                       transactionType: transactions[index].transactionType,
                       timestamp: transactions[index].timestamp,
+                      currencySymbol: currencySymbol,
                     );
                   },
                 ),
