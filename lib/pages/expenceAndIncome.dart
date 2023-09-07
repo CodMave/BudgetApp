@@ -72,6 +72,10 @@ class _ExpenceState extends State<Expence> {
 
   String? userSelectedCurrency;
 
+  //list for toggle bar
+  List<bool> _selections = [true, false, false];
+  int selectedFilterIndex = 0;
+
   //list Expence categories
   List<String> expenceCategories = [
     'Food',
@@ -291,7 +295,7 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
-  //fettching latest expence and income from firestore *************
+  //fettching latest expence and income from firestore
 
   Future<void> fetchLatestTransactions(String userId) async {
     try {
@@ -447,7 +451,7 @@ class _ExpenceState extends State<Expence> {
         .snapshots();
   }
 
-  //Feth transactions for the current day  ***************
+  //Feth transactions for the current day
   Future<List<MyTransaction>> fetchTransactionsForCurrentDay(
       String userId) async {
     try {
@@ -513,7 +517,6 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
-  //*****************
   @override
   void initState() {
     final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -590,7 +593,6 @@ class _ExpenceState extends State<Expence> {
     getUserSelectedCurrency();
   }
 
-  //**************************/
   void newTransaction() {
     showDialog(
         barrierDismissible: false,
@@ -817,7 +819,7 @@ class _ExpenceState extends State<Expence> {
       //bottomNavigationBar: BottomNavigation(),
       body: Column(
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           // Show balance
 
@@ -1032,10 +1034,56 @@ class _ExpenceState extends State<Expence> {
             color: Colors.grey[300],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
+
+          //Toggle bar
+          ToggleButtons(
+            isSelected: _selections,
+            onPressed: (int newIndex) {
+              setState(() {
+                for (int index = 0; index < _selections.length; index++) {
+                  if (index == newIndex) {
+                    _selections[index] = true;
+                  } else {
+                    _selections[index] = false;
+                  }
+                }
+                selectedFilterIndex = newIndex;
+              });
+            },
+            borderRadius: BorderRadius.circular(20),
+            selectedColor: const Color.fromARGB(255, 25, 86, 143),
+            color: Colors.grey.shade600,
+            fillColor: Colors.grey[100],
+            selectedBorderColor: const Color.fromARGB(255, 25, 86, 143),
+            children: const [
+              Padding(
+                padding: EdgeInsets.only(left: 50, right: 50),
+                child: Text(
+                  'All',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 25, right: 25),
+                child: Text(
+                  'Income',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 20, right: 20),
+                child: Text(
+                  'Expence',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
 
           // Show recent transactions
-
           Expanded(
             // to show the list and button to overlay the list
             child: Stack(
@@ -1043,13 +1091,25 @@ class _ExpenceState extends State<Expence> {
                 ListView.builder(
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
-                    return MyTransaction(
-                      transactionName: transactions[index].transactionName,
-                      transactionAmount: transactions[index].transactionAmount,
-                      transactionType: transactions[index].transactionType,
-                      timestamp: transactions[index].timestamp,
-                      currencySymbol: currencySymbol,
-                    );
+                    if (selectedFilterIndex ==
+                            0 || // Show all when 'All' is selected
+                        (selectedFilterIndex == 1 &&
+                            transactions[index].transactionType ==
+                                'Income') || // Show income when 'Income' is selected
+                        (selectedFilterIndex == 2 &&
+                            transactions[index].transactionType == 'Expence')) {
+                      // Show expense when 'Expence' is selected
+                      return MyTransaction(
+                        transactionName: transactions[index].transactionName,
+                        transactionAmount:
+                            transactions[index].transactionAmount,
+                        transactionType: transactions[index].transactionType,
+                        timestamp: transactions[index].timestamp,
+                        currencySymbol: currencySymbol,
+                      );
+                    } else {
+                      return Container(); // Return an empty container for other cases
+                    }
                   },
                 ),
                 // Positioned widget for the button

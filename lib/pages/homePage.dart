@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'Savings.dart';
+import 'Summery.dart';
 import 'expenceAndIncome.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,8 +23,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String username = '';
   int? totalBalance;
-  String userSelectedCurrency = '';
-  String currencySymbol = '';
+  String? userSelectedCurrency;
+  String? currencySymbol;
   double? percentage;
 
   //get username from the firestore
@@ -64,13 +65,13 @@ class _HomePageState extends State<HomePage> {
       if (querySnapshot.docs.isNotEmpty) {
         var doc = querySnapshot.docs.first;
         userSelectedCurrency = doc.get('currency');
-        currencySymbolAssign(userSelectedCurrency);
+        currencySymbolAssign(userSelectedCurrency!);
         print('user selected currency is $userSelectedCurrency');
       }
     }
 
     print('user selected currency is $userSelectedCurrency');
-    return userSelectedCurrency;
+    return userSelectedCurrency!;
   }
 
   //method to calculate the total balance
@@ -304,7 +305,6 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 20),
 
               //card to show the remaining goals amout
-              //card to show the remaining goals amout
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: Container(
@@ -410,13 +410,14 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Container(
                                 height: 120,
-                                width: 210,
+                                width: 190,
                                 decoration: BoxDecoration(
                                   color: Colors.blueGrey.shade100,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.only(top: 12),
+                                  padding:
+                                      const EdgeInsets.only(top: 12, left: 10),
                                   child: Column(
                                     children: [
                                       Row(
@@ -424,7 +425,7 @@ class _HomePageState extends State<HomePage> {
                                             MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Text(
-                                            'Add New',
+                                            'Summary',
                                             style: TextStyle(
                                               color: Colors.grey.shade800,
                                               fontSize: 25,
@@ -438,12 +439,7 @@ class _HomePageState extends State<HomePage> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        Expence(
-                                                          notificationList: [],
-                                                          nume: 0,
-                                                          //onDeleteNotification:
-                                                          //onDeleteNotification
-                                                        )),
+                                                        Pro()),
                                               );
                                             },
                                             child: Icon(
@@ -454,106 +450,79 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ],
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: 50,
-                                            height: 50,
-                                            margin: const EdgeInsets.only(
-                                                left: 20, top: 10),
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.grey.shade800,
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Container(
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 15),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(width: 5),
+                                            Container(
+                                              width: 50,
+                                              height: 50,
+                                              margin: const EdgeInsets.only(
+                                                  left: 3, top: 10),
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: Colors.grey.shade100,
-                                              ),
-                                              child: IconButton(
-                                                icon: const Icon(
-                                                  FontAwesomeIcons.car,
-                                                  size: 30,
-                                                  color: Colors.black,
+                                                border: Border.all(
+                                                  color: Colors.grey.shade800,
+                                                  width: 1,
                                                 ),
-                                                onPressed: () {},
+                                              ),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.grey.shade100,
+                                                ),
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    Icons
+                                                        .align_vertical_bottom_outlined,
+                                                    size: 30,
+                                                    color: Colors.black,
+                                                  ),
+                                                  onPressed: () {},
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 5),
-                                          Container(
-                                            width: 50,
-                                            height: 50,
-                                            margin: const EdgeInsets.only(
-                                                left: 3, top: 10),
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.grey.shade800,
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Container(
+                                            const SizedBox(width: 5),
+                                            Container(
+                                              width: 50,
+                                              height: 50,
+                                              margin: const EdgeInsets.only(
+                                                  left: 3, top: 10),
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: Colors.grey.shade100,
-                                              ),
-                                              child: IconButton(
-                                                icon: const Icon(
-                                                  FontAwesomeIcons.burger,
-                                                  size: 30,
-                                                  color: Colors.black,
+                                                border: Border.all(
+                                                  color: Colors.grey.shade800,
+                                                  width: 1,
                                                 ),
-                                                onPressed: () {},
                                               ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 5),
-                                          Container(
-                                            width: 50,
-                                            height: 50,
-                                            margin: const EdgeInsets.only(
-                                                left: 3, top: 10),
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.grey.shade800,
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: Colors.grey.shade100,
-                                              ),
-                                              child: IconButton(
-                                                icon: const Icon(
-                                                  FontAwesomeIcons.plus,
-                                                  size: 30,
-                                                  color: Colors.black,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.grey.shade100,
                                                 ),
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            Expence(
-                                                              notificationList: [],
-                                                              nume: 0,
-                                                              //onDeleteNotification:
-                                                              //onDeleteNotification,
-                                                            )),
-                                                  );
-                                                },
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    FontAwesomeIcons.plus,
+                                                    size: 30,
+                                                    color: Colors.black,
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              Pro()),
+                                                    );
+                                                  },
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -562,7 +531,7 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(width: 10),
                               Container(
                                 height: 120,
-                                width: 170,
+                                width: 190,
                                 decoration: BoxDecoration(
                                   color: Colors.blueGrey.shade100,
                                   borderRadius: BorderRadius.circular(20),

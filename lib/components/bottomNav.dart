@@ -18,10 +18,13 @@ class _BottomNavigationState extends State<BottomNavigation> {
   int currentIndex = 0;
 
   List<Widget> pages = [
-    HomePage(),
-    Pro(),
-    Goals(),
-    Check(),
+    const HomePage(),
+    Expence(
+      notificationList: [],
+      nume: 0,
+    ),
+    const Goals(),
+    const Check(),
   ];
 
   void onTap(int index) {
@@ -35,7 +38,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return Scaffold(
       body: pages[currentIndex],
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.grey.shade300,
@@ -49,20 +52,20 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 rippleColor: Colors.grey[300]!,
                 hoverColor: Colors.grey[100]!,
                 gap: 8,
-                activeColor: Color.fromARGB(255, 11, 126, 221),
+                activeColor: Color.fromARGB(255, 25, 86, 143),
                 iconSize: 24,
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 duration: Duration(milliseconds: 400),
-                tabBackgroundColor: Colors.grey[400]!,
-                color: Colors.blue,
+                tabBackgroundColor: Colors.grey[300]!,
+                color: Colors.blueGrey,
                 tabs: const [
                   GButton(
                     icon: Icons.home,
                     text: 'Home',
                   ),
                   GButton(
-                    icon: Icons.align_vertical_bottom_outlined,
-                    text: 'Summary',
+                    icon: Icons.add_circle,
+                    text: 'Add',
                   ),
                   GButton(
                     icon: Icons.track_changes_rounded,

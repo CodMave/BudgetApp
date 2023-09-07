@@ -31,10 +31,7 @@ class _ProState extends State<Pro> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HomePage()),
-              );
+              Navigator.pop(context);
             },
           ),
           title: const Text(
