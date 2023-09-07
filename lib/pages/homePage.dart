@@ -488,13 +488,13 @@ class _ControllerState extends State<Controller> {
           ),
         ),
         body: SingleChildScrollView(
-          //user allows to scrolldown
+
           child: Container(
             alignment: Alignment.topCenter,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Container(
+             Container(
                   //container which carries the percentage indicator
                   height: 270,
                   width: 450,
@@ -897,7 +897,11 @@ class _ControllerState extends State<Controller> {
                     ),
                     InkWell(
                       onTap: () {
-                        print("Summary");
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => PlansApp()),
+                        // );
+
                       },
                       child: Container(
                         height: 80,
