@@ -13,48 +13,6 @@ import 'package:http/http.dart' as http;
 import '../firebase_options.dart';
 import 'homePage.dart';
 
-
-Future<void> _FirebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print('Handling background message:${message.messageId}');
-}
-
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'high_importance_channel',
-  'High Importance Notifications',
-  importance: Importance.high,
-);
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
-  var initializationsettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-  var initializationsettings =
-      InitializationSettings(android: initializationsettingsAndroid);
-  flutterLocalNotificationsPlugin.initialize(initializationsettings);
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-  runApp(MyWork());
-}
-
-class NotificationData {
-  final String message;
-  final DateTime receivedDateTime;
-
-  NotificationData({
-    required this.message,
-    required this.receivedDateTime,
-  });
-}
-
-
 class MyWork extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -63,6 +21,7 @@ class MyWork extends StatelessWidget {
     );
   }
 }
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, this.title}) : super(key: key);
 
@@ -74,21 +33,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int flag = 0;
-  String name='';
+  String name = '';
   FirebaseMessaging msg = FirebaseMessaging.instance;
- SharedPreferences? _prefs;
+  SharedPreferences? _prefs;
   int totalBalance = 0;
   String? mtoken = " ";
-
   String titleText = '';
   String bodyText = ' ';
-  String sts = ' ';
-
-
-  String titleText='';
-  String bodyText=' ';
-  final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
-
+  final FlutterLocalNotificationsPlugin notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> saveToken(String token) async {
@@ -131,8 +84,10 @@ class _MyHomePageState extends State<MyHomePage> {
       print("Error getting FCM token: $e");
     }
   }
+
   Future<void> initNotification() async {
-    AndroidInitializationSettings initializationSettingsAndroid = const AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings initializationSettingsAndroid =
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
 
     var initializationSettingsIOS = DarwinInitializationSettings(
         requestAlertPermission: true,
@@ -148,34 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
             (NotificationResponse notificationResponse) async {});
   }
 
-
-  void sendPushMessage(String token, String body, String title) async {
-    try {
-      await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization':
-              'key=AAAALO2Ssv8:APA91bFhhtJX7mwqMVxY4A4FYnDIrXNARvnH_ZmkasaXMwGuUkNBqiqphhLbHbnoB1OlmJnV3yQ1wX08FIT_X4RxCxBRdsvQLT_dVk1BONVlzg1IeJZnJboH3qgssZVMoMJlVEQoqVHb',
-        },
-        body: jsonEncode(
-          <String, dynamic>{
-            'notification': <String, dynamic>{'body': body, 'title': title},
-            'priority': 'high',
-            'data': <String, dynamic>{
-              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              'id': '1',
-              'status': 'done'
-            },
-            "to": token,
-          },
-        ),
-      );
-    } catch (e) {
-      print("error push notification");
-    }
-  }
-
   notificationDetails() {
     return const NotificationDetails(
         android: AndroidNotificationDetails('channelId', 'channelName',
@@ -189,10 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
         id, title, body, await notificationDetails());
   }
 
-
-  Future<void>firstprocess(String token)async {
-
-  void firstprocess(String token) async {
+  Future<void> firstprocess(String token) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -224,20 +148,16 @@ class _MyHomePageState extends State<MyHomePage> {
         await documentReference.update({
           'State': 'valid',
         });
-
-        sendPushMessage(token, bodyText, titleText);
-
-        String message='Hello! Welcome back to have an great experiance on budget Managing';
-        DateTime time=DateTime.now();
-       showNotification(
-          id:1,
+        String message =
+            'Hello! Welcome back to have an great experiance on budget Managing';
+        DateTime time = DateTime.now();
+        showNotification(
+          id: 1,
           title: 'Hello!!',
           body: message,
         );
-          addNotificationToFirestore(message,time);
-
+        addNotificationToFirestore(message, time);
       }
-
     }
   }
 
@@ -266,188 +186,55 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
-  void requestPermission() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      print('User granted provisional permission');
-    } else {
-      print('User declined or has not accepted permission');
-    }
-  }
-
-
   void initState() {
-
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
     initNotification();
     getToken();
 
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null) {
-        // Show in-app notification banner
-        Fluttertoast.showToast(
-          msg: notification.body!,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.blue,
-          textColor: Colors.white,
-        );
-
-        // Show local notification
-
-        // Now you can use the token as needed
-        // ...
-
-        flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              channelDescription: channel.description,
-              color: Colors.blue,
-              playSound: true,
-              icon: '@mipmap/ic_launcher',
-            ),
-          ),
-        );
-
-        counter();
-
-        addNotificationToList(notification.body ?? '');
-        print(notificationList.length);
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null) {
-        showDialog(
-          context: context,
-          builder: (_) {
-            return AlertDialog(
-              title: Text(notification.title!),
-              content: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(notification.body!),
-                    SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Text(
-                        'Received on: ${DateTime.now()}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      }
-    });
-
-    loadSavedMessages();
     getNewMessagesCount().then((value) {
-
-getNewMessagesCount().then((value) {
-
       setState(() {
         flag = value;
       });
     });
-
   }
-
-
- }
 
   Future<int> getNewMessagesCount() async {
     _prefs = await SharedPreferences.getInstance();
     return _prefs?.getInt('newMessagesCount') ?? 0;
   }
 
-
-  void addNotificationToFirestore(String message,DateTime time) async {
+  void addNotificationToFirestore(String message, DateTime time) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     User? user = _auth.currentUser;
     String username = user!.uid;
 
     try {
+      try {
+        final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-        try {
-          final FirebaseFirestore firestore = FirebaseFirestore.instance;
+        final CollectionReference incomeCollection = firestore
+            .collection('userDetails')
+            .doc(username)
+            .collection('ReceivedNotifications');
 
-          final CollectionReference incomeCollection = firestore
-              .collection('userDetails')
-              .doc(username)
-              .collection('ReceivedNotifications');
+        final DocumentReference newDocument = await incomeCollection.add({
+          'message': message,
+          'Time': time, // Use the formatted time as a DateTime
+        });
 
-          final DocumentReference newDocument = await incomeCollection.add({
-            'message': message,
-            'Time':time, // Use the formatted time as a DateTime
-          });
-
-          final String newDocumentId = newDocument.id;
-          print('New document created with ID: $newDocumentId');
-        } catch (ex) {
-          print('Notification adding failed: $ex');
-          // Handle the error appropriately, e.g., show a message to the user
-        }
+        final String newDocumentId = newDocument.id;
+        print('New document created with ID: $newDocumentId');
+      } catch (ex) {
+        print('Notification adding failed: $ex');
+        // Handle the error appropriately, e.g., show a message to the user
+      }
       // }
-    }
-
-    if (notificationList.isEmpty) {
-      // If the notificationList is empty, clear the stored messages from SharedPreferences
-      _prefs!.remove('messages');
-      _prefs!.remove('times');
-    } else {
-      final messages =
-          notificationList.map((notification) => notification.message).toList();
-      final times = notificationList
-          .map((notification) => notification.receivedDateTime.toString())
-          .toList();
-      _prefs!.setStringList('messages', messages);
-      _prefs!.setStringList('times', times);
-
-        catch (ex) {
+    } catch (ex) {
       print('Error occurs: $ex');
       // Handle any unexpected errors here
-
     }
   }
-
-
-
-
 
   Future<void> counter() async {
     final newCount = flag + 1;
@@ -458,38 +245,26 @@ getNewMessagesCount().then((value) {
     });
   }
 
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomePage(),
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Controller(
-          balance: totalBalance,
+        balance: totalBalance,
         num: flag,
       ),
-
-
     );
   }
 }
 
 class Holder extends StatefulWidget {
- final int totalBalance;
+  final int totalBalance;
 
   Holder({
     required this.totalBalance,
- });
-
+  });
 
   @override
-  State<Holder> createState() => _HolderState(
-
-
-  );
+  State<Holder> createState() => _HolderState();
 }
 
 class _HolderState extends State<Holder> {
@@ -551,94 +326,98 @@ class _HolderState extends State<Holder> {
 //    }
 //  }
 //
- void onDeleteNotification(int index) async {
-   final FirebaseAuth _auth = FirebaseAuth.instance;
-   User? user = _auth.currentUser;
-   String username = user!.uid;
+  void onDeleteNotification(int index) async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
 
-   try {
-     final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-     // Delete the notification from the local list
+      // Delete the notification from the local list
 
+      // Retrieve the corresponding document ID from Firestore
+      final CollectionReference incomeCollection = firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('ReceivedNotifications');
 
-     // Retrieve the corresponding document ID from Firestore
-     final CollectionReference incomeCollection = firestore
-         .collection('userDetails')
-         .doc(username)
-         .collection('ReceivedNotifications');
+      QuerySnapshot querySnapshot = await incomeCollection.get();
+      final documents = querySnapshot.docs;
 
-     QuerySnapshot querySnapshot = await incomeCollection.get();
-     final documents = querySnapshot.docs;
+      if (index < documents.length) {
+        final documentId = documents[index].id;
 
-     if (index < documents.length) {
-       final documentId = documents[index].id;
+        // Delete the notification document from Firestore
+        await incomeCollection.doc(documentId).delete();
+      } else {
+        print('Invalid index or document not found in Firestore');
+      }
+    } catch (ex) {
+      print('Error deleting notification: $ex');
+    }
+  }
 
-       // Delete the notification document from Firestore
-       await incomeCollection.doc(documentId).delete();
-     } else {
-       print('Invalid index or document not found in Firestore');
-     }
-   } catch (ex) {
-     print('Error deleting notification: $ex');
-   }
- }
- Future<int> getDocumentCount() async {
-   final FirebaseAuth _auth = FirebaseAuth.instance;
-   User? user = _auth.currentUser;
-   String username = user!.uid;
-   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  Future<int> getDocumentCount() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-   // Replace 'receivedMessage' with the name of your collection
-   final QuerySnapshot snapshot = await firestore.collection('userDetails').doc(username).collection('ReceivedNotifications').get();
+    // Replace 'receivedMessage' with the name of your collection
+    final QuerySnapshot snapshot = await firestore
+        .collection('userDetails')
+        .doc(username)
+        .collection('ReceivedNotifications')
+        .get();
 
-   // The length property of QuerySnapshot gives you the document count
-   final int documentCount = snapshot.size;
+    // The length property of QuerySnapshot gives you the document count
+    final int documentCount = snapshot.size;
 
-   return documentCount;
- }
-void getDocCount() async {
+    return documentCount;
+  }
 
-   count=await getDocumentCount();
-print(count);
- }
-
+  void getDocCount() async {
+    count = await getDocumentCount();
+    print(count);
+  }
 
   List<String> messages = []; // Store messages here
   int count = 0;
 
   void initState() {
-  super.initState();
-  getDocCount();
-  fetchMessages(); // Fetch messages when the widget is initialized
+    super.initState();
+    getDocCount();
+    fetchMessages(); // Fetch messages when the widget is initialized
   }
 
   Future<void> fetchMessages() async {
-  try {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  User? user = _auth.currentUser;
-  String username = user!.uid;
+    try {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      User? user = _auth.currentUser;
+      String username = user!.uid;
 
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final incomeSnapshot = await firestore
-      .collection('userDetails')
-      .doc(username)
-      .collection('ReceivedNotifications')
-      .get();
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('ReceivedNotifications')
+          .get();
 
-  List<String> fetchedMessages = [];
+      List<String> fetchedMessages = [];
 
-  incomeSnapshot.docs.forEach((dDoc) {
-  fetchedMessages.insert(0, dDoc.get('message'));
-  });
+      incomeSnapshot.docs.forEach((dDoc) {
+        fetchedMessages.insert(0, dDoc.get('message'));
+      });
 
-  setState(() {
-  messages = fetchedMessages;
-  });
-  } catch (ex) {
-  print('Getting the messages failed: $ex');
+      setState(() {
+        messages = fetchedMessages;
+      });
+    } catch (ex) {
+      print('Getting the messages failed: $ex');
+    }
   }
-  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -676,15 +455,8 @@ print(count);
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-
-                      children: List.generate(widget.notificationList.length,
-                          (index) {
-                        final notificationData = widget.notificationList[index];
-
-
                       itemCount: messages.length, // Use the length of messages
                       itemBuilder: (context, index) {
-
                         return Dismissible(
                           key: UniqueKey(),
                           background: Container(
@@ -693,19 +465,11 @@ print(count);
                           onDismissed: (direction) {
                             if (direction == DismissDirection.startToEnd) {
                               ScaffoldMessenger.of(context).showSnackBar(
-
-                                  SnackBar(
-                                      content: Text('$index item deleted')));
-
-                              widget.onDeleteNotification(index);
-
                                 SnackBar(
                                   content: Text('$index item deleted'),
-
                                 ),
                               );
                               onDeleteNotification(index);
-
                             }
                           },
                           child: Column(
@@ -717,54 +481,19 @@ print(count);
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(10),
                                   ),
-
-                                ), // Background color for the notification
-                                padding: EdgeInsets.all(
-                                    10), // Padding around the notification
-                                margin: EdgeInsets.all(
-                                    20), // Margin between notifications
-
                                 ),
                                 padding: EdgeInsets.all(10),
                                 margin: EdgeInsets.all(20),
-
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-
-                                      notificationData.message,
-
                                       messages[index], // Use messages[index]
-
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Color(0xff181EAA),
                                         fontWeight: FontWeight.bold,
                                       ),
-
-                                    ),
-                                    SizedBox(height: 5),
-                                    Align(
-                                      alignment: Alignment.bottomRight,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            DateFormat('dd/MM/yyyy   h:mm a')
-                                                .format(notificationData
-                                                    .receivedDateTime),
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.grey,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
                                     ),
                                     SizedBox(height: 5),
                                     // Align(
@@ -785,20 +514,14 @@ print(count);
                                     //     ],
                                     //   ),
                                     // ),
-
                                   ],
                                 ),
                               ),
                             ],
                           ),
                         );
-
-                      }),
-                    )
-
                       },
                     ),
-
                   ],
                 ),
               ),
