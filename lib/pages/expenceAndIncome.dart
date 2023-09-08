@@ -7,32 +7,31 @@ import '../components/tranaction.dart';
 import 'Notification.dart';
 
 class Expence extends StatefulWidget {
-  final List<NotificationData> notificationList; //initialize a list
   final int nume;
   //final void Function(int index) onDeleteNotification;
 
   Expence({
     Key? key,
-    required this.notificationList,
     required this.nume,
     //required this.onDeleteNotification,
   }) : super(key: key);
 
   @override
   _ExpenceState createState() => _ExpenceState(
-        notificationList: notificationList,
+        //notificationList: notificationList,
         nume: nume,
         //onDeleteNotification: onDeleteNotification,
       );
+
 // You need to replace this with the correct way to get the instance of the _ExpenceState class
 }
 
 class _ExpenceState extends State<Expence> {
-  final List<NotificationData> notificationList;
   final int nume;
+
   //final void Function(int index) onDeleteNotification;
+
   _ExpenceState({
-    required this.notificationList,
     required this.nume,
     //required this.onDeleteNotification,
   });
@@ -786,12 +785,6 @@ class _ExpenceState extends State<Expence> {
         });
   }
 
-  void updateTotalBalance(int newBalance) {
-    setState(() {
-      totalBalance = newBalance;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -799,6 +792,7 @@ class _ExpenceState extends State<Expence> {
       appBar: AppBar(
         backgroundColor:
             Colors.grey[100], // Set the background color of the App Bar
+
         title: const Text(
           'T R A N S A C T I O N S',
           style: TextStyle(

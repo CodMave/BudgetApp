@@ -252,11 +252,17 @@ class _SavingsState extends State<Savings> {
         appBar: AppBar(
           backgroundColor: Colors.grey[100],
           leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              color: Colors.black,
-              onPressed: () {
-                Navigator.pop(context);
-              }),
+            icon: Icon(Icons.arrow_back),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomePage(),
+                ),
+              );
+            },
+          ),
           actions: [
             Icon(
               CupertinoIcons.money_dollar_circle,

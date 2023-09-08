@@ -434,8 +434,9 @@ class _HomePageState extends State<HomePage> {
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Pro()),
+                                                    builder: (context) => Pro(
+                                                        balance:
+                                                            totalBalance!)),
                                               );
                                             },
                                             child: Icon(
@@ -510,8 +511,9 @@ class _HomePageState extends State<HomePage> {
                                                     Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              Pro()),
+                                                          builder: (context) => Pro(
+                                                              balance:
+                                                                  totalBalance!)),
                                                     );
                                                   },
                                                 ),
