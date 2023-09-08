@@ -22,6 +22,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     Expence(
       notificationList: [],
       nume: 0,
+      //onDeleteNotification: (index) => {},
     ),
     const Goals(),
     const Check(),

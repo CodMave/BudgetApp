@@ -9,7 +9,6 @@ import 'Notification.dart';
 class Expence extends StatefulWidget {
   final List<NotificationData> notificationList; //initialize a list
   final int nume;
-
   //final void Function(int index) onDeleteNotification;
 
   Expence({
@@ -800,13 +799,6 @@ class _ExpenceState extends State<Expence> {
       appBar: AppBar(
         backgroundColor:
             Colors.grey[100], // Set the background color of the App Bar
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black, // Set the color of the back arrow
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         title: const Text(
           'T R A N S A C T I O N S',
           style: TextStyle(

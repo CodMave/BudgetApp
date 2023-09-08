@@ -23,6 +23,8 @@ class _GoalsState extends State<Goals> {
   DateTime? endDate;
   final planTitleController = TextEditingController();
   final planAmountController = TextEditingController();
+  String? userSelectedCurrency;
+  late String currencySymbol = '';
 
   late Stream<DocumentSnapshot<Map<String, dynamic>>> _plansStream;
 
@@ -134,6 +136,49 @@ class _GoalsState extends State<Goals> {
     }
   }
 
+  //get the user selected currency from firestore
+  Future<String> getUserSelectedCurrency() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      var email = user.email!;
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('userDetails')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        userSelectedCurrency = doc.get('currency');
+        currencySymbolAssign(userSelectedCurrency!);
+        print('user selected currency is $userSelectedCurrency');
+      }
+    }
+
+    print('user selected currency is $userSelectedCurrency');
+    return userSelectedCurrency!;
+  }
+
+  void currencySymbolAssign(String userSelecterCurrency) {
+    if (userSelecterCurrency == 'USD') {
+      currencySymbol = '\$';
+    } else if (userSelecterCurrency == 'EUR') {
+      currencySymbol = '€';
+    } else if (userSelecterCurrency == 'INR') {
+      currencySymbol = '₹';
+    } else if (userSelecterCurrency == 'SLR') {
+      currencySymbol = 'Rs';
+    } else if (userSelecterCurrency == 'GBP') {
+      currencySymbol = '£';
+    } else if (userSelecterCurrency == 'AUD') {
+      currencySymbol = 'A\$';
+    } else if (userSelecterCurrency == 'CAD') {
+      currencySymbol = 'C\$';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -156,6 +201,8 @@ class _GoalsState extends State<Goals> {
         });
       }
     });
+
+    getUserSelectedCurrency();
   }
 
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
@@ -432,7 +479,7 @@ class _GoalsState extends State<Goals> {
                                       amount: amount,
                                       startDate: startDate,
                                       endDate: endDate,
-                                      //currency: currencySymbol,
+                                      currencySymbol: currencySymbol,
                                     ));
                                   },
                                 );
@@ -506,13 +553,6 @@ class _GoalsState extends State<Goals> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black,
-        ),
         title: const Text(
           'G O A L S',
           style: TextStyle(
@@ -681,6 +721,7 @@ class _GoalsState extends State<Goals> {
                               amount: goalData['amount'],
                               startDate: goalData['startDate'].toDate(),
                               endDate: goalData['endDate'].toDate(),
+                              currencySymbol: currencySymbol,
                             );
                           }).toList(),
                         ),

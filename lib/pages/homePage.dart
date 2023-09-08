@@ -1,17 +1,13 @@
 import 'package:budgettrack/pages/Profile.dart';
-import 'package:budgettrack/pages/goals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-
 import 'Savings.dart';
 import 'Summery.dart';
-import 'expenceAndIncome.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -281,7 +277,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Your Current Balace',
+                        'Your Current Balance',
                         style: TextStyle(
                           color: Colors.grey.shade300,
                           fontSize: 20,
