@@ -20,7 +20,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   List<Widget> pages = [
     const HomePage(),
     Expence(
-      notificationList: [],
+      //notificationList: [],
       nume: 0,
       //onDeleteNotification: (index) => {},
     ),
