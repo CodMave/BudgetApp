@@ -9,12 +9,15 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'Savings.dart';
 import 'Summery.dart';
 
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
 
 class _HomePageState extends State<HomePage> {
   String username = '';
@@ -35,6 +38,7 @@ class _HomePageState extends State<HomePage> {
           .where('email', isEqualTo: email)
           .limit(1)
           .get();
+
 
       if (querySnapshot.docs.isNotEmpty) {
         var doc = querySnapshot.docs.first;
@@ -167,6 +171,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+
   void currencySymbolAssign(String userSelecterCurrency) {
     if (userSelecterCurrency == 'USD') {
       currencySymbol = '\$';
@@ -182,8 +187,11 @@ class _HomePageState extends State<HomePage> {
       currencySymbol = 'A\$';
     } else if (userSelecterCurrency == 'CAD') {
       currencySymbol = 'C\$';
+
     }
+
   }
+
 
   @override
   void initState() {
@@ -192,6 +200,7 @@ class _HomePageState extends State<HomePage> {
       print('completed');
       setState(() {});
     });
+
 
     //get the username
     getUsername();
@@ -225,6 +234,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey.shade300,
                     size: 40,
                   ),
+
                 ),
               ),
               const SizedBox(width: 10),
@@ -251,6 +261,7 @@ class _HomePageState extends State<HomePage> {
                       );
                     }
                   },
+
                 ),
               ),
             ],
@@ -259,6 +270,7 @@ class _HomePageState extends State<HomePage> {
           elevation: 0,
         ),
         body: SingleChildScrollView(
+
           child: Column(
             children: [
               //card to show the total balance
@@ -282,8 +294,11 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.grey.shade300,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+
                         ),
+
                       ),
+
                       const SizedBox(height: 15),
                       Text(
                         '$currencySymbol$totalBalance',
@@ -291,6 +306,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white,
                           fontSize: 70,
                           fontWeight: FontWeight.bold,
+
                         ),
                       ),
                     ],
@@ -411,6 +427,7 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.blueGrey.shade100,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
+
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.only(top: 12, left: 10),
@@ -443,6 +460,7 @@ class _HomePageState extends State<HomePage> {
                                               color: Colors.grey.shade800,
                                               size: 30,
                                             ),
+
                                           ),
                                         ],
                                       ),
@@ -519,8 +537,10 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           ],
                                         ),
+
                                       ),
                                     ],
+
                                   ),
                                 ),
                               ),
@@ -532,6 +552,8 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.blueGrey.shade100,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
+
+
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 12),
                                   child: Column(
@@ -645,7 +667,9 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
+
                         ],
+
                       ),
                     ),
                   ],

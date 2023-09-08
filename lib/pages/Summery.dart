@@ -4,11 +4,22 @@ import '../components/bottomNav.dart';
 import 'homePage.dart';
 
 class Pro extends StatefulWidget {
+  int balance=0;
+  Pro({
+    required int balance
+}){
+    this.balance=balance;
+  }
+
   @override
-  _ProState createState() => _ProState();
+  _ProState createState() => _ProState(
+      savingbalance:balance,
+  );
 }
 
 class _ProState extends State<Pro> {
+  int savingbalance=0;
+  _ProState({required this.savingbalance});
   bool showContainer1 = false;
   bool showContainer2 = false;
   bool showContainer3 = false;
@@ -46,6 +57,7 @@ class _ProState extends State<Pro> {
         ),
         //bottomNavigationBar:
         //bottomNavigationBar: BottomNavigation(),
+
         body: SingleChildScrollView(
           child: Container(
             child: Column(
@@ -59,7 +71,7 @@ class _ProState extends State<Pro> {
                       ElevatedButton(
                         onPressed: () => _showContainer(1),
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xff181EAA),
+                          primary: showContainer1 ? Colors.green : Color(0xff181EAA),
                           onPrimary: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -71,7 +83,7 @@ class _ProState extends State<Pro> {
                       ElevatedButton(
                         onPressed: () => _showContainer(2),
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xff181EAA),
+                          primary:showContainer2 ? Colors.green : Color(0xff181EAA),
                           onPrimary: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -83,14 +95,15 @@ class _ProState extends State<Pro> {
                       ElevatedButton(
                         onPressed: () => _showContainer(3),
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xff181EAA),
+                          primary: showContainer3 ? Colors.green : Color(0xff181EAA),
                           onPrimary: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         child: Text('Yearly'),
-                      ),
+                      )
+
                     ],
                   ),
                 ),
