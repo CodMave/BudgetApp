@@ -14,7 +14,7 @@ class PlusButton extends StatelessWidget {
         height: 60,
         width: 60,
         decoration: BoxDecoration(
-          color: const Color(0xff90E0EF),
+          color: Color.fromARGB(255, 71, 148, 221),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(

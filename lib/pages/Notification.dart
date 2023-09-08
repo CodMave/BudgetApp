@@ -13,6 +13,48 @@ import 'package:http/http.dart' as http;
 import '../firebase_options.dart';
 import 'homePage.dart';
 
+
+Future<void> _FirebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print('Handling background message:${message.messageId}');
+}
+
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel',
+  'High Importance Notifications',
+  importance: Importance.high,
+);
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_FirebaseMessagingBackgroundHandler);
+  var initializationsettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationsettings =
+      InitializationSettings(android: initializationsettingsAndroid);
+  flutterLocalNotificationsPlugin.initialize(initializationsettings);
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+  runApp(MyWork());
+}
+
+class NotificationData {
+  final String message;
+  final DateTime receivedDateTime;
+
+  NotificationData({
+    required this.message,
+    required this.receivedDateTime,
+  });
+}
+
+
 class MyWork extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -37,31 +79,35 @@ class _MyHomePageState extends State<MyHomePage> {
  SharedPreferences? _prefs;
   int totalBalance = 0;
   String? mtoken = " ";
+
+  String titleText = '';
+  String bodyText = ' ';
+  String sts = ' ';
+
+
   String titleText='';
   String bodyText=' ';
   final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
+
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> saveToken(String token) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     User? user = _auth.currentUser;
     String username = user!.uid;
-    final CollectionReference incomeCollection = firestore.collection('userDetails')
-        .doc(username)
-        .collection('Tokens');
+    final CollectionReference incomeCollection =
+        firestore.collection('userDetails').doc(username).collection('Tokens');
 
     // Check if the token already exists in the database
-    final existingToken = await incomeCollection.where('token', isEqualTo: token).get();
+    final existingToken =
+        await incomeCollection.where('token', isEqualTo: token).get();
 
     if (existingToken.docs.isEmpty) {
       // Token does not exist, so save it
-      final DocumentReference newDocument = await incomeCollection.add({
-        'token': token,
-        'State':'invalid'
-      });
+      final DocumentReference newDocument =
+          await incomeCollection.add({'token': token, 'State': 'invalid'});
 
       // Perform any additional actions you need
-
     } else {
       // Token already exists, no need to save it again
       print("Token already exists in the database");
@@ -102,6 +148,34 @@ class _MyHomePageState extends State<MyHomePage> {
             (NotificationResponse notificationResponse) async {});
   }
 
+
+  void sendPushMessage(String token, String body, String title) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAALO2Ssv8:APA91bFhhtJX7mwqMVxY4A4FYnDIrXNARvnH_ZmkasaXMwGuUkNBqiqphhLbHbnoB1OlmJnV3yQ1wX08FIT_X4RxCxBRdsvQLT_dVk1BONVlzg1IeJZnJboH3qgssZVMoMJlVEQoqVHb',
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'notification': <String, dynamic>{'body': body, 'title': title},
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'id': '1',
+              'status': 'done'
+            },
+            "to": token,
+          },
+        ),
+      );
+    } catch (e) {
+      print("error push notification");
+    }
+  }
+
   notificationDetails() {
     return const NotificationDetails(
         android: AndroidNotificationDetails('channelId', 'channelName',
@@ -118,14 +192,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void>firstprocess(String token)async {
 
+  void firstprocess(String token) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    final incomeSnapshot = await firestore.collection('userDetails').doc(username).collection('Tokens').where('State',isEqualTo:'invalid').get();
+    final incomeSnapshot = await firestore
+        .collection('userDetails')
+        .doc(username)
+        .collection('Tokens')
+        .where('State', isEqualTo: 'invalid')
+        .get();
     print(token);
     if (incomeSnapshot.docs.isNotEmpty) {
-      bodyText = 'Hello! Welcome back to have an great experiance on budget Managing';
+      bodyText =
+          'Hello! Welcome back to have an great experiance on budget Managing';
       titleText = 'Welcome!';
 
       final existingEntry = await getExistingEntry('invalid');
@@ -141,8 +222,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // Use the update method to update the "Balance" field
         await documentReference.update({
-          'State':'valid',
+          'State': 'valid',
         });
+
+        sendPushMessage(token, bodyText, titleText);
+
         String message='Hello! Welcome back to have an great experiance on budget Managing';
         DateTime time=DateTime.now();
        showNotification(
@@ -151,11 +235,12 @@ class _MyHomePageState extends State<MyHomePage> {
           body: message,
         );
           addNotificationToFirestore(message,time);
+
       }
 
     }
-
   }
+
   Future<String?> getExistingEntry(String state) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -166,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
           .collection('userDetails')
           .doc(username)
           .collection('Tokens')
-          .where('State',isEqualTo: state)
+          .where('State', isEqualTo: state)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -182,6 +267,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
+  void requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
+  }
+
+
   void initState() {
 
     super.initState();
@@ -189,11 +298,95 @@ class _MyHomePageState extends State<MyHomePage> {
     initNotification();
     getToken();
 
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        // Show in-app notification banner
+        Fluttertoast.showToast(
+          msg: notification.body!,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.blue,
+          textColor: Colors.white,
+        );
+
+        // Show local notification
+
+        // Now you can use the token as needed
+        // ...
+
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+              color: Colors.blue,
+              playSound: true,
+              icon: '@mipmap/ic_launcher',
+            ),
+          ),
+        );
+
+        counter();
+
+        addNotificationToList(notification.body ?? '');
+        print(notificationList.length);
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageOpenedApp event was published!');
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: Text(notification.title!),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(notification.body!),
+                    SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Text(
+                        'Received on: ${DateTime.now()}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      }
+    });
+
+    loadSavedMessages();
+    getNewMessagesCount().then((value) {
+
 getNewMessagesCount().then((value) {
+
       setState(() {
         flag = value;
       });
     });
+
+  }
+
 
  }
 
@@ -231,9 +424,24 @@ getNewMessagesCount().then((value) {
         }
       // }
     }
+
+    if (notificationList.isEmpty) {
+      // If the notificationList is empty, clear the stored messages from SharedPreferences
+      _prefs!.remove('messages');
+      _prefs!.remove('times');
+    } else {
+      final messages =
+          notificationList.map((notification) => notification.message).toList();
+      final times = notificationList
+          .map((notification) => notification.receivedDateTime.toString())
+          .toList();
+      _prefs!.setStringList('messages', messages);
+      _prefs!.setStringList('times', times);
+
         catch (ex) {
       print('Error occurs: $ex');
       // Handle any unexpected errors here
+
     }
   }
 
@@ -249,6 +457,13 @@ getNewMessagesCount().then((value) {
       flag = newCount;
     });
   }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: HomePage(),
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -256,6 +471,7 @@ getNewMessagesCount().then((value) {
           balance: totalBalance,
         num: flag,
       ),
+
 
     );
   }
@@ -460,8 +676,15 @@ print(count);
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
+
+                      children: List.generate(widget.notificationList.length,
+                          (index) {
+                        final notificationData = widget.notificationList[index];
+
+
                       itemCount: messages.length, // Use the length of messages
                       itemBuilder: (context, index) {
+
                         return Dismissible(
                           key: UniqueKey(),
                           background: Container(
@@ -470,12 +693,19 @@ print(count);
                           onDismissed: (direction) {
                             if (direction == DismissDirection.startToEnd) {
                               ScaffoldMessenger.of(context).showSnackBar(
+
+                                  SnackBar(
+                                      content: Text('$index item deleted')));
+
+                              widget.onDeleteNotification(index);
+
                                 SnackBar(
                                   content: Text('$index item deleted'),
 
                                 ),
                               );
                               onDeleteNotification(index);
+
                             }
                           },
                           child: Column(
@@ -487,19 +717,54 @@ print(count);
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(10),
                                   ),
+
+                                ), // Background color for the notification
+                                padding: EdgeInsets.all(
+                                    10), // Padding around the notification
+                                margin: EdgeInsets.all(
+                                    20), // Margin between notifications
+
                                 ),
                                 padding: EdgeInsets.all(10),
                                 margin: EdgeInsets.all(20),
+
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
+
+                                      notificationData.message,
+
                                       messages[index], // Use messages[index]
+
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Color(0xff181EAA),
                                         fontWeight: FontWeight.bold,
                                       ),
+
+                                    ),
+                                    SizedBox(height: 5),
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            DateFormat('dd/MM/yyyy   h:mm a')
+                                                .format(notificationData
+                                                    .receivedDateTime),
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
                                     ),
                                     SizedBox(height: 5),
                                     // Align(
@@ -520,14 +785,20 @@ print(count);
                                     //     ],
                                     //   ),
                                     // ),
+
                                   ],
                                 ),
                               ),
                             ],
                           ),
                         );
+
+                      }),
+                    )
+
                       },
                     ),
+
                   ],
                 ),
               ),

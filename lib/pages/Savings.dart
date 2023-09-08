@@ -7,6 +7,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../components/bottomNav.dart';
 import 'homePage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cupertino_icons/cupertino_icons.dart';
@@ -18,8 +19,8 @@ class Savings extends StatefulWidget {
 
   @override
   State<Savings> createState() => _SavingsState(
-    savingbalance: balance,
-  );
+        savingbalance: balance,
+      );
 }
 
 String documentId = '';
@@ -27,10 +28,9 @@ String documentId = '';
 class _SavingsState extends State<Savings> {
   SharedPreferences? _prefs;
   String? selectedyear = "23";
-  int savingbalance=0;
+  int savingbalance = 0;
 
-  DateTime now=DateTime.now();
-
+  DateTime now = DateTime.now();
 
   final items = [
     '23',
@@ -69,6 +69,8 @@ class _SavingsState extends State<Savings> {
   DateTime lastDate = DateTime.now();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  String? get username => null;
+
   void initState() {
     super.initState();
     loadYear();
@@ -79,7 +81,7 @@ class _SavingsState extends State<Savings> {
     List<int> currentBalance = [];
     User? user = _auth
         .currentUser; //created an instance to the User of Firebase authorized
-    username = user!.uid;
+    var username = user!.uid;
 
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -106,6 +108,11 @@ class _SavingsState extends State<Savings> {
         .currentUser; //created an instance to the User of Firebase authorized
     username = user!.uid;
 
+
+  Future<DateTime> loadLastMonth() async {
+    _prefs = await SharedPreferences.getInstance();
+    final storedMonth = _prefs?.getString('lastMonth');
+
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
       final incomeSnapshot = await firestore
@@ -119,6 +126,7 @@ class _SavingsState extends State<Savings> {
       currentMonth.insert(0,dDoc.get('Month'));
       });
 
+
       return  currentMonth;
     } catch (ex) {
       print('Getting the month failed');
@@ -127,10 +135,10 @@ class _SavingsState extends State<Savings> {
   }
 
 
+
+
   Future<void> updateBalance() async {
-
     final currentMonth = DateTime.now();
-
 
     // Update the balance for the current month
     try {
@@ -166,7 +174,6 @@ class _SavingsState extends State<Savings> {
     setState(() {});
   }
 
-
   Future<String?> getExistingEntry(String month, int year) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -195,7 +202,6 @@ class _SavingsState extends State<Savings> {
     }
   }
 
-
   Future<int> loadYear() async {
     _prefs = await SharedPreferences.getInstance();
     final selectedYear = _prefs?.getString('selectedYear');
@@ -209,12 +215,18 @@ class _SavingsState extends State<Savings> {
   }
 
 
+  Future<void> saveBalance() async {
+    if (savingbalance != 0) {
+      await saveLastMonth(DateTime.now());
+    }
+  }
+
 
   Future<String> addSavingsToFireStore(
-      int balance,
-      String Day,
-      int year,
-      ) async {
+    int balance,
+    String Day,
+    int year,
+  ) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
 
@@ -244,21 +256,24 @@ class _SavingsState extends State<Savings> {
 
   @override
   Widget build(BuildContext context) {
-   
+
+    DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
+          value: item,
+          child: Text(
+            item,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 60),
+          ),
+        );
+
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey[100],
         appBar: AppBar(
           backgroundColor: Colors.grey[100],
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             color: Colors.black,
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomePage(),
-                ),
-              );
+              Navigator.pop(context);
             },
           ),
           actions: [
@@ -714,6 +729,8 @@ class _SavingsState extends State<Savings> {
                             color:const Color(0xFF090950),
                           )
                       ),
+            // Use RefreshIndicator to enable manual refresh
+
                     ),
                   ),
                   Container(
@@ -761,12 +778,14 @@ class _SavingsState extends State<Savings> {
                           final balanceList = snapshot.data!;
                           return Scrollbar(
                             child: RefreshIndicator(
+
                               onRefresh: () async {
                                 await updateBalance();
                               },
                               child: ListView.builder(
                                 itemCount: balanceList.length,
                                 itemBuilder: (context, index) {
+
                                   return Column(
                                     children: [
                                       ListTile(
@@ -833,6 +852,7 @@ class _SavingsState extends State<Savings> {
                                                   ),
                                                 ),
                                               ],
+
                                             ),
                                           ],
                                         ),

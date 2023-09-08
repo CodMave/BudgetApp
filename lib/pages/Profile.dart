@@ -9,41 +9,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../components/bottomNav.dart';
+
 import '../firebase_options.dart';
 import '../main.dart';
+
 import 'LoginPage.dart';
 import 'Startup.dart';
 import 'authPage.dart';
 import 'homePage.dart';
 import 'loginOrReg.dart';
 
-class Check extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: Size(300, 812),
-      builder: (context, child) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Profile(), //routes to the Profile class
-      ),
-    );
-  }
-}
-
-class Profile extends StatefulWidget {
-  FirebaseAuth auth = FirebaseAuth.instance;
-  Profile({
-    Key? key,
-    this.title,
-  }) : super(key: key);
-
-  final String? title;
+class Check extends StatefulWidget {
+  const Check({Key? key}) : super(key: key);
 
   @override
-  _Profile createState() => _Profile();
+  _CheckState createState() => _CheckState();
 }
 
-class _Profile extends State<Profile> {
+class _CheckState extends State<Check> {
   //private class of the Profile class
 
   Uint8List? _image; //initialize the image variable
@@ -79,7 +64,7 @@ class _Profile extends State<Profile> {
   void saveImageToStorage(Uint8List image) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String imageData =
-    base64Encode(image); //again encode the String to the image
+        base64Encode(image); //again encode the String to the image
     prefs.setString(_imagekey, imageData);
   }
 
@@ -96,8 +81,8 @@ class _Profile extends State<Profile> {
   }
 
   void
-  TakePhoto() async //allows to user to set the profile image as taken photo fro camera
-      {
+      TakePhoto() async //allows to user to set the profile image as taken photo fro camera
+  {
     Uint8List img = await PickImage(ImageSource.camera);
     if (img != null) {
       saveImageToStorage(img); //save the image
@@ -111,7 +96,7 @@ class _Profile extends State<Profile> {
   static Future<String> getUserName() async {
     //get the username of the current user and display it as text
     User? user = _auth.currentUser;
-    email = user!.email!;
+    var email = user!.email!;
     if (user != null) {
       //the query check wither the authentication email match with the email which is taken at the user details
       QuerySnapshot qs = await FirebaseFirestore.instance
@@ -141,14 +126,13 @@ class _Profile extends State<Profile> {
     }
   }
 
-
   static Future<String> getCurrency() async {
     //get the currency that user selected and show it as text
     User? user = _auth.currentUser;
-    email = user!.email!;
+    var email = user!.email!;
     if (user != null) {
       QuerySnapshot qs = await FirebaseFirestore.instance.collection(
-        //the query check wither the authentication email match with the email which is taken at the user details
+          //the query check wither the authentication email match with the email which is taken at the user details
           'userDetails').where('email', isEqualTo: email).limit(1).get();
 
       if (qs.docs.isNotEmpty) {
@@ -176,10 +160,7 @@ class _Profile extends State<Profile> {
     //show button sheet when the user click on the camera allows to set a new image
     return Container(
       height: 100,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      width: MediaQuery.of(context).size.width,
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
         children: [
@@ -210,11 +191,13 @@ class _Profile extends State<Profile> {
       ),
     );
   }
+
   Future<void> _signOut(BuildContext context) async {
     try {
       await _auth.signOut(); // Sign out the current user
       Navigator.of(context).popUntil((route) => route.isFirst); // Clear the navigation stack
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Myclass())); // Navigate to the initial route
+
     } catch (e) {
       print('Error while signing out: $e');
     }
@@ -224,19 +207,14 @@ class _Profile extends State<Profile> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
-              ),
-            );
+            Navigator.pop(context);
           },
         ),
         title: Text(
@@ -254,7 +232,6 @@ class _Profile extends State<Profile> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-
             /// PROFILE HEADER
             Container(
               alignment: Alignment.topCenter,
@@ -288,14 +265,14 @@ class _Profile extends State<Profile> {
                               children: [
                                 _image != null
                                     ? //if the user hasn't set an image yet then display this image in the following circle avatar
-                                CircleAvatar(
-                                    radius: 80.0,
-                                    backgroundImage: MemoryImage(_image!))
+                                    CircleAvatar(
+                                        radius: 80.0,
+                                        backgroundImage: MemoryImage(_image!))
                                     : CircleAvatar(
-                                  //if the user set an image then display the corresponding image in the following circle avatar
-                                    radius: 80.0,
-                                    backgroundImage: AssetImage(
-                                        'lib/images/Profileimage.png')),
+                                        //if the user set an image then display the corresponding image in the following circle avatar
+                                        radius: 80.0,
+                                        backgroundImage: AssetImage(
+                                            'lib/images/Profileimage.png')),
                                 Positioned(
                                   bottom: 20.0,
                                   right: 20.0,
@@ -308,8 +285,7 @@ class _Profile extends State<Profile> {
                                       );
                                     },
                                     child: Icon(
-                                      Icons
-                                          .camera_alt,
+                                      Icons.camera_alt,
                                       //camera icon allows user to set an image
                                       color: Colors.teal,
                                       size: 28.0,
@@ -421,8 +397,7 @@ class _Profile extends State<Profile> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => MyMenu()),
+                              MaterialPageRoute(builder: (context) => MyMenu()),
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -440,7 +415,7 @@ class _Profile extends State<Profile> {
                           child: Text('Settings')),
                     ),
                     Container(
-                      //this button allows to user to log out from the account
+                        //this button allows to user to log out from the account
                         margin: EdgeInsets.only(top: 10),
                         child: ElevatedButton(
                           onPressed: () => _signOut(context),
@@ -457,9 +432,7 @@ class _Profile extends State<Profile> {
                             elevation: 3,
                           ),
                           child: Text('Log Out'),
-                        )
-
-                    )
+                        ))
                   ],
                 )
               ],
@@ -470,4 +443,3 @@ class _Profile extends State<Profile> {
     );
   }
 }
-
