@@ -115,7 +115,7 @@ class _ControllerState extends State<Controller> {
     int balance = (totalIncome - totalExpence).toInt();
 
     setState(() {
-    newbalance = balance;
+      newbalance = balance;
     });
 
     return newbalance;
@@ -430,7 +430,7 @@ class _ControllerState extends State<Controller> {
               } else if (Index == 2) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Pro(balance: newbalance,)),
+                  MaterialPageRoute(builder: (context) => Pro()),
                 );
               } else if (Index == 3) {
                 Navigator.push(
@@ -533,27 +533,27 @@ class _ControllerState extends State<Controller> {
                               // Handle the case where the Future is still running
                               return CircularProgressIndicator();
                             } else if (snapshot.hasError) {
-                                // Handle any errors that occurred during the Future execution
-                                return Text('Error: ${snapshot.error}');
+                              // Handle any errors that occurred during the Future execution
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              // Perform a null check before using snapshot.data
+                              if (snapshot.data != null) {
+
+                                final percentage = (snapshot.data!*100).toStringAsFixed(0);
+
+                                return Text(
+                                  '${percentage}%',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 60,
+                                    color: Colors.black,
+                                  ),
+                                );
                               } else {
-                                // Perform a null check before using snapshot.data
-                                if (snapshot.data != null) {
-
-                                  final percentage = (snapshot.data!*100).toStringAsFixed(0);
-
-                                  return Text(
-                                    '${percentage}%',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 60,
-                                      color: Colors.black,
-                                    ),
-                                  );
-                                } else {
-                                  // Handle the case where snapshot.data is null
-                                  return Text('Data is null');
-                                }
+                                // Handle the case where snapshot.data is null
+                                return Text('Data is null');
                               }
+                            }
                             },
                           ),
                         ),
@@ -602,71 +602,71 @@ class _ControllerState extends State<Controller> {
               ),
               SizedBox(height:10),
               Container(
-              width:375,
-              height:220,
+                  width:375,
+                  height:220,
 
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('lib/images/mastercard NEW.png'),
-                  fit: BoxFit.cover,
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-
-
-              child:Column(
-                children: [
-                  Align(
-                    alignment:Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top:5,left:5),
-                      child: Text(
-                          'Balance',
-                          style:TextStyle(
-                            fontFamily:'Lexend-VariableFont',
-                            fontSize: 20,
-                            color:const Color(0xFF090950),
-                          )
-                      ),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('lib/images/mastercard NEW.png'),
+                      fit: BoxFit.cover,
                     ),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  Align(
-                    alignment:Alignment.bottomLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top:130,left:5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                                    '\$${newbalance}',
-                                    style: TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
-                                      fontSize: 40,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                          Text(
-                            '${DateFormat('dd/MM').format(DateTime.now())}',
-                            style:TextStyle(
-                              fontFamily:'Lexend-VariableFont',
-                              fontSize:20,
-                              color:Colors.white,
-                            ),
+
+
+                  child:Column(
+                    children: [
+                      Align(
+                        alignment:Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top:5,left:5),
+                          child: Text(
+                              'Balance',
+                              style:TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                fontSize: 20,
+                                color:const Color(0xFF090950),
+                              )
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                      Align(
+                        alignment:Alignment.bottomLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top:130,left:5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '\$${newbalance}',
+                                style: TextStyle(
+                                  fontFamily:'Lexend-VariableFont',
+                                  fontSize: 40,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                '${DateFormat('dd/MM').format(DateTime.now())}',
+                                style:TextStyle(
+                                  fontFamily:'Lexend-VariableFont',
+                                  fontSize:20,
+                                  color:Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
 
 
-                ],
-              )
+                    ],
+                  )
 
-            ),
-            const SizedBox(height: 10),
+              ),
+              const SizedBox(height: 10),
 
               Container(
-               width:double.infinity,
+                width:double.infinity,
                 height:140,
                 color:Color(0xFF85B6FF),
                 child: Row(
@@ -879,106 +879,7 @@ class _ControllerState extends State<Controller> {
                   ],
                 ),
               ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //   children: [
-              //     InkWell(
-              //       onTap: () {
-              //         Navigator.push(
-              //           context,
-              //           MaterialPageRoute(builder: (context) => Pro(balance: newbalance,)),
-              //         );
-              //       },
-              //       child: Container(
-              //         height: 80,
-              //         width: 80,
-              //         margin: const EdgeInsets.only(top: 15, left: 5),
-              //         decoration: const BoxDecoration(
-              //           borderRadius: BorderRadius.all(Radius.circular(10)),
-              //           color: Color(0xff86D5FF),
-              //         ),
-              //         child: const Align(
-              //           alignment: Alignment.center,
-              //           child: Image(
-              //             width: 60,
-              //             height: 60,
-              //             image: AssetImage(
-              //                 'lib/images/Income.png'), //income image
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //     InkWell(
-              //       onTap: () {
-              //         // Navigator.push(
-              //         //   context,
-              //         //   MaterialPageRoute(builder: (context) => PlansApp()),
-              //         // );
-              //
-              //       },
-              //       child: Container(
-              //         height: 80,
-              //         width: 80,
-              //         margin: const EdgeInsets.only(top: 15),
-              //         decoration: const BoxDecoration(
-              //           borderRadius: BorderRadius.all(Radius.circular(10)),
-              //           color: Color(0xff86D5FF),
-              //         ),
-              //         child: const Align(
-              //           alignment: Alignment.center,
-              //           child: Image(
-              //             width: 80,
-              //             height: 80,
-              //             image: AssetImage(
-              //                 'lib/images/Summery.png'), //summery image
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //     InkWell(
-              //       onTap: () {
-              //         // on click to goals
-              //         Navigator.push(
-              //           context,
-              //           MaterialPageRoute(
-              //               builder: (context) => const Goals()),
-              //         );
-              //       },
-              //       child: Container(
-              //         height: 80,
-              //         width: 80,
-              //         margin: const EdgeInsets.only(top: 15),
-              //         decoration: const BoxDecoration(
-              //           borderRadius: BorderRadius.all(Radius.circular(10)),
-              //           color: Color(0xff86D5FF),
-              //         ),
-              //         child: const Align(
-              //           alignment: Alignment.center,
-              //           child: Image(
-              //             width: 60,
-              //             height: 60,
-              //             image: AssetImage(
-              //                 'lib/images/Profile.png'), //profile image
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //     InkWell(
-              //       onTap: () {
-              //         print("Novelty");
-              //       },
-              //       child: Container(
-              //         height: 80,
-              //         width: 80,
-              //         margin: const EdgeInsets.only(top: 15),
-              //         decoration: const BoxDecoration(
-              //           borderRadius: BorderRadius.all(Radius.circular(10)),
-              //           color: Color(0xff86D5FF),
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
+
 
             ],
           ),
