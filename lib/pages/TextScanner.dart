@@ -216,7 +216,7 @@ class _ResultState extends State<Result> {
       words.addAll(lineWords);
     }
     for (word in words) {
-      if (word == 'ROUTE:'||word == 'ROUTE'|||word == 'RoUTE') {
+      if (word == 'ROUTE:'||word == 'ROUTE'||word == 'RoUTE') {
         transactiontype='Transport';
         print('Found the Word ROUTE');
       }
@@ -247,8 +247,30 @@ class _ResultState extends State<Result> {
           }
           print( transactiontype);
           addtransaction( transactiontype,double.parse(extractedValue).toInt());
-        }
 
+        }
+    showDialog(
+      context: context, // Use the current context
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Color(0xFFC2DAFF), // Set background color
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0), // Add circular border
+          ),
+          title: Text('Transaction'),
+          content: Text('Transaction:($transactiontype) occured successfully\n The transaction amount is Rs.$double.parse(extractedValue).toInt()'),
+          actions: [
+            TextButton(
+
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the alert dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
   Future<int> getTotalBalance(String userId) async {
     int totalIncome = await calculateTotalIncome(userId);

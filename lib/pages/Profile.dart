@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../firebase_options.dart';
 import '../main.dart';
 import 'LoginPage.dart';
+import 'Savings.dart';
 import 'Startup.dart';
 import 'authPage.dart';
 import 'homePage.dart';
@@ -65,24 +66,91 @@ class _Profile extends State<Profile> {
     super.initState();
     loadStoredImage();
   }
+  Future<Uint8List?> getImageFromFirestore() async {
+    try {
+      User? user = _auth.currentUser;
+      String username = user!.uid;
 
-  void loadStoredImage() async {
-    //load the profile image when the user load the app
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? imageData = prefs.getString(_imagekey);
-    if (imageData != null) {
-      setState(() {
-        _image = base64Decode(imageData); //decode image to String
-      });
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final CollectionReference profileImageCollection = firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('ProfileImage');
+
+      QuerySnapshot imageDocuments = await profileImageCollection.get();
+
+      if (imageDocuments.docs.isNotEmpty) {
+        // If there are image documents, retrieve the first one (assuming only one exists)
+        String base64Image = imageDocuments.docs.first['Userimage'];
+
+        // Decode the base64-encoded image data and return it as Uint8List
+        Uint8List imageBytes = base64Decode(base64Image);
+        return imageBytes;
+      } else {
+        return null; // Return null if no image documents are found
+      }
+    } catch (ex) {
+      print('Image retrieval from Firestore failed: $ex');
+      return null; // Return null to indicate failure
     }
   }
 
-  void saveImageToStorage(Uint8List image) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String imageData =
-    base64Encode(image); //again encode the String to the image
-    prefs.setString(_imagekey, imageData);
+
+  void loadStoredImage() async {
+
+    Uint8List? profileImage = await getImageFromFirestore();
+
+    if (profileImage != null) {
+      setState(() {
+        _image = profileImage;
+      });
+    } else {
+      _image=null;
+    }
   }
+
+  Future<String?> saveImageToStorage(Uint8List? image) async {
+    try {
+      User? user = _auth.currentUser;
+      String username = user!.uid;
+
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final CollectionReference profileImageCollection = firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('ProfileImage');
+
+      // Query the Firestore to check if an image document already exists
+      QuerySnapshot existingImages = await profileImageCollection.get();
+
+      if (existingImages.docs.isNotEmpty) {
+        // If an image document exists, update it with the new image data
+        String base64Image = base64Encode(image!);
+        DocumentSnapshot existingImage = existingImages.docs.first;
+        await existingImage.reference.update({'Userimage': base64Image});
+        print('Image updated with ID: ${existingImage.id}');
+        return existingImage.id;
+      } else {
+        // If no image document exists, add a new one
+        if (image != null) {
+          String base64Image = base64Encode(image);
+          DocumentReference newDocument =
+          await profileImageCollection.add({'Userimage': base64Image});
+          String newDocumentId = newDocument.id;
+          print('New document created with ID: $newDocumentId');
+          return newDocumentId;
+        } else {
+          return null; // Return null if no image data is provided
+        }
+      }
+    } catch (ex) {
+      print('Image upload to Firestore failed: $ex');
+      return null; // Return null to indicate failure
+    }
+  }
+
   void SelectImageFromGalery() async {
     //allows user to select an image from the gallery
     Uint8List img = await PickImage(ImageSource.gallery);

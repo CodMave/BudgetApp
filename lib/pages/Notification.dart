@@ -277,64 +277,7 @@ class Holder extends StatefulWidget {
 }
 
 class _HolderState extends State<Holder> {
-//   List<String> messages = [];
-//   int count=0;
-// void initState(){
-//   super.initState();
-//   getDocCount();
-// }
-//
-//
-//  Future<List> gettheMessagefromDB() async {
-//    final FirebaseAuth _auth = FirebaseAuth.instance;
-//    List<String> Message = [];
-//    User? user = _auth.currentUser; //created an instance to the User of Firebase authorized
-//    username = user!.uid;
-//
-//    try {
-//      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-//      final incomeSnapshot = await firestore
-//          .collection('userDetails')
-//          .doc(username)
-//          .collection('ReceivedNotifications')
-//          .get();
-//
-//      incomeSnapshot.docs.forEach((dDoc) {
-//       Message.insert(0,dDoc.get('message'));
-//      });
-//
-//      return  Message;
-//    } catch (ex) {
-//      print('Getting the message failed');
-//      return [];
-//    }
-//  }
-//  Future<List> gettheReceivedTimefromDB() async {
-//    List<DateTime> time = [];
-//    final FirebaseAuth _auth = FirebaseAuth.instance;
-//
-//    User? user = _auth.currentUser; //created an instance to the User of Firebase authorized
-//    username = user!.uid;
-//
-//    try {
-//      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-//      final incomeSnapshot = await firestore
-//          .collection('userDetails')
-//          .doc(username)
-//          .collection('ReceivedNotifications')
-//          .get();
-//
-//      incomeSnapshot.docs.forEach((dDoc) {
-//        time.insert(0,dDoc.get('Time'));
-//      });
-//
-//      return  time;
-//    } catch (ex) {
-//      print('Getting the time failed');
-//      return [];
-//    }
-//  }
-//
+
   List<DateTime> time = [];
   void onDeleteNotification(int index) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
