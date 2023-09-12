@@ -90,37 +90,58 @@ class _ExpenceState extends State<Expence> {
 
   //get currency
 
-  Future<void> getDocIds() async {
-    try {
-      var snapshot =
-      await FirebaseFirestore.instance.collection('userDatails').get();
-      if (snapshot.docs.isNotEmpty) {
-        userSelecterCurrency = snapshot.docs[0].get('currency');
-        print('user selected currency: $userSelecterCurrency');
-        currencySymbolAssign();
+  Future<String> getDocIds() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    email = user!.email!;
+    if (user != null) {
+      QuerySnapshot qs = await FirebaseFirestore.instance.collection(
+        //the query check wither the authentication email match with the email which is taken at the user details
+          'userDetails').where('email', isEqualTo: email).limit(1).get();
+
+      if (qs.docs.isNotEmpty) {
+        // Loop through the documents to find the one with the matching email
+        for (QueryDocumentSnapshot doc in qs.docs) {
+          if (doc.get('email') == email) {
+            // Get the 'username' field from the matching document
+            currencySymbol = doc.get('currency');
+            print(currencySymbol);
+            if(currencySymbol=='SLR'){
+              currencySymbol='Rs.';
+            }
+            else if(currencySymbol=='USD'){
+              currencySymbol='\$';
+            }
+            else if(currencySymbol=='EUR'){
+              currencySymbol='€';
+            }
+            else if(currencySymbol=='INR'){
+              currencySymbol='₹';
+            }
+            else if(currencySymbol=='GBP'){
+              currencySymbol='£';
+            }
+            else if(currencySymbol== 'AUD'){
+              currencySymbol='A\$';
+            }
+            else if(currencySymbol=='CAD'){
+              currencySymbol='C\$';
+            }
+
+            return currencySymbol; //return the currency
+          }
+        }
       }
-    } catch (e) {
-      print('Error fetching user details: $e');
+      // Handle the case when no matching documents are found for the current user
+      print('No matching document found for the current user.');
+      return ''; // Return an empty string or null based on your requirements
+    } else {
+      // Handle the case when the user is not authenticated
+      print('User not authenticated.');
+      return ''; // Return an empty string or null based on your requirements
     }
   }
 
-  void currencySymbolAssign() {
-    if (userSelecterCurrency == 'USD') {
-      currencySymbol = '\$';
-    } else if (userSelecterCurrency == 'EUR') {
-      currencySymbol = '€';
-    } else if (userSelecterCurrency == 'INR') {
-      currencySymbol = '₹';
-    } else if (userSelecterCurrency == 'SLR') {
-      currencySymbol = 'Rs';
-    } else if (userSelecterCurrency == 'GBP') {
-      currencySymbol = '£';
-    } else if (userSelecterCurrency == 'AUD') {
-      currencySymbol = 'A\$';
-    } else if (userSelecterCurrency == 'CAD') {
-      currencySymbol = 'C\$';
-    }
-  }
 
   //method to get currently signed in user's uid
 

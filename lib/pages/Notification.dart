@@ -335,6 +335,7 @@ class _HolderState extends State<Holder> {
 //    }
 //  }
 //
+  List<DateTime> time = [];
   void onDeleteNotification(int index) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     User? user = _auth.currentUser;
@@ -394,7 +395,8 @@ class _HolderState extends State<Holder> {
   void initState() {
     super.initState();
     getDocCount();
-    fetchMessages(); // Fetch messages when the widget is initialized
+    fetchMessages();
+    fetchTime();// Fetch messages when the widget is initialized
   }
 
   Future<void> fetchMessages() async {
@@ -418,6 +420,35 @@ class _HolderState extends State<Holder> {
 
       setState(() {
         messages = fetchedMessages;
+      });
+    } catch (ex) {
+      print('Getting the messages failed: $ex');
+    }
+  }
+  Future<void> fetchTime() async {
+    try {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      User? user = _auth.currentUser;
+      String username = user!.uid;
+
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('ReceivedNotifications')
+          .get();
+
+      List<DateTime> fetchedTime = []; // Change the type to List<DateTime>
+
+      incomeSnapshot.docs.forEach((dDoc) {
+        // Assuming 'Time' is a timestamp field in Firestore
+        Timestamp timestamp = dDoc.get('Time');
+        DateTime dateTime = timestamp.toDate();
+        fetchedTime.insert(0, dateTime);
+      });
+
+      setState(() {
+        time = fetchedTime;
       });
     } catch (ex) {
       print('Getting the messages failed: $ex');
@@ -462,72 +493,76 @@ class _HolderState extends State<Holder> {
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: messages.length, // Use the length of messages
                       itemBuilder: (context, index) {
-                        return Dismissible(
-                          key: UniqueKey(),
-                          background: Container(
-                            color: Colors.blue,
-                          ),
-                          onDismissed: (direction) {
-                            if (direction == DismissDirection.startToEnd) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('$index item deleted'),
-
-                                ),
-                              );
-                              onDeleteNotification(index);
-                            }
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xffADE8F4),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
+                        if (index < messages.length && index < time.length) {
+                          return Dismissible(
+                            key: UniqueKey(),
+                            background: Container(
+                              color: Colors.blue,
+                            ),
+                            onDismissed: (direction) {
+                              if (direction == DismissDirection.startToEnd) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('$index item deleted'),
+                                  ),
+                                );
+                                onDeleteNotification(index);
+                              }
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffADE8F4),
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(10),
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.all(10),
+                                  margin: EdgeInsets.all(20),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        messages[index], // Use messages[index]
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Color(0xff181EAA),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Align(
+                                        alignment: Alignment.bottomRight,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              DateFormat('dd/MM/yyyy   h:mm a')
+                                                  .format(time[index]),
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.all(20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      messages[index], // Use messages[index]
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0xff181EAA),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    // Align(
-                                    //   alignment: Alignment.bottomRight,
-                                    //   child: Column(
-                                    //     crossAxisAlignment:
-                                    //         CrossAxisAlignment.start,
-                                    //     children: [
-                                    //       Text(
-                                    //         DateFormat('dd/MM/yyyy   h:mm a')
-                                    //             .format(timelist?[index]),
-                                    //         style: TextStyle(
-                                    //           fontSize: 16,
-                                    //           color: Colors.grey,
-                                    //           fontWeight: FontWeight.bold,
-                                    //         ),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
+                              ],
+                            ),
+                          );
+                        } else {
+                          // Handle the case where index is out of bounds
+                          return SizedBox(); // Return an empty SizedBox or any other appropriate widget
+                        }
                       },
-                    ),
+                    )
+
                   ],
                 ),
               ),

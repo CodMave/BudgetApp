@@ -40,6 +40,10 @@ class _RegisterPage extends State<RegisterPage> {
 
   //user signup method
   void userSignUp() async {
+    if (usernameControll.text.isEmpty || passwordControll.text.isEmpty||emailControll.text.isEmpty||confirmPasswordControll.text.isEmpty) {
+      wrongInputlAlert('Fields can\'t be empty');
+      return;
+    }
     //loading circle
     showDialog(
       context: context,
@@ -67,7 +71,6 @@ class _RegisterPage extends State<RegisterPage> {
 
         //loading circle end
         Navigator.pop(context);
-        print('this is working zzzzzzzzzzzzzzzzz');
 
         //navigate to email verification page
         Navigator.pushReplacement(
@@ -136,10 +139,20 @@ class _RegisterPage extends State<RegisterPage> {
         child: SingleChildScrollView(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             const SizedBox(height: 20),
-            //logo
-            const Icon(
-              Icons.lock,
-              size: 50,
+            Column(
+              children: [
+                Container(
+                    alignment: Alignment.topCenter,
+                    width:180,
+                    height:180,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('lib/images/monkey.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    )),
+              ],
             ),
 
             const SizedBox(height: 20),

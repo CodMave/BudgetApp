@@ -64,17 +64,17 @@ class _GoalsState extends State<Goals> {
   //Method add goals to the database
 
   Future<void> addGoalsToFirestore(
-    String userId,
-    String selectedCategory,
-    int planAmountController,
-    DateTime selectedStartDate,
-    DateTime selectedEndDate,
-  ) async {
+      String userId,
+      String selectedCategory,
+      int planAmountController,
+      DateTime selectedStartDate,
+      DateTime selectedEndDate,
+      ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
       final CollectionReference goalsCollection =
-          firestore.collection('userDetails').doc(userId).collection('goalsID');
+      firestore.collection('userDetails').doc(userId).collection('goalsID');
 
       await goalsCollection.add({
         'amount': planAmountController,
@@ -274,7 +274,7 @@ class _GoalsState extends State<Goals> {
                               },
                               items: expenceCategories
                                   .map<DropdownMenuItem<String>>(
-                                (String value) {
+                                    (String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Row(
@@ -472,7 +472,7 @@ class _GoalsState extends State<Goals> {
                                 amount = int.parse(planAmountController.text);
 
                                 setState(
-                                  () {
+                                      () {
                                     myGoals.add(MyGoal(
                                       userId: userId,
                                       category: selectedCategory,
@@ -510,17 +510,17 @@ class _GoalsState extends State<Goals> {
                                     .snapshots();
 
                                 _plansStream.listen(
-                                    (DocumentSnapshot<Map<String, dynamic>>
-                                        snapshot) {
-                                  if (snapshot.exists) {
-                                    setState(() {
-                                      amount = snapshot.data()!['amount'];
-                                      categoty = snapshot.data()!['category'];
-                                      startDate = snapshot.data()!['startDate'];
-                                      endDate = snapshot.data()!['endDate'];
+                                        (DocumentSnapshot<Map<String, dynamic>>
+                                    snapshot) {
+                                      if (snapshot.exists) {
+                                        setState(() {
+                                          amount = snapshot.data()!['amount'];
+                                          categoty = snapshot.data()!['category'];
+                                          startDate = snapshot.data()!['startDate'];
+                                          endDate = snapshot.data()!['endDate'];
+                                        });
+                                      }
                                     });
-                                  }
-                                });
 
                                 //selectedCategory = '';
                                 //planAmountController.clear();
@@ -605,7 +605,7 @@ class _GoalsState extends State<Goals> {
 
                 // Add plan button
 
-                const SizedBox(width: 93),
+                const SizedBox(width: 64),
 
                 GestureDetector(
                   onTap: () {
@@ -714,7 +714,7 @@ class _GoalsState extends State<Goals> {
                         Column(
                           children: goalDocs.map((goalDoc) {
                             final goalData =
-                                goalDoc.data() as Map<String, dynamic>;
+                            goalDoc.data() as Map<String, dynamic>;
                             return MyGoal(
                               userId: userId!,
                               category: goalData['category'],

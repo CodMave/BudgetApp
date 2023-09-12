@@ -216,7 +216,7 @@ class _ResultState extends State<Result> {
       words.addAll(lineWords);
     }
     for (word in words) {
-      if (word == 'ROUTE:'||word == 'ROUTE') {
+      if (word == 'ROUTE:'||word == 'ROUTE'|||word == 'RoUTE') {
         transactiontype='Transport';
         print('Found the Word ROUTE');
       }

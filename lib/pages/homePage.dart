@@ -69,6 +69,7 @@ class Controller extends StatefulWidget {
 class _ControllerState extends State<Controller> {
   bool isContainerVisible = false;
   int newbalance = 0;
+  String currency='';
 
   _ControllerState(
       {required this.newbalance});
@@ -95,6 +96,57 @@ class _ControllerState extends State<Controller> {
             // Get the 'username' field from the matching document
             String username = doc.get('username');
             return username;
+          }
+        }
+      }
+      // Handle the case when no matching documents are found for the current user
+      print('No matching document found for the current user.');
+      return ''; // Return an empty string or null based on your requirements
+    } else {
+      // Handle the case when the user is not authenticated
+      print('User not authenticated.');
+      return ''; // Return an empty string or null based on your requirements
+    }
+  }
+   Future<String> getCurrency() async {
+    //get the currency that user selected and show it as text
+    User? user = _auth.currentUser;
+    email = user!.email!;
+    if (user != null) {
+      QuerySnapshot qs = await FirebaseFirestore.instance.collection(
+        //the query check wither the authentication email match with the email which is taken at the user details
+          'userDetails').where('email', isEqualTo: email).limit(1).get();
+
+      if (qs.docs.isNotEmpty) {
+        // Loop through the documents to find the one with the matching email
+        for (QueryDocumentSnapshot doc in qs.docs) {
+          if (doc.get('email') == email) {
+            // Get the 'username' field from the matching document
+             currency = doc.get('currency');
+            print(currency);
+            if(currency=='SLR'){
+              currency='Rs.';
+            }
+            else if(currency=='USD'){
+              currency='\$';
+            }
+            else if(currency=='EUR'){
+              currency='€';
+            }
+            else if(currency=='INR'){
+              currency='₹';
+            }
+            else if(currency=='GBP'){
+              currency='£';
+            }
+            else if(currency== 'AUD'){
+              currency='A\$';
+            }
+            else if(currency=='CAD'){
+              currency='C\$';
+            }
+
+            return currency; //return the currency
           }
         }
       }
@@ -172,6 +224,7 @@ class _ControllerState extends State<Controller> {
   }
   void initState() {
     super.initState();
+    getCurrency();
     getBalance();
     getIncome();
     getExpence();
@@ -638,7 +691,7 @@ class _ControllerState extends State<Controller> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '\$${newbalance}',
+                                '${currency}${newbalance}',
                                 style: TextStyle(
                                   fontFamily:'Lexend-VariableFont',
                                   fontSize: 40,

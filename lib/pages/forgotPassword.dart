@@ -59,12 +59,21 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //logo
-              const Icon(
-                Icons.lock,
-                size: 100,
+              Column(
+                children: [
+                  Container(
+                      alignment: Alignment.topCenter,
+                      width:150,
+                      height:150,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('lib/images/monkey.png'),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      )),
+                ],
               ),
-
               const SizedBox(height: 20),
 
               // Text

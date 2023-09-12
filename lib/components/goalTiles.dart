@@ -54,7 +54,7 @@ class _MyGoalState extends State<MyGoal> {
                       "${widget.amount}",
                       style: const TextStyle(
                         color: Colors.black,
-                        fontSize: 40,
+                        fontSize: 32,
                       ),
                     ),
                   ],

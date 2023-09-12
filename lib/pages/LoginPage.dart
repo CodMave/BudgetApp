@@ -26,7 +26,21 @@ class _LoginPageState extends State<LoginPage> {
   //text editing
   final usernameControll = TextEditingController();
   String mtoken='';
+  final formKey = GlobalKey<FormState>();
   final passwordControll = TextEditingController();
+
+  String? selectedCurrency = "USD";
+  List currency = [
+    'USD',
+    'EUR',
+    'INR',
+    'SLR',
+    'GBP',
+    'AUD',
+    'CAD'
+    // ADD MORE
+  ];
+
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void setvalidity()async{
@@ -145,6 +159,167 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
+  // void newTransaction() {
+  //   showDialog(
+  //       barrierDismissible: false,
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return StatefulBuilder(
+  //           builder: (BuildContext context, setState) {
+  //             return AlertDialog(
+  //               title: const Text("Please set your first name and the currency"),
+  //               content: SingleChildScrollView(
+  //                 child: Form(
+  //                   key: formKey,
+  //                   child: Column(
+  //                     children: [
+  //
+  //                       Row(
+  //                         children: [
+  //                           Expanded(
+  //                             child: TextFormField(
+  //                               decoration: const InputDecoration(
+  //                                 border: OutlineInputBorder(),
+  //                                 hintText: "Enter the First name",
+  //                               ),
+  //                               validator: (text) {
+  //                                 if (text == null || text.isEmpty) {
+  //                                   return "Please enter the First name";
+  //                                 }
+  //                                 return null;
+  //                               },
+  //                               keyboardType: TextInputType.text,
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                       const SizedBox(height: 10),
+  //                       Row(
+  //                         children: [
+  //                           Padding(
+  //                             padding: const EdgeInsets.symmetric(horizontal: 25.0),
+  //                             child: DropdownButtonFormField(
+  //                               value: selectedCurrency,
+  //                               items: currency.map((listValue) {
+  //                                 return DropdownMenuItem(
+  //                                   value: listValue,
+  //                                   child: Text(listValue),
+  //                                 );
+  //                               }).toList(),
+  //                               onChanged: (valueSelected) {
+  //                                 setState(() {
+  //                                   selectedCurrency = valueSelected as String;
+  //                                 });
+  //                               },
+  //                               icon: Icon(
+  //                                 Icons.arrow_downward_outlined,
+  //                                 color: Colors.grey[800],
+  //                               ),
+  //                               dropdownColor: Colors.grey[200],
+  //                               decoration: InputDecoration(
+  //                                 labelText: "Selet The Currency",
+  //                                 labelStyle: TextStyle(
+  //                                     color: Colors.grey[700],
+  //                                     fontSize: 17,
+  //                                     fontWeight: FontWeight.bold),
+  //                                 prefixIcon: Icon(
+  //                                   Icons.attach_money_sharp,
+  //                                   color: Colors.grey[700],
+  //                                   size: 40,
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //               actions: <Widget>[
+  //                 MaterialButton(
+  //                   color: Colors.grey[600],
+  //                   child: const Text(
+  //                     'Cancel',
+  //                     style: TextStyle(
+  //                       color: Colors.white,
+  //                     ),
+  //                   ),
+  //                   onPressed: () {
+  //                     Navigator.of(context).pop();
+  //                   },
+  //                 ),
+  //                 MaterialButton(
+  //                   color: Colors.grey[600],
+  //                   child: const Text(
+  //                     'Enter',
+  //                     style: TextStyle(
+  //                       color: Colors.white,
+  //                     ),
+  //                   ),
+  //                   onPressed: () async {
+  //                     if (formKey.currentState!.validate()) {
+  //                       String transactionType =
+  //                       is_income ? "Income" : "Expence";
+  //                       int transactionAmount =
+  //                       int.parse(amountController.text);
+  //
+  //                       String transactionName = transactionNameController.text;
+  //                       print(transactionName);
+  //
+  //                       //get the user id
+  //                       String? userId = await getCurrentUserId();
+  //
+  //                       transactions
+  //                           .sort((a, b) => b.timestamp.compareTo(a.timestamp));
+  //
+  //                       //Navigator.of(context).pop();
+  //
+  //                       //add transaction to the list
+  //                       setState(() {
+  //                         transactions.add(
+  //                           MyTransaction(
+  //                             transactionName: transactionName,
+  //                             transactionAmount: transactionAmount,
+  //                             transactionType: transactionType,
+  //                             timestamp: DateTime.now(),
+  //                             currencySymbol: currencySymbol,
+  //                           ),
+  //                         );
+  //                       });
+  //
+  //                       transactionNameController.clear();
+  //                       amountController.clear();
+  //                       Navigator.of(context).pop();
+  //
+  //                       if (is_income) {
+  //                         addIncomeToFireStore(
+  //                           userId,
+  //                           transactionName,
+  //                           transactionAmount,
+  //                         );
+  //                       } else {
+  //                         addExpenceToFireStore(
+  //                           userId,
+  //                           transactionName,
+  //                           transactionAmount,
+  //                         );
+  //                       }
+  //                       updateBalance(
+  //                         userId,
+  //                         await getTotalBalance(userId),
+  //                         await calculateTotalIncome(userId),
+  //                         await getTotalExpence(userId),
+  //                       );
+  //                     }
+  //                   },
+  //                 ),
+  //               ],
+  //             );
+  //           },
+  //         );
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -154,11 +329,22 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             const SizedBox(height: 50),
-            //logo
-            const Icon(
-              Icons.lock,
-              size: 100,
-            ),
+          Column(
+            children: [
+              Container(
+                alignment: Alignment.topCenter,
+                width:180,
+                  height:180,
+                  decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('lib/images/monkey.png'),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              )),
+            ],
+          ),
+
 
             const SizedBox(height: 40),
 
@@ -271,12 +457,7 @@ class _LoginPageState extends State<LoginPage> {
                 MyTitle(
                     imagePath: 'lib/images/google.png',
                     onTap: () => {
-                      if(AuthService().signInWithGoodle()!=null){
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) => HomePage()
-                            )
-                        ),
-                      }
+                      //showmethod(),
                     }
                 ),
 
@@ -318,4 +499,9 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
+}   // if(AuthService().signInWithGoodle()!=null){
+//   Navigator.pushReplacement(context,
+//       MaterialPageRoute(builder: (context) => HomePage()
+//       )
+//   ),
+// }

@@ -70,18 +70,70 @@ class _SavingsState extends State<Savings> {
   // Default time: 12:00
 
   _SavingsState({required this.savingbalance,required this.incomev,required this.expensev});
-
+ String currencySymbol='';
   DateTime lastDate = DateTime.now();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void initState() {
     super.initState();
     loadYear();
+    getDocIds();
     updateBalance();
     getthesavingfromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
     gettheexpensefromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
     getSelectedMonth(DateFormat('MMMM').format(DateTime.now()));
     countpercent(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
+  }
+  Future<String> getDocIds() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    email = user!.email!;
+    if (user != null) {
+      QuerySnapshot qs = await FirebaseFirestore.instance.collection(
+        //the query check wither the authentication email match with the email which is taken at the user details
+          'userDetails').where('email', isEqualTo: email).limit(1).get();
+
+      if (qs.docs.isNotEmpty) {
+        // Loop through the documents to find the one with the matching email
+        for (QueryDocumentSnapshot doc in qs.docs) {
+          if (doc.get('email') == email) {
+            // Get the 'username' field from the matching document
+            currencySymbol = doc.get('currency');
+            print(currencySymbol);
+            if(currencySymbol=='SLR'){
+              currencySymbol='Rs.';
+            }
+            else if(currencySymbol=='USD'){
+              currencySymbol='\$';
+            }
+            else if(currencySymbol=='EUR'){
+              currencySymbol='€';
+            }
+            else if(currencySymbol=='INR'){
+              currencySymbol='₹';
+            }
+            else if(currencySymbol=='GBP'){
+              currencySymbol='£';
+            }
+            else if(currencySymbol== 'AUD'){
+              currencySymbol='A\$';
+            }
+            else if(currencySymbol=='CAD'){
+              currencySymbol='C\$';
+            }
+
+            return currencySymbol; //return the currency
+          }
+        }
+      }
+      // Handle the case when no matching documents are found for the current user
+      print('No matching document found for the current user.');
+      return ''; // Return an empty string or null based on your requirements
+    } else {
+      // Handle the case when the user is not authenticated
+      print('User not authenticated.');
+      return ''; // Return an empty string or null based on your requirements
+    }
   }
   int getLastTwoDigitsOfCurrentYear() {
     DateTime now = DateTime.now();
@@ -429,7 +481,7 @@ class _SavingsState extends State<Savings> {
   }
   Future<void>countpercent(String year,String month)async{
 
-    double percentage = (await getthesavingfromDB(year,month)).toDouble() /(await gettheexpensefromDB(year,month)).toDouble();
+    double percentage = (await getthesavingfromDB(year,month)).toDouble() /(await gettheincomefromDB(year,month)).toDouble();
     if (percentage >= 0 && percentage <= 1) {
       setState(() {
         this.percent=percentage;
@@ -704,7 +756,7 @@ class _SavingsState extends State<Savings> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      'Rs.',
+                                      '$currencySymbol',
                                       style: TextStyle(
                                         fontFamily:'Lexend-VariableFont',
                                         color: const Color(0xFF090950),
@@ -800,7 +852,7 @@ class _SavingsState extends State<Savings> {
                                                   child: Row(
                                                     children: [
                                                       Text(
-                                                        'Rs.',//curency of income
+                                                        '$currencySymbol',//curency of income
                                                         style: TextStyle(
                                                             fontFamily:'Lexend-VariableFont',
                                                             fontSize:20,
@@ -891,7 +943,7 @@ class _SavingsState extends State<Savings> {
                                                   child: Row(
                                                     children: [
                                                       Text(
-                                                        'Rs.',//curency of expense
+                                                        '$currencySymbol',//curency of expense
                                                         style: TextStyle(
                                                             fontFamily:'Lexend-VariableFont',
                                                             fontSize:20,
@@ -1053,7 +1105,7 @@ class _SavingsState extends State<Savings> {
 
                                                   children:[
                                                     Text(
-                                                      '\$ ${balanceList[index]}',
+                                                      '$currencySymbol ${balanceList[index]}',
                                                       style: TextStyle(
                                                         fontSize: 15,
                                                         fontFamily: 'Lexend-VariableFont',

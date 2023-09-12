@@ -60,6 +60,7 @@ class _Profile extends State<Profile> {
     }
   }
 
+//  _image = base64Decode(imageData); //decode image to String
   void initState() {
     super.initState();
     loadStoredImage();
@@ -82,7 +83,6 @@ class _Profile extends State<Profile> {
     base64Encode(image); //again encode the String to the image
     prefs.setString(_imagekey, imageData);
   }
-
   void SelectImageFromGalery() async {
     //allows user to select an image from the gallery
     Uint8List img = await PickImage(ImageSource.gallery);
@@ -107,6 +107,8 @@ class _Profile extends State<Profile> {
       });
     }
   }
+
+
 
   static Future<String> getUserName() async {
     //get the username of the current user and display it as text
@@ -203,13 +205,15 @@ class _Profile extends State<Profile> {
                 },
                 icon: Icon(Icons.image), //gallery option to set the image
                 label: Text('Galery'),
-              )
+              ),
+
             ],
           )
         ],
       ),
     );
   }
+
   Future<void> _signOut(BuildContext context) async {
     try {
       await _auth.signOut(); // Sign out the current user
@@ -264,68 +268,67 @@ class _Profile extends State<Profile> {
                 children: [
                   //const SizedBox(height: 10),
                   Column(children: [
-                    Container(
-                      height: 250,
-                      width: 250,
-                      decoration: BoxDecoration(
-                        color: const Color(0xffEDF2FB),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            height: 200,
-                            width: 200,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                            ),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                _image != null
-                                    ? //if the user hasn't set an image yet then display this image in the following circle avatar
-                                CircleAvatar(
-                                    radius: 80.0,
-                                    backgroundImage: MemoryImage(_image!))
-                                    : CircleAvatar(
-                                  //if the user set an image then display the corresponding image in the following circle avatar
-                                    radius: 80.0,
-                                    backgroundImage: AssetImage(
-                                        'lib/images/Profileimage.png')),
-                                Positioned(
-                                  bottom: 20.0,
-                                  right: 20.0,
-                                  child: InkWell(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        builder: (context) =>
-                                            buttonsheet(context),
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons
-                                          .camera_alt,
-                                      //camera icon allows user to set an image
-                                      color: Colors.teal,
-                                      size: 28.0,
-                                    ),
-                                  ),
+              Container(
+              height: 250,
+                width: 250,
+                decoration: BoxDecoration(
+                  color: const Color(0xffEDF2FB),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                margin: const EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 10),
+                child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        height: 200,
+                        width: 200,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            _image != null
+                                ? //if the user hasn't set an image yet then display this image in the following circle avatar
+                            CircleAvatar(
+                                radius: 80.0,
+                                backgroundImage:MemoryImage(_image!))
+                                : CircleAvatar(
+                              //if the user set an image then display the corresponding image in the following circle avatar
+                                radius: 80.0,
+                                backgroundImage: AssetImage(
+                                    'lib/images/Profileimage.png')),
+                            Positioned(
+                              bottom: 20.0,
+                              right: 20.0,
+                              child: InkWell(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) =>
+                                        buttonsheet(context),
+                                  );
+                                },
+                                child: Icon(
+                                  Icons
+                                      .camera_alt,
+                                  //camera icon allows user to set an image
+                                  color: Colors.teal,
+                                  size: 28.0,
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+
                         ],
                       ),
                     ),
                   ]),
-                ],
               ),
-            ),
+              ],
+              ),
+
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -467,7 +470,11 @@ class _Profile extends State<Profile> {
           ],
         ),
       ),
+    ],
+    ),
+    ),
     );
+
   }
 }
 
