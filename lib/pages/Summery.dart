@@ -1,28 +1,19 @@
 import 'package:flutter/material.dart';
-//import 'package:fl_chart/fl_chart.dart';
-import '../components/bottomNav.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'homePage.dart';
 
 class Pro extends StatefulWidget {
-  int balance=0;
-  Pro({
-    required int balance
-}){
-    this.balance=balance;
-  }
-
   @override
-  _ProState createState() => _ProState(
-      savingbalance:balance,
-  );
+  _ProState createState() => _ProState();
 }
 
 class _ProState extends State<Pro> {
-  int savingbalance=0;
-  _ProState({required this.savingbalance});
   bool showContainer1 = false;
   bool showContainer2 = false;
   bool showContainer3 = false;
+  bool showTitle = false;
+
+  Color dailyButtonColor = const Color.fromARGB(255, 24, 30, 170);
 
   void _showContainer(int containerNumber) {
     setState(() {
@@ -36,33 +27,65 @@ class _ProState extends State<Pro> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.grey[100],
-        appBar: AppBar(
-          backgroundColor: Colors.grey[100],
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: const Text(
-            'S U M M E R Y',
-            style: TextStyle(
-              color: Colors.blue,
-              fontSize: 20.0,
-            ),
-          ),
-          centerTitle: true,
-          elevation: 0,
-        ),
-        //bottomNavigationBar:
-        //bottomNavigationBar: BottomNavigation(),
-
         body: SingleChildScrollView(
           child: Container(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                Container(
+                  height: 100,
+                  width: 400,
+                  margin: EdgeInsets.only(left: 20, right: 15),
+                  decoration: BoxDecoration(
+                    color: Color(0xff181EAA),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.topLeft,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 25),
+                        child: IconButton(
+                          icon: Icon(
+                            weight: 10,
+                            Icons.arrow_back,
+                            size: 40,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomePage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      FractionallySizedBox(
+                        //Above the percentage value I have displayed the current date and time
+                        widthFactor: 1.0,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 0),
+                            child: Text(
+                              'Summery',
+                              style: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Container(
                   margin: EdgeInsets.only(top: 20),
                   child: Row(
@@ -71,19 +94,25 @@ class _ProState extends State<Pro> {
                       ElevatedButton(
                         onPressed: () => _showContainer(1),
                         style: ElevatedButton.styleFrom(
-                          primary: showContainer1 ? Colors.green : Color(0xff181EAA),
+                          primary: showContainer1
+                              ? Color.fromARGB(255, 113, 204, 250)
+                              : Color(0xff181EAA),
                           onPrimary: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text('Daily'),
+                        child: Text(
+                          'Daily',
+                        ),
                       ),
                       SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: () => _showContainer(2),
                         style: ElevatedButton.styleFrom(
-                          primary:showContainer2 ? Colors.green : Color(0xff181EAA),
+                          primary: showContainer2
+                              ? Color.fromARGB(255, 113, 204, 250)
+                              : Color(0xff181EAA),
                           onPrimary: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -95,15 +124,16 @@ class _ProState extends State<Pro> {
                       ElevatedButton(
                         onPressed: () => _showContainer(3),
                         style: ElevatedButton.styleFrom(
-                          primary: showContainer3 ? Colors.green : Color(0xff181EAA),
+                          primary: showContainer3
+                              ? Color.fromARGB(255, 113, 204, 250)
+                              : Color(0xff181EAA),
                           onPrimary: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text('Yearly'),
-                      )
-
+                        child: Text('Monthly'),
+                      ),
                     ],
                   ),
                 ),
@@ -225,12 +255,121 @@ class _ProState extends State<Pro> {
                 ),
                 Visibility(
                   visible: showContainer3,
-                  child: Container(
-                    margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-                    width: 200,
-                    height: 200,
-                    color: Colors.red,
-                    child: Text('Container 3'),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 80,
+                        width: 400,
+                        margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 134, 209, 249),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Received: Rs. 00.00',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'Paid: Rs: 1000.00',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Container(
+                        height: 50,
+                        width: 400,
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 134, 209, 249),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Total balance :  Rs. 1000.00',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Visibility(
+                  visible:
+                      showContainer2, // Show the chart when Weekly is seleced
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 200,
+                        width: 400,
+                        margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: BarChart(
+                          BarChartData(
+                            titlesData: FlTitlesData(
+                              leftTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                      reservedSize: 44, showTitles: true)),
+                              bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                      reservedSize: 30, showTitles: true)),
+                            ),
+                            borderData: FlBorderData(show: true),
+                            gridData: FlGridData(show: false),
+                            barGroups: [
+                              BarChartGroupData(
+                                x: 1,
+                                barRods: [BarChartRodData(toY: 15)],
+                              ),
+                              BarChartGroupData(
+                                x: 2,
+                                barRods: [BarChartRodData(toY: 35)],
+                              ),
+                              BarChartGroupData(
+                                x: 3,
+                                barRods: [BarChartRodData(toY: 17)],
+                              ),
+                              BarChartGroupData(
+                                x: 4,
+                                barRods: [BarChartRodData(toY: 23)],
+                              ),
+                              BarChartGroupData(
+                                x: 5,
+                                barRods: [BarChartRodData(toY: 98)],
+                              ),
+                              BarChartGroupData(
+                                x: 6,
+                                barRods: [BarChartRodData(toY: 10)],
+                              ),
+                              BarChartGroupData(
+                                x: 7,
+                                barRods: [BarChartRodData(toY: 30)],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
