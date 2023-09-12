@@ -21,7 +21,6 @@ class MyWork extends StatelessWidget {
     );
   }
 }
-
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, this.title}) : super(key: key);
 
@@ -33,34 +32,36 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int flag = 0;
-  String name = '';
+  String name='';
   FirebaseMessaging msg = FirebaseMessaging.instance;
   SharedPreferences? _prefs;
   int totalBalance = 0;
   String? mtoken = " ";
-  String titleText = '';
-  String bodyText = ' ';
-  final FlutterLocalNotificationsPlugin notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  String titleText='';
+  String bodyText=' ';
+  final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> saveToken(String token) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     User? user = _auth.currentUser;
     String username = user!.uid;
-    final CollectionReference incomeCollection =
-        firestore.collection('userDetails').doc(username).collection('Tokens');
+    final CollectionReference incomeCollection = firestore.collection('userDetails')
+        .doc(username)
+        .collection('Tokens');
 
     // Check if the token already exists in the database
-    final existingToken =
-        await incomeCollection.where('token', isEqualTo: token).get();
+    final existingToken = await incomeCollection.where('token', isEqualTo: token).get();
 
     if (existingToken.docs.isEmpty) {
       // Token does not exist, so save it
-      final DocumentReference newDocument =
-          await incomeCollection.add({'token': token, 'State': 'invalid'});
+      final DocumentReference newDocument = await incomeCollection.add({
+        'token': token,
+        'State':'invalid'
+      });
 
       // Perform any additional actions you need
+
     } else {
       // Token already exists, no need to save it again
       print("Token already exists in the database");
@@ -84,10 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
       print("Error getting FCM token: $e");
     }
   }
-
   Future<void> initNotification() async {
-    AndroidInitializationSettings initializationSettingsAndroid =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings initializationSettingsAndroid = const AndroidInitializationSettings('@mipmap/ic_launcher');
 
     var initializationSettingsIOS = DarwinInitializationSettings(
         requestAlertPermission: true,
@@ -116,21 +115,17 @@ class _MyHomePageState extends State<MyHomePage> {
         id, title, body, await notificationDetails());
   }
 
-  Future<void> firstprocess(String token) async {
+
+  Future<void>firstprocess(String token)async {
+
     User? user = _auth.currentUser;
     String username = user!.uid;
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    final incomeSnapshot = await firestore
-        .collection('userDetails')
-        .doc(username)
-        .collection('Tokens')
-        .where('State', isEqualTo: 'invalid')
-        .get();
+    final incomeSnapshot = await firestore.collection('userDetails').doc(username).collection('Tokens').where('State',isEqualTo:'invalid').get();
     print(token);
     if (incomeSnapshot.docs.isNotEmpty) {
-      bodyText =
-          'Hello! Welcome back to have an great experiance on budget Managing';
+      bodyText = 'Hello! Welcome back to have an great experiance on budget Managing';
       titleText = 'Welcome!';
 
       final existingEntry = await getExistingEntry('invalid');
@@ -146,21 +141,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // Use the update method to update the "Balance" field
         await documentReference.update({
-          'State': 'valid',
+          'State':'valid',
         });
-        String message =
-            'Hello! Welcome back to have an great experiance on budget Managing';
-        DateTime time = DateTime.now();
+        String message='Hello! Welcome back to have an great experiance on budget Managing';
+        DateTime time=DateTime.now();
         showNotification(
-          id: 1,
+          id:1,
           title: 'Hello!!',
           body: message,
         );
-        addNotificationToFirestore(message, time);
+        addNotificationToFirestore(message,time);
       }
-    }
-  }
 
+    }
+
+  }
   Future<String?> getExistingEntry(String state) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -171,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
           .collection('userDetails')
           .doc(username)
           .collection('Tokens')
-          .where('State', isEqualTo: state)
+          .where('State',isEqualTo: state)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -186,7 +181,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+
   void initState() {
+
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
     initNotification();
@@ -197,6 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
         flag = value;
       });
     });
+
   }
 
   Future<int> getNewMessagesCount() async {
@@ -204,12 +202,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return _prefs?.getInt('newMessagesCount') ?? 0;
   }
 
-  void addNotificationToFirestore(String message, DateTime time) async {
+
+  void addNotificationToFirestore(String message,DateTime time) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     User? user = _auth.currentUser;
     String username = user!.uid;
 
     try {
+
       try {
         final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -220,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         final DocumentReference newDocument = await incomeCollection.add({
           'message': message,
-          'Time': time, // Use the formatted time as a DateTime
+          'Time':time, // Use the formatted time as a DateTime
         });
 
         final String newDocumentId = newDocument.id;
@@ -230,11 +230,16 @@ class _MyHomePageState extends State<MyHomePage> {
         // Handle the error appropriately, e.g., show a message to the user
       }
       // }
-    } catch (ex) {
+    }
+    catch (ex) {
       print('Error occurs: $ex');
       // Handle any unexpected errors here
     }
   }
+
+
+
+
 
   Future<void> counter() async {
     final newCount = flag + 1;
@@ -244,7 +249,6 @@ class _MyHomePageState extends State<MyHomePage> {
       flag = newCount;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -252,6 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
         balance: totalBalance,
         num: flag,
       ),
+
     );
   }
 }
@@ -263,8 +268,12 @@ class Holder extends StatefulWidget {
     required this.totalBalance,
   });
 
+
   @override
-  State<Holder> createState() => _HolderState();
+  State<Holder> createState() => _HolderState(
+
+
+  );
 }
 
 class _HolderState extends State<Holder> {
@@ -336,6 +345,7 @@ class _HolderState extends State<Holder> {
 
       // Delete the notification from the local list
 
+
       // Retrieve the corresponding document ID from Firestore
       final CollectionReference incomeCollection = firestore
           .collection('userDetails')
@@ -357,7 +367,6 @@ class _HolderState extends State<Holder> {
       print('Error deleting notification: $ex');
     }
   }
-
   Future<int> getDocumentCount() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     User? user = _auth.currentUser;
@@ -365,22 +374,19 @@ class _HolderState extends State<Holder> {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     // Replace 'receivedMessage' with the name of your collection
-    final QuerySnapshot snapshot = await firestore
-        .collection('userDetails')
-        .doc(username)
-        .collection('ReceivedNotifications')
-        .get();
+    final QuerySnapshot snapshot = await firestore.collection('userDetails').doc(username).collection('ReceivedNotifications').get();
 
     // The length property of QuerySnapshot gives you the document count
     final int documentCount = snapshot.size;
 
     return documentCount;
   }
-
   void getDocCount() async {
-    count = await getDocumentCount();
+
+    count=await getDocumentCount();
     print(count);
   }
+
 
   List<String> messages = []; // Store messages here
   int count = 0;
@@ -417,7 +423,6 @@ class _HolderState extends State<Holder> {
       print('Getting the messages failed: $ex');
     }
   }
-
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -467,6 +472,7 @@ class _HolderState extends State<Holder> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('$index item deleted'),
+
                                 ),
                               );
                               onDeleteNotification(index);

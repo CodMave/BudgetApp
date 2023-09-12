@@ -25,7 +25,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       //onDeleteNotification: (index) => {},
     ),
     const Goals(),
-    const Check(),
+     Check(),
   ];
 
   void onTap(int index) {

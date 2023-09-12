@@ -4,36 +4,32 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
-import 'Notification.dart';
+import 'homePage.dart';
 
 class Expence extends StatefulWidget {
+
   final int nume;
-  //final void Function(int index) onDeleteNotification;
+
+
 
   Expence({
     Key? key,
     required this.nume,
-    //required this.onDeleteNotification,
   }) : super(key: key);
 
   @override
   _ExpenceState createState() => _ExpenceState(
-        //notificationList: notificationList,
-        nume: nume,
-        //onDeleteNotification: onDeleteNotification,
-      );
-
+    nume: nume,
+  );
 // You need to replace this with the correct way to get the instance of the _ExpenceState class
 }
 
 class _ExpenceState extends State<Expence> {
+
   final int nume;
-
-  //final void Function(int index) onDeleteNotification;
-
   _ExpenceState({
     required this.nume,
-    //required this.onDeleteNotification,
+
   });
   double totalex = 0.0;
   double totalin = 0.0;
@@ -41,7 +37,7 @@ class _ExpenceState extends State<Expence> {
   List<MyTransaction> transactions = [];
 
   final TextEditingController transactionNameController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool is_income = false;
   final formKey = GlobalKey<FormState>();
@@ -68,12 +64,6 @@ class _ExpenceState extends State<Expence> {
   //variables to store the selected category
   String selectedCategory = 'Others';
 
-  String? userSelectedCurrency;
-
-  //list for toggle bar
-  List<bool> _selections = [true, false, false];
-  int selectedFilterIndex = 0;
-
   //list Expence categories
   List<String> expenceCategories = [
     'Food',
@@ -98,7 +88,23 @@ class _ExpenceState extends State<Expence> {
     'Others',
   ];
 
-  void currencySymbolAssign(String userSelecterCurrency) {
+  //get currency
+
+  Future<void> getDocIds() async {
+    try {
+      var snapshot =
+      await FirebaseFirestore.instance.collection('userDatails').get();
+      if (snapshot.docs.isNotEmpty) {
+        userSelecterCurrency = snapshot.docs[0].get('currency');
+        print('user selected currency: $userSelecterCurrency');
+        currencySymbolAssign();
+      }
+    } catch (e) {
+      print('Error fetching user details: $e');
+    }
+  }
+
+  void currencySymbolAssign() {
     if (userSelecterCurrency == 'USD') {
       currencySymbol = '\$';
     } else if (userSelecterCurrency == 'EUR') {
@@ -116,31 +122,6 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
-  //get the user selected currency from firestore
-  Future<String> getUserSelectedCurrency() async {
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      var email = user.email!;
-
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('userDetails')
-          .where('email', isEqualTo: email)
-          .limit(1)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        var doc = querySnapshot.docs.first;
-        userSelectedCurrency = doc.get('currency');
-        currencySymbolAssign(userSelectedCurrency!);
-        print('user selected currency is $userSelectedCurrency');
-      }
-    }
-
-    print('user selected currency is $userSelectedCurrency');
-    return userSelectedCurrency!;
-  }
-
   //method to get currently signed in user's uid
 
   Future<String> getCurrentUserId() async {
@@ -153,25 +134,26 @@ class _ExpenceState extends State<Expence> {
       return '';
     }
   }
-
   //method to add new expence to the expenceID collection
-  Future<void> addBalanceToFireStore(
-    String userId,
-    int balance,
-    int income,
-    int expence,
-  ) async {
+  Future<void>addBalanceToFireStore(
+      String userId,
+      int balance,
+      int income,
+      int expence,
+      )async{
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      final CollectionReference expenceCollection =
-          firestore.collection('userDetails').doc(userId).collection('Balance');
+      final CollectionReference expenceCollection = firestore
+          .collection('userDetails')
+          .doc(userId)
+          .collection('Balance');
 
       await expenceCollection.add({
         'Balance': balance,
         'timestamp': DateTime.now(),
-        'Income': income,
-        'Expences': expence,
+        'Income':income,
+        'Expences':expence,
       });
     } catch (ex) {
       print('Balance adding failed');
@@ -180,10 +162,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new expence to the expenceID collection
 
   Future<void> addExpenceToFireStore(
-    String userId,
-    String transactionName,
-    int transactionAmount,
-  ) async {
+      String userId,
+      String transactionName,
+      int transactionAmount,
+      ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -203,8 +185,9 @@ class _ExpenceState extends State<Expence> {
       print('expence adding failed');
     }
   }
-
   Future<String?> getBalance(String userId) async {
+
+
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -226,13 +209,12 @@ class _ExpenceState extends State<Expence> {
       return null;
     }
   }
-
   Future<void> updateBalance(
-    String userId,
-    int balance,
-    int income,
-    int expence,
-  ) async {
+      String userId,
+      int balance,
+      int income,
+      int expence,
+      ) async {
     // Define the 'username' variable
 
     // Update the balance for the current month
@@ -251,14 +233,14 @@ class _ExpenceState extends State<Expence> {
         // Use the update method to update the "Balance" field
         await documentReference.update({
           'Balance': balance,
-          'Income': income,
-          'Expences': expence,
+          'Income':income,
+          'Expences':expence,
         });
 
         print('Balance updated successfully!');
       } else {
         // No entry for the current month, add a new one
-        addBalanceToFireStore(userId, balance, income, expence);
+        addBalanceToFireStore(userId, balance,income,expence);
       }
     } catch (ex) {
       print('Error updating balance: $ex');
@@ -268,10 +250,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new income to the incomeID collection
 
   Future<void> addIncomeToFireStore(
-    String userId,
-    String transactionName,
-    int transactionAmount,
-  ) async {
+      String userId,
+      String transactionName,
+      int transactionAmount,
+      ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -293,7 +275,7 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
-  //fettching latest expence and income from firestore
+  //fettching latest exoence and income from firestore
 
   Future<void> fetchLatestTransactions(String userId) async {
     try {
@@ -464,7 +446,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('expenceID')
           .where('timestamp',
-              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -473,7 +455,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('incomeID')
           .where('timestamp',
-              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -522,6 +504,8 @@ class _ExpenceState extends State<Expence> {
     String username = user!.uid;
     print(username);
     super.initState();
+
+    getDocIds();
 
     //fetch and set the total balance
     getCurrentUserId().then((userId) {
@@ -581,15 +565,15 @@ class _ExpenceState extends State<Expence> {
         updateBalance(
           username,
           totalBalance,
-          await calculateTotalIncome(userId),
+          await  calculateTotalIncome(userId),
           await getTotalExpence(userId),
+
         );
       });
     });
-
-    //assign user selected currency
-    getUserSelectedCurrency();
   }
+
+
 
   void newTransaction() {
     showDialog(
@@ -675,23 +659,23 @@ class _ExpenceState extends State<Expence> {
                                 },
                                 items: is_income
                                     ? incomeCategories
-                                        .map<DropdownMenuItem<String>>(
-                                          (String category) =>
-                                              DropdownMenuItem<String>(
-                                            value: category,
-                                            child: Text(category),
-                                          ),
-                                        )
-                                        .toList()
+                                    .map<DropdownMenuItem<String>>(
+                                      (String category) =>
+                                      DropdownMenuItem<String>(
+                                        value: category,
+                                        child: Text(category),
+                                      ),
+                                )
+                                    .toList()
                                     : expenceCategories
-                                        .map<DropdownMenuItem<String>>(
-                                          (String category) =>
-                                              DropdownMenuItem<String>(
-                                            value: category,
-                                            child: Text(category),
-                                          ),
-                                        )
-                                        .toList(),
+                                    .map<DropdownMenuItem<String>>(
+                                      (String category) =>
+                                      DropdownMenuItem<String>(
+                                        value: category,
+                                        child: Text(category),
+                                      ),
+                                )
+                                    .toList(),
                               ),
                             ),
                           ],
@@ -724,9 +708,9 @@ class _ExpenceState extends State<Expence> {
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         String transactionType =
-                            is_income ? "Income" : "Expence";
+                        is_income ? "Income" : "Expence";
                         int transactionAmount =
-                            int.parse(amountController.text);
+                        int.parse(amountController.text);
 
                         String transactionName = transactionNameController.text;
                         print(transactionName);
@@ -785,14 +769,28 @@ class _ExpenceState extends State<Expence> {
         });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor:
-            Colors.grey[100], // Set the background color of the App Bar
+        Colors.grey[100], // Set the background color of the App Bar
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.black, // Set the color of the back arrow
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>HomePage(
 
+                ),
+              ),
+            );
+          },
+        ),
         title: const Text(
           'T R A N S A C T I O N S',
           style: TextStyle(
@@ -802,24 +800,184 @@ class _ExpenceState extends State<Expence> {
         centerTitle: true, // Center the title
         elevation: 0.0, // Removes the shadow
       ),
-      //bottomNavigationBar: BottomNavigation(),
       body: Column(
         children: [
-          const SizedBox(height: 10),
+          const SizedBox(height: 20),
 
           // Show balance
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
-              height: 222,
-              width: 400,
+              //color: Colors.grey[100],
+              height: 190,
+              // ignore: sort_child_properties_last
+              child: Column(
+                children: [
+                  // Balance text
+
+                  const SizedBox(height: 20),
+
+                  Text(
+                    "B A L A N C E",
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 16,
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // Balance amount
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // currency symbol
+                      Text(
+                        currencySymbol,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 34,
+                        ),
+                      ),
+
+                      const SizedBox(width: 3),
+
+                      // amount
+
+                      Text(
+                        totalBalance.toString(),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 34,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Show expence and income
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 70),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        //income
+
+                        Row(
+                          children: [
+                            // up icon
+                            const Icon(
+                              Icons.arrow_upward,
+                              color: Colors.green,
+                              size: 28,
+                            ),
+
+                            const SizedBox(width: 5),
+
+                            // income
+                            Column(
+                              children: [
+                                //income text
+                                Text(
+                                  "Income",
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 18,
+                                  ),
+                                ),
+
+                                //income amount
+                                Row(
+                                  children: [
+                                    //currency symbol
+                                    Text(
+                                      currencySymbol,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+
+                                    // amount
+                                    Text(
+                                      "${lastIncomeTransaction?.transactionAmount ?? '0'}",
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        //expence
+
+                        Row(
+                          children: [
+                            // down icon
+                            const Icon(
+                              Icons.arrow_downward,
+                              color: Colors.red,
+                              size: 28,
+                            ),
+
+                            // expence
+                            Column(
+                              children: [
+                                //expence text
+                                Text(
+                                  "Expence",
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 18,
+                                  ),
+                                ),
+
+                                //expence amount
+                                Row(
+                                  children: [
+                                    //currency symbol
+                                    Text(
+                                      currencySymbol,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+
+                                    // amount
+                                    Text(
+                                      "${lastExpenseTransaction?.transactionAmount ?? '0'}",
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: const Color(0xff90E0EF),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(1),
+                    color: Colors.grey.withOpacity(0.5),
                     offset: const Offset(4.0, 4.0),
                     blurRadius: 10.0,
                     spreadRadius: 1,
@@ -830,246 +988,21 @@ class _ExpenceState extends State<Expence> {
                     blurRadius: 10.0,
                     spreadRadius: 0.25,
                   ),
-                ],
-              ),
-              // ignore: sort_child_properties_last
-              child: Column(
-                children: [
-                  // Balance text
-                  Container(
-                    height: 70,
-                    width: 400,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 25, 86, 143),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 75),
-                      child: Row(
-                        children: [
-                          Text(
-                            "B A L A N C E",
-                            style: TextStyle(
-                              color: Colors.grey[100],
-                              fontSize: 30,
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Icon(
-                            Icons.account_balance_wallet_outlined,
-                            size: 35,
-                            color: Colors.grey[100],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 1,
-                    width: 400,
-                    color: Colors.grey[500],
-                  ),
-
-                  // Balance amount
-                  Container(
-                    height: 70,
-                    width: 400,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 71, 148, 221),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "$currencySymbol$totalBalance",
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 50,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    height: 1,
-                    width: 400,
-                    color: Colors.grey[500],
-                  ),
-
-                  // Show expence and income
-                  Container(
-                    height: 80,
-                    width: 400,
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey[100],
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          //Income
-                          Column(
-                            children: [
-                              const Row(
-                                children: [
-                                  Icon(
-                                    Icons.add_card_rounded,
-                                    size: 22,
-                                    color: Colors.green,
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'Income',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 22,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 7),
-                              Row(
-                                children: [
-                                  Text(
-                                    currencySymbol,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 25,
-                                    ),
-                                  ),
-                                  Text(
-                                    "${lastIncomeTransaction?.transactionAmount ?? '0'}",
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 25,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2, bottom: 8),
-                            child: Container(
-                              height: 70,
-                              width: 1,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                          //expence
-                          Column(
-                            children: [
-                              const Row(
-                                children: [
-                                  Icon(
-                                    Icons.add_card_rounded,
-                                    size: 22,
-                                    color: Colors.red,
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'Expence',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 22,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 7),
-                              Row(
-                                children: [
-                                  Text(
-                                    currencySymbol,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 25,
-                                    ),
-                                  ),
-                                  Text(
-                                    "${lastExpenseTransaction?.transactionAmount ?? '0'}",
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 25,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.7),
+                    offset: const Offset(4.0, -4.0),
+                    blurRadius: 10.0,
+                    spreadRadius: 0.25,
                   ),
                 ],
               ),
             ),
           ),
 
-          const SizedBox(height: 20),
-
-          Container(
-            height: 1,
-            width: double.infinity,
-            color: Colors.grey[300],
-          ),
-
-          const SizedBox(height: 10),
-
-          //Toggle bar
-          ToggleButtons(
-            isSelected: _selections,
-            onPressed: (int newIndex) {
-              setState(() {
-                for (int index = 0; index < _selections.length; index++) {
-                  if (index == newIndex) {
-                    _selections[index] = true;
-                  } else {
-                    _selections[index] = false;
-                  }
-                }
-                selectedFilterIndex = newIndex;
-              });
-            },
-            borderRadius: BorderRadius.circular(20),
-            selectedColor: const Color.fromARGB(255, 25, 86, 143),
-            color: Colors.grey.shade600,
-            fillColor: Colors.grey[100],
-            selectedBorderColor: const Color.fromARGB(255, 25, 86, 143),
-            children: const [
-              Padding(
-                padding: EdgeInsets.only(left: 50, right: 50),
-                child: Text(
-                  'All',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 25, right: 25),
-                child: Text(
-                  'Income',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 20, right: 20),
-                child: Text(
-                  'Expence',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
 
           // Show recent transactions
+
           Expanded(
             // to show the list and button to overlay the list
             child: Stack(
@@ -1077,25 +1010,13 @@ class _ExpenceState extends State<Expence> {
                 ListView.builder(
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
-                    if (selectedFilterIndex ==
-                            0 || // Show all when 'All' is selected
-                        (selectedFilterIndex == 1 &&
-                            transactions[index].transactionType ==
-                                'Income') || // Show income when 'Income' is selected
-                        (selectedFilterIndex == 2 &&
-                            transactions[index].transactionType == 'Expence')) {
-                      // Show expense when 'Expence' is selected
-                      return MyTransaction(
-                        transactionName: transactions[index].transactionName,
-                        transactionAmount:
-                            transactions[index].transactionAmount,
-                        transactionType: transactions[index].transactionType,
-                        timestamp: transactions[index].timestamp,
-                        currencySymbol: currencySymbol,
-                      );
-                    } else {
-                      return Container(); // Return an empty container for other cases
-                    }
+                    return MyTransaction(
+                      transactionName: transactions[index].transactionName,
+                      transactionAmount: transactions[index].transactionAmount,
+                      transactionType: transactions[index].transactionType,
+                      timestamp: transactions[index].timestamp,
+                      currencySymbol: currencySymbol,
+                    );
                   },
                 ),
                 // Positioned widget for the button
