@@ -110,9 +110,9 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-      - family: Lexend-VariableFont
-        fonts:
-          - asset: fonts/Lexend-VariableFont_wght.ttf
+    - family: Lexend-VariableFont
+      fonts:
+        - asset: fonts/Lexend-VariableFont_wght.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
