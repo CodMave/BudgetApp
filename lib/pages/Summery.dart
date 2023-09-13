@@ -33,27 +33,17 @@ class _ProState extends State<Pro> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  height: 100,
-                  width: 400,
-                  margin: EdgeInsets.only(left: 20, right: 15),
-                  decoration: BoxDecoration(
-                    color: Color(0xff181EAA),
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10),
-                    ),
-                  ),
                   child: Stack(
                     alignment: Alignment.topLeft,
                     children: [
                       Container(
-                        margin: EdgeInsets.only(top: 25),
+                        margin: EdgeInsets.only(top: 25, right: 40),
                         child: IconButton(
                           icon: Icon(
                             weight: 10,
                             Icons.arrow_back,
-                            size: 40,
-                            color: Colors.white,
+                            size: 20,
+                            color: Color(0xFF3AC6D5),
                           ),
                           onPressed: () {
                             Navigator.push(
@@ -66,25 +56,44 @@ class _ProState extends State<Pro> {
                         ),
                       ),
                       FractionallySizedBox(
-                        //Above the percentage value I have displayed the current date and time
                         widthFactor: 1.0,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 0),
-                            child: Text(
-                              'Summery',
-                              style: TextStyle(
-                                fontSize: 35,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 30, left: 80),
+                              child: Text(
+                                'S U M M A R Y',
+                                style: TextStyle(
+                                  color: const Color(0xFF090950),
+                                  fontSize: 20,
+                                  fontFamily: 'Lexend-VariableFont',
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
+                            SizedBox(
+                              width: 90,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 25), // Add spacing between text and icon
+                              child: Icon(
+                                Icons.align_vertical_bottom_outlined,
+                                size: 20,
+                                color: Color(0xFF3AC6D5),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
+                ),
+                Container(
+                  height: 1,
+                  width: double.infinity,
+                  color: Colors.grey,
                 ),
                 Container(
                   margin: EdgeInsets.only(top: 20),
@@ -103,7 +112,7 @@ class _ProState extends State<Pro> {
                           ),
                         ),
                         child: Text(
-                          'Daily',
+                          'Weekly',
                         ),
                       ),
                       SizedBox(width: 10),
@@ -118,7 +127,7 @@ class _ProState extends State<Pro> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text('Weekly'),
+                        child: Text('Monthly'),
                       ),
                       SizedBox(width: 10),
                       ElevatedButton(
@@ -129,12 +138,23 @@ class _ProState extends State<Pro> {
                               : Color(0xff181EAA),
                           onPrimary: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(5),
                           ),
                         ),
-                        child: Text('Monthly'),
+                        child: Text('Yearly'),
                       ),
                     ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 25),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Text(
+                    'SEP 11,2023 - SEP 17,2023',
+                    style: TextStyle(fontSize: 15, color: Colors.grey),
                   ),
                 ),
                 Visibility(
@@ -313,7 +333,7 @@ class _ProState extends State<Pro> {
                 ),
                 Visibility(
                   visible:
-                  showContainer2, // Show the chart when Weekly is seleced
+                      showContainer1, // Show the chart when Weekly is seleced
                   child: Column(
                     children: [
                       Container(
@@ -367,6 +387,30 @@ class _ProState extends State<Pro> {
                               ),
                             ],
                           ),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          'Food            Rs. 1 500.00          15%',
+                          style: TextStyle(fontSize: 15, color: Colors.black),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          'Travel           Rs. 3 200.00          35%',
+                          style: TextStyle(fontSize: 15, color: Colors.black),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          ' Health           Rs. 1 750.00         17%',
+                          style: TextStyle(fontSize: 15, color: Colors.black),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          ' Fuel              Rs. 2 500.00            23%',
+                          style: TextStyle(fontSize: 15, color: Colors.black),
                         ),
                       ),
                     ],
