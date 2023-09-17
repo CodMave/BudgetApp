@@ -150,6 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: 'Hello!!',
           body: message,
         );
+        counter();
         addNotificationToFirestore(message,time);
       }
 

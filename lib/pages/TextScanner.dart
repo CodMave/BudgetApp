@@ -258,7 +258,7 @@ class _ResultState extends State<Result> {
             borderRadius: BorderRadius.circular(16.0), // Add circular border
           ),
           title: Text('Transaction'),
-          content: Text('Transaction:($transactiontype) occured successfully\n The transaction amount is Rs.$double.parse(extractedValue).toInt()'),
+          content: Text('Transaction:($transactiontype) occured successfully\n The transaction amount is Rs.${double.parse(extractedValue).toInt()}'),
           actions: [
             TextButton(
 

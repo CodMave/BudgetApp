@@ -412,13 +412,21 @@ class _ExpenceState extends State<Expence> {
     totalex = totalExpence;
     totalin = totalIncome;
 
-    int balance = (totalIncome - totalExpence).toInt();
+    int difference = (totalIncome - totalExpence).toInt();
+    if(difference<0) {
+      setState(() {
+        totalBalance = 0;
+      });
+      return totalBalance;
+    }
+    else {
+      setState(() {
+        totalBalance =difference;
+      });
+      return totalBalance;
+    }
 
-    setState(() {
-      totalBalance = balance;
-    });
 
-    return totalBalance;
   }
 
   //method to get the updates in realtime

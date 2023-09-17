@@ -79,8 +79,7 @@ class _ControllerState extends State<Controller> {
   SharedPreferences? _prefs; //initialized the sharedpreferances
   static Future<String> getUserName() async {
     //get the username from Profile file
-    User? user = _auth
-        .currentUser; //created an instance to the User of Firebase authorized
+    User? user = _auth.currentUser; //created an instance to the User of Firebase authorized
     email = user!.email!; //get the user's email
     if (user != null) {
       QuerySnapshot qs = await FirebaseFirestore.instance
@@ -164,13 +163,21 @@ class _ControllerState extends State<Controller> {
     int totalExpence = await  getExpence();
 
 
-    int balance = (totalIncome - totalExpence).toInt();
+    int difference = (totalIncome - totalExpence).toInt();
 
-    setState(() {
-      newbalance = balance;
-    });
+    if(difference<0) {
+      setState(() {
+        newbalance = 0;
+      });
+      return newbalance;
+    }
+    else {
+      setState(() {
+        newbalance =difference;
+      });
+      return newbalance;
+    }
 
-    return newbalance;
   }
   Future<int> getIncome() async {
     User? user = _auth.currentUser;
@@ -364,18 +371,20 @@ class _ControllerState extends State<Controller> {
             future: getUserName(),
             builder: (context, snapshot) {
               return Text(
-                "Welcome,${snapshot.data}!",
+                "Welcome,${snapshot.data}",
                 //print the user name who are currently using with
                 style: TextStyle(
+                  fontFamily:'Lexend-VariableFont',
                   color: Colors.black,
-                  fontSize: 25,
+                  fontSize:25,
+
                 ),
               );
             }),
-        centerTitle: true,
+          centerTitle: true,
         iconTheme: const IconThemeData(
           color: Colors.black,
-          size: 40,
+          size: 30,
         ),
         leading: IconButton(
           onPressed: () {
@@ -389,6 +398,7 @@ class _ControllerState extends State<Controller> {
           icon: const Icon(Icons.menu),
         ),
         actions: [
+
           Icon(
 
             Icons.waving_hand,
@@ -458,7 +468,7 @@ class _ControllerState extends State<Controller> {
             color: const Color(0xFF85B6FF),
             activeColor: const Color.fromARGB(255, 31, 96, 192),
             tabBackgroundColor: Colors.grey.shade400,
-            gap: 8,
+            gap:6,
             onTabChange: (Index) {
               //if the user click on the bottom navigation bar then it will move to the following pages
               if (Index == 0) {
@@ -597,6 +607,7 @@ class _ControllerState extends State<Controller> {
                                 return Text(
                                   '${percentage}%',
                                   style: TextStyle(
+                                    fontFamily:'Lexend-VariableFont',
                                     fontWeight: FontWeight.bold,
                                     fontSize: 60,
                                     color: Colors.black,
@@ -623,6 +634,7 @@ class _ControllerState extends State<Controller> {
                               DateFormat('MMM dd').format(DateTime.now()),
                               //time and date format
                               style: const TextStyle(
+                                fontFamily:'Lexend-VariableFont',
                                 fontSize:30,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
@@ -641,6 +653,7 @@ class _ControllerState extends State<Controller> {
                             child: Text(
                               'Remaining',
                               style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
@@ -738,16 +751,17 @@ class _ControllerState extends State<Controller> {
                             offset: Offset(0,3),
                           ),
                         ],
-
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Stack(children: [
                         const Align(
-                          alignment: Alignment.topLeft,
+                          alignment: Alignment.topCenter,
                           child: Padding(
                             padding: EdgeInsets.only(top: 5, left: 5),
                             child: Text(
-                              'Recent Activity', //print the text as 'Recent'
+                              'TRANSACTION', //print the text as 'Recent'
                               style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color:Colors.black,
@@ -767,7 +781,7 @@ class _ControllerState extends State<Controller> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color:const Color(0xFFC2DAFF),
+                                  color: Colors.blue,
                                   width: 3.0,
                                 ),
                               ),
@@ -780,7 +794,7 @@ class _ControllerState extends State<Controller> {
                                   icon: const Icon(
                                     FontAwesomeIcons.car,
                                     size: 40,
-                                    color:const Color(0xFFC2DAFF),
+                                    color: Colors.blue,
                                   ),
                                   onPressed: () {
                                     print('clicked');
@@ -805,7 +819,7 @@ class _ControllerState extends State<Controller> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color:const Color(0xFFC2DAFF),
+                                  color: Colors.blue,
                                   width: 3.0,
                                 ),
                               ),
@@ -818,7 +832,7 @@ class _ControllerState extends State<Controller> {
                                   icon: const Icon(
                                     FontAwesomeIcons.burger,
                                     size: 40,
-                                    color:const Color(0xFFC2DAFF),
+                            color: Colors.blue,
                                   ),
                                   onPressed: () {
                                     print('clicked');
@@ -849,7 +863,7 @@ class _ControllerState extends State<Controller> {
                                 icon: const Icon(
                                   FontAwesomeIcons.plus,
                                   size: 30,
-                                  color:const Color(0xFFC2DAFF),
+                                  color:Colors.blue,
                                 ),
                                 onPressed: () {
                                   Navigator.push(
@@ -895,36 +909,43 @@ class _ControllerState extends State<Controller> {
                               offset: Offset(0,3),
                             ),
                           ],
-
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Stack(
                           children: [
                             Align(
-                              alignment: Alignment.topLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                  top: 0,
-                                  left: 5,
-                                ),
-                                child: Text(
-                                  'Savings',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color:Colors.black,
-                                  ),
+                              alignment: Alignment.topCenter,
+                              child: Text(
+                                'SAVINGS',
+                                style: TextStyle(
+                                  fontFamily:'Lexend-VariableFont',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color:Colors.black,
                                 ),
                               ),
                             ),
                             Align(
                               alignment: Alignment.center,
-                              child: Image(
-                                width: 80,
-                                height: 80,
-                                image: AssetImage(
-                                    'lib/images/Savings.png'), //savings image
-                              ),
+                              child:Stack(
+                              children: [
+                                Icon(
+                                  Icons.wallet,
+                                  size: 55,
+                                  color: Colors.blue,
+                                ),
+                                Positioned(
+                                  top:25,
+                                  child: Icon(
+                                    Icons.currency_bitcoin,
+                                    size:35,
+                                    color:const Color(0xFFC2DAFF),
+                                  ),
+                                ),
+                              ],
                             ),
+                            )
+
                           ],
                         ),
                       ),

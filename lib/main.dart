@@ -1,5 +1,6 @@
 import 'package:budgettrack/pages/Startup.dart';
 import 'package:budgettrack/pages/authPage.dart';
+import 'package:budgettrack/pages/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -20,8 +21,15 @@ const MyApp({super.key});
   Widget build(BuildContext context) {
     return  MaterialApp(
         title: 'Flutter Demo',
-        home:Myclass(),
+        home:WillPopScope(
+            onWillPop: () async{
 
-    );
+                print('back button pressed');
+                Navigator.pop(context);
+                return true;
+
+            },
+            child: Myclass()),
+      );
   }
 }

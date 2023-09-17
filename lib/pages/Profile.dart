@@ -1,22 +1,17 @@
 import 'dart:convert';
+import 'dart:core';
 import 'dart:typed_data';
-import 'package:budgettrack/pages/MyMenu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../firebase_options.dart';
-import '../main.dart';
-import 'LoginPage.dart';
-import 'Savings.dart';
 import 'Startup.dart';
-import 'authPage.dart';
+import 'forgotPassword.dart';
 import 'homePage.dart';
-import 'loginOrReg.dart';
+
 
 class Check extends StatelessWidget {
   @override
@@ -45,8 +40,18 @@ class Profile extends StatefulWidget {
 }
 
 class _Profile extends State<Profile> {
+  String? selectedCurrency = "USD";
   //private class of the Profile class
-
+  List currency = [
+    'USD',
+    'EUR',
+    'INR',
+    'SLR',
+    'GBP',
+    'AUD',
+    'CAD'
+    // ADD MORE
+  ];
   Uint8List? _image; //initialize the image variable
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   final String _imagekey =
@@ -66,6 +71,95 @@ class _Profile extends State<Profile> {
     super.initState();
     loadStoredImage();
   }
+  void ChangeCurrency() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: Colors.white),
+          ),
+          backgroundColor: Colors.white,
+          title:Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            child: Column(
+              children: [
+                DropdownButtonFormField(
+                  value: selectedCurrency,
+                  items: currency.map((listValue) {
+                    return DropdownMenuItem(
+                      value: listValue,
+                      child: Text(listValue),
+                    );
+                  }).toList(),
+                  onChanged: (valueSelected) {
+                    setState(() {
+                      selectedCurrency = valueSelected as String;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.arrow_downward_outlined,
+                    color: Colors.grey[800],
+                  ),
+                  dropdownColor: Colors.grey[200],
+                  decoration: InputDecoration(
+                    labelText: "Selet The Currency",
+                    labelStyle: TextStyle(
+                        fontFamily:'Lexend-VariableFont',
+                        color:  Color(0xFF090950),
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold),
+                    prefixIcon: Icon(
+                      Icons.attach_money_sharp,
+                      color: Colors.grey[700],
+                      size: 40,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                    onPressed: (){
+                      updateCurrency(selectedCurrency!);
+                    },
+                    child: Text('Ok'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+  Future<void> updateCurrency(String currency) async {
+    User? user = _auth.currentUser;
+    String? email = user?.email;
+    print(email);
+
+    try {
+      QuerySnapshot qs = await FirebaseFirestore.instance
+          .collection('userDetails')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (qs.docs.isNotEmpty) {
+        // Get the reference to the first document in the result set
+        DocumentReference docRef = qs.docs.first.reference;
+
+        // Update the 'currency' field of the document
+        await docRef.update({
+          'currency': currency,
+        });
+
+        print('Currency updated successfully!');
+      }
+    } catch (ex) {
+      print(ex);
+    }
+
+    setState(() {});
+  }
+
   Future<Uint8List?> getImageFromFirestore() async {
     try {
       User? user = _auth.currentUser;
@@ -296,236 +390,429 @@ class _Profile extends State<Profile> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.grey[100],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Colors.black,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
-              ),
-            );
-          },
-        ),
-        title: Text(
-          'P R O F I L E',
-          style: TextStyle(
-            color: Colors.blue,
-            fontSize: 20.0,
-            //fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-
-            /// PROFILE HEADER
-            Container(
-              alignment: Alignment.topCenter,
-              margin: EdgeInsets.only(left: 40, right: 40, top: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  //const SizedBox(height: 10),
-                  Column(children: [
-              Container(
-              height: 250,
-                width: 250,
-                decoration: BoxDecoration(
-                  color: const Color(0xffEDF2FB),
-                  borderRadius: BorderRadius.circular(10),
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.grey[100],
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                   HomePage()
                 ),
-                margin: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 10),
-                child: Stack(
-                    alignment: Alignment.center,
+              );
+            },
+          ),
+          title: Text(
+            'P R O F I L E',
+            style: TextStyle(
+              fontFamily:'Lexend-VariableFont',
+              color: Colors.blue,
+              fontSize: 20.0,
+              //fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  alignment: Alignment.topCenter,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        height: 200,
-                        width: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
+                        width: double.infinity,
+                        height:275,
+                        color: Colors.transparent,
                         child: Stack(
-                          alignment: Alignment.center,
                           children: [
-                            _image != null
-                                ? //if the user hasn't set an image yet then display this image in the following circle avatar
-                            CircleAvatar(
-                                radius: 80.0,
-                                backgroundImage:MemoryImage(_image!))
-                                : CircleAvatar(
-                              //if the user set an image then display the corresponding image in the following circle avatar
-                                radius: 80.0,
-                                backgroundImage: AssetImage(
-                                    'lib/images/Profileimage.png')),
-                            Positioned(
-                              bottom: 20.0,
-                              right: 20.0,
-                              child: InkWell(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) =>
-                                        buttonsheet(context),
-                                  );
-                                },
-                                child: Icon(
-                                  Icons
-                                      .camera_alt,
-                                  //camera icon allows user to set an image
-                                  color: Colors.teal,
-                                  size: 28.0,
+                            Container(
+                              height: 175,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color:Colors.white,
+                                  image: DecorationImage(
+                                    image: AssetImage('lib/images/monkey.png'),
+                                    fit: BoxFit.cover,
+                                  ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius:8,
+                                    offset: Offset(0,3),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+
+                              margin: const EdgeInsets.symmetric(horizontal: 20),
+                            ),
+                                  Positioned(
+                                    top:90,
+                                    left:125,
+                                    child: _image != null
+                                        ? CircleAvatar(
+                                        radius: 80.0,
+                                        backgroundImage: MemoryImage(_image!))
+                                        : CircleAvatar(
+                                        radius: 80.0,
+                                        backgroundImage:
+                                        AssetImage('lib/images/Profileimage.png')),
+                                  ),
+                        Positioned(
+                                  bottom:20.0,
+                                  right:125.0,
+                                  child: InkWell(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) => buttonsheet(context),
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.teal,
+                                      size: 28.0,
+                                    ),
+                                  ),
                                 ),
+                          ],
+                        ),
+                      ),
+
+
+                      Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width:100,
+                          height:40,
+                          margin: EdgeInsets.only(left:50,),
+                          decoration: BoxDecoration(
+                            color:Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius:8,
+                                offset: Offset(0,3),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Name',
+                              style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                fontSize:17,
+                                color: Colors.black,
                               ),
                             ),
-
-                        ],
-                      ),
-                    ),
-                  ]),
-              ),
-              ],
-              ),
-
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FractionallySizedBox(
-                  widthFactor: 1.0,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 60, top: 15),
-                      child: Text(
-                        'User Name',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  //this container display the current user's name as text
-                  width: 300,
-
-                  margin: EdgeInsets.only(left: 60, right: 60, top: 10),
-                  padding: EdgeInsets.only(
-                      top: 20.0, left: 10, right: 10, bottom: 20.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 0.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: FutureBuilder<String>(
-                      future: getUserName(),
-                      builder: (context, snapshot) {
-                        return Text(
-                          "${snapshot.data}",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
                           ),
-                        );
-                      }),
-                ),
-                FractionallySizedBox(
-                  widthFactor: 1.0,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 60, top: 15),
-                      child: Text(
-                        'Currency',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  //this container displays the user's currency as the text
-                  width: 300,
-
-                  margin: EdgeInsets.only(left: 60, right: 60, top: 10),
-                  padding: EdgeInsets.only(
-                      top: 20.0, left: 10, right: 10, bottom: 20.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 0.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: FutureBuilder<String>(
-                      future: getCurrency(),
-                      builder: (context, snapshot) {
-                        return Text(
-                          "${snapshot.data}",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
+                        Container(
+                          //this container display the current user's name as text
+                          width:180,
+                          height:45,
+                          margin:EdgeInsets.only(left:20),
+                          decoration: BoxDecoration(
+                            color:Color(0xFF85B6FF),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius:8,
+                                  offset: Offset(0,3),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(20),
                           ),
-                        );
-                      }),
-                ),
-                Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 30),
-                      child: ElevatedButton(
+                          child: FutureBuilder<String>(
+                              future: getUserName(),
+                              builder: (context, snapshot) {
+                                return Center(
+                                  child: Text(
+                                    "${snapshot.data}",
+                                    style: TextStyle(
+                                      fontFamily:'Lexend-VariableFont',
+                                      color: Colors.black,
+                                      fontSize:17,
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height:5,),
+                    Row(
+                      children: [
+                        Container(
+                          width:100,
+                          height:45,
+                          margin: EdgeInsets.only(top:5,left:50,),
+                          decoration: BoxDecoration(
+                              color:Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius:8,
+                                  offset: Offset(0,3),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Currency',
+                              style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                fontSize:17,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          //this container display the current user's name as text
+                          width:180,
+                          height:40,
+                          margin:EdgeInsets.only(left:20),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF85B6FF),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius:8,
+                                offset: Offset(0,3),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: FutureBuilder<String>(
+                              future: getCurrency(),
+                              builder: (context, snapshot) {
+                                return Center(
+                                  child: Text(
+                                    "${snapshot.data}",
+                                    style: TextStyle(
+                                      fontFamily:'Lexend-VariableFont',
+                                      color: Colors.black,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+
+                      ],
+                    ),
+                     Container(
+                       margin:EdgeInsets.only(top:10),
+                       height:40,
+                       width:double.infinity,
+                       color: Color(0xFF85B6FF),
+                       child:Align(
+                         alignment: Alignment.centerLeft,
+                         child: Padding(
+                           padding: EdgeInsets.only(left:30,),
+                           child: Text(
+                             'Settings',
+                             style: TextStyle(
+                             fontFamily:'Lexend-VariableFont',
+                             color: Colors.black,
+                             fontSize: 17,
+                           ),
+                           ),
+                         ),
+                       ),
+                     ),
+                    SizedBox(height:5),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        margin:EdgeInsets.only(left:30),
+                        width:350, // Set the desired width
+                        child: ElevatedButton(
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => MyMenu()),
+                                builder: (context) => const ForgotPassword(),
+                              ),
                             );
                           },
+
                           style: ElevatedButton.styleFrom(
-                            //a button set to allow the user to move to the settings page
-                            primary: Color(0xff181EAA),
-                            onPrimary: Colors.white,
+                            primary: Colors.white,
+                            onPrimary:  Color(0xFF090950),
+                            elevation: 5,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 40, vertical: 12),
-                            textStyle: TextStyle(fontSize: 20),
-                            elevation: 3,
                           ),
-                          child: Text('Settings')),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Text(
+                                'Change Password',
+                                style: TextStyle(
+                                  fontFamily: 'Lexend-VariableFont',
+                                  fontSize: 17,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height:5),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        margin:EdgeInsets.only(left:30),
+                        width:350, // Set the desired width
+                        child: ElevatedButton(
+                          onPressed: () {
+                            ChangeCurrency();
+                          },
+
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white,
+                            onPrimary:  Color(0xFF090950),
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Text(
+                                'Change Currency',
+                                style: TextStyle(
+                                  fontFamily: 'Lexend-VariableFont',
+                                  fontSize: 17,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin:EdgeInsets.only(top:5),
+                      height:40,
+                      width:double.infinity,
+                      color: Color(0xFF85B6FF),
+                      child:Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(left:30,),
+                          child: Text(
+                            'Version                       1.0.0',
+                            style: TextStyle(
+                              fontFamily:'Lexend-VariableFont',
+                              color: Colors.black,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin:EdgeInsets.only(top:5),
+                      height:40,
+                      width:double.infinity,
+                      color: Color(0xFF85B6FF),
+                      child:Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(left:30,),
+                          child: Text(
+                            'Rate Us',
+                            style: TextStyle(
+                              fontFamily:'Lexend-VariableFont',
+                              color: Colors.black,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin:EdgeInsets.only(top:10),
+                      width:350,height:40,
+                      decoration: BoxDecoration(
+                        color:Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius:8,
+                            offset: Offset(0,3),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: RatingBar.builder(
+                          itemBuilder: (context, _) => Icon(
+                              Icons.star_border,
+                              color:Color(0xFF85B6FF)),
+                          minRating: 1,
+                          itemSize: 40,
+                          itemPadding: EdgeInsets.symmetric(
+                              horizontal:14),
+                          updateOnDrag: true,
+                          onRatingUpdate: (newRating) {
+                            setState(() {
+                              // this.rating = newRating;
+                            });
+                          }),
+                    ),
+                    SizedBox(height:5),
+                    Divider( // Add a Divider here
+                      height: 3, // You can adjust the height of the divider
+                      thickness:1, // You can adjust the thickness of the divider
+                      color: Colors.grey, // You can set the color of the divider
                     ),
                     Container(
                       //this button allows to user to log out from the account
-                        margin: EdgeInsets.only(top: 10),
+                        margin: EdgeInsets.only(top:5),
                         child: ElevatedButton(
                           onPressed: () => _signOut(context),
                           // Use _signOut as the onPressed callback
                           style: ElevatedButton.styleFrom(
-                            primary: Color(0xff181EAA),
-                            onPrimary: Colors.white,
+                            primary: Colors.white,
+                            onPrimary: Color(0xFF090950),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(
+                                color:  Color(0xFF090950), // Set the border color
+                                width: 2, // Set the border width
+                              ),
                             ),
                             padding: EdgeInsets.symmetric(
                                 horizontal: 40, vertical: 12),
-                            textStyle: TextStyle(fontSize: 20),
-                            elevation: 3,
+                            textStyle: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                fontSize: 20),
+                            elevation: 2,
                           ),
                           child: Text('Log Out'),
                         )
@@ -534,15 +821,12 @@ class _Profile extends State<Profile> {
                   ],
                 )
               ],
-            )
-          ],
-        ),
+            ),
+          ),
+      ],
       ),
-    ],
-    ),
-    ),
-    );
-
-  }
+      ),
+     );
+}
 }
 

@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import '../components/button.dart';
 import '../components/tile.dart';
@@ -28,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   String mtoken='';
   final formKey = GlobalKey<FormState>();
   final passwordControll = TextEditingController();
-
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
   String? selectedCurrency = "USD";
   List currency = [
     'USD',
@@ -159,168 +160,44 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-  // void newTransaction() {
-  //   showDialog(
-  //       barrierDismissible: false,
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return StatefulBuilder(
-  //           builder: (BuildContext context, setState) {
-  //             return AlertDialog(
-  //               title: const Text("Please set your first name and the currency"),
-  //               content: SingleChildScrollView(
-  //                 child: Form(
-  //                   key: formKey,
-  //                   child: Column(
-  //                     children: [
-  //
-  //                       Row(
-  //                         children: [
-  //                           Expanded(
-  //                             child: TextFormField(
-  //                               decoration: const InputDecoration(
-  //                                 border: OutlineInputBorder(),
-  //                                 hintText: "Enter the First name",
-  //                               ),
-  //                               validator: (text) {
-  //                                 if (text == null || text.isEmpty) {
-  //                                   return "Please enter the First name";
-  //                                 }
-  //                                 return null;
-  //                               },
-  //                               keyboardType: TextInputType.text,
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                       const SizedBox(height: 10),
-  //                       Row(
-  //                         children: [
-  //                           Padding(
-  //                             padding: const EdgeInsets.symmetric(horizontal: 25.0),
-  //                             child: DropdownButtonFormField(
-  //                               value: selectedCurrency,
-  //                               items: currency.map((listValue) {
-  //                                 return DropdownMenuItem(
-  //                                   value: listValue,
-  //                                   child: Text(listValue),
-  //                                 );
-  //                               }).toList(),
-  //                               onChanged: (valueSelected) {
-  //                                 setState(() {
-  //                                   selectedCurrency = valueSelected as String;
-  //                                 });
-  //                               },
-  //                               icon: Icon(
-  //                                 Icons.arrow_downward_outlined,
-  //                                 color: Colors.grey[800],
-  //                               ),
-  //                               dropdownColor: Colors.grey[200],
-  //                               decoration: InputDecoration(
-  //                                 labelText: "Selet The Currency",
-  //                                 labelStyle: TextStyle(
-  //                                     color: Colors.grey[700],
-  //                                     fontSize: 17,
-  //                                     fontWeight: FontWeight.bold),
-  //                                 prefixIcon: Icon(
-  //                                   Icons.attach_money_sharp,
-  //                                   color: Colors.grey[700],
-  //                                   size: 40,
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //               actions: <Widget>[
-  //                 MaterialButton(
-  //                   color: Colors.grey[600],
-  //                   child: const Text(
-  //                     'Cancel',
-  //                     style: TextStyle(
-  //                       color: Colors.white,
-  //                     ),
-  //                   ),
-  //                   onPressed: () {
-  //                     Navigator.of(context).pop();
-  //                   },
-  //                 ),
-  //                 MaterialButton(
-  //                   color: Colors.grey[600],
-  //                   child: const Text(
-  //                     'Enter',
-  //                     style: TextStyle(
-  //                       color: Colors.white,
-  //                     ),
-  //                   ),
-  //                   onPressed: () async {
-  //                     if (formKey.currentState!.validate()) {
-  //                       String transactionType =
-  //                       is_income ? "Income" : "Expence";
-  //                       int transactionAmount =
-  //                       int.parse(amountController.text);
-  //
-  //                       String transactionName = transactionNameController.text;
-  //                       print(transactionName);
-  //
-  //                       //get the user id
-  //                       String? userId = await getCurrentUserId();
-  //
-  //                       transactions
-  //                           .sort((a, b) => b.timestamp.compareTo(a.timestamp));
-  //
-  //                       //Navigator.of(context).pop();
-  //
-  //                       //add transaction to the list
-  //                       setState(() {
-  //                         transactions.add(
-  //                           MyTransaction(
-  //                             transactionName: transactionName,
-  //                             transactionAmount: transactionAmount,
-  //                             transactionType: transactionType,
-  //                             timestamp: DateTime.now(),
-  //                             currencySymbol: currencySymbol,
-  //                           ),
-  //                         );
-  //                       });
-  //
-  //                       transactionNameController.clear();
-  //                       amountController.clear();
-  //                       Navigator.of(context).pop();
-  //
-  //                       if (is_income) {
-  //                         addIncomeToFireStore(
-  //                           userId,
-  //                           transactionName,
-  //                           transactionAmount,
-  //                         );
-  //                       } else {
-  //                         addExpenceToFireStore(
-  //                           userId,
-  //                           transactionName,
-  //                           transactionAmount,
-  //                         );
-  //                       }
-  //                       updateBalance(
-  //                         userId,
-  //                         await getTotalBalance(userId),
-  //                         await calculateTotalIncome(userId),
-  //                         await getTotalExpence(userId),
-  //                       );
-  //                     }
-  //                   },
-  //                 ),
-  //               ],
-  //             );
-  //           },
-  //         );
-  //       });
-  // }
 
+  void saveUserDetails(String?currency) async {
+    print('works');
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    await FirebaseFirestore.instance.collection('userDetails').add({
+      'username':user?.displayName,
+      'email':user?.email,
+      'currency': currency,
+    }
+    );
+  }
+  Future<String>getUser() async {
+    //get the username from Profile file
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    if (user != null) {
+      QuerySnapshot qs = await FirebaseFirestore.instance
+          .collection('userDetails')
+          .where('email', isEqualTo: user.email)
+          .limit(1)
+          .get(); //need to filter the current user's name by matching with the users male at the authentication and the username
+
+      if (qs.docs.isNotEmpty) {
+        // Return the document ID of the existing entry
+        return qs.docs.first.id;
+      } else {
+        return '';
+      }
+      // Handle the case when no matching documents are found for the current user
+      print('No matching document found for the current user.');
+      return ''; // Return an empty string or null based on your requirements
+    } else {
+      // Handle the case when the user is not authenticated
+      print('User not authenticated.');
+      return ''; // Return an empty string or null based on your requirements
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -455,11 +332,88 @@ class _LoginPageState extends State<LoginPage> {
                 //google
 
                 MyTitle(
-                    imagePath: 'lib/images/google.png',
-                    onTap: () => {
-                      //showmethod(),
+                  imagePath: 'lib/images/google.png',
+                  onTap: () async {
+                    // Sign in with Google
+                    final googleSignInResult = await AuthService().signInWithGoogle();
+
+                    if (googleSignInResult != null) {
+                      // Check if the user details are already saved
+                      if (getUser() == null) {
+                        final selectedCurrency = await showDialog<String>(
+                          context: context,
+                          builder: (context) {
+                            String selectedCurrency = 'USD'; // Default currency
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                side: const BorderSide(color: Colors.white),
+                              ),
+                              backgroundColor: Colors.grey[700],
+                              title: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                child: StatefulBuilder(
+                                  builder: (context, setState) {
+                                    return DropdownButtonFormField(
+                                      value: selectedCurrency,
+                                      items: currency.map((listValue) {
+                                        return DropdownMenuItem(
+                                          value: listValue,
+                                          child: Text(listValue),
+                                        );
+                                      }).toList(),
+                                      onChanged: (valueSelected) {
+                                        setState(() {
+                                          selectedCurrency = valueSelected as String;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        Icons.arrow_downward_outlined,
+                                        color: Colors.grey[800],
+                                      ),
+                                      dropdownColor: Colors.grey[200],
+                                      decoration: InputDecoration(
+                                        labelText: "Select The Currency",
+                                        labelStyle: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        prefixIcon: Icon(
+                                          Icons.attach_money_sharp,
+                                          color: Colors.grey[700],
+                                          size: 40,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(selectedCurrency);
+                                  },
+                                  child: Text('Save'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        if (selectedCurrency != null) {
+                          // Save user details with selectedCurrency
+                          saveUserDetails(selectedCurrency);
+                        }
+                      } else {
+                        // User details already exist, handle navigation or other logic
+                        // For example:
+                        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+                      }
                     }
+                  },
                 ),
+
 
                 const SizedBox(width: 25),
                 //apple
@@ -499,9 +453,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}   // if(AuthService().signInWithGoodle()!=null){
-//   Navigator.pushReplacement(context,
-//       MaterialPageRoute(builder: (context) => HomePage()
-//       )
-//   ),
-// }
+}

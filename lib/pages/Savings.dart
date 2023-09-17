@@ -19,6 +19,7 @@ class Savings extends StatefulWidget {
 
   }
 
+
   @override
   State<Savings> createState() => _SavingsState(
     savingbalance: balance, incomev:income, expensev: expense,
@@ -505,13 +506,8 @@ class _SavingsState extends State<Savings> {
             icon: Icon(Icons.arrow_back),
             color: Colors.black,
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomePage(),
-                ),
-              );
-            },
+              Navigator.of(context).pop();
+              },
           ),
           actions: [
             Icon(
