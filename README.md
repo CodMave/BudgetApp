@@ -10,7 +10,7 @@ Data base used
 Group members
 
 -Muhammed Fais
--Shehan Yasaruvan
+-Sehan Yasaru
 -Pasindu Nimesh
 -Nilupa Fernando
 -Ama Prabuddhika
