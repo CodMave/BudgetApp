@@ -80,11 +80,13 @@ class _SavingsState extends State<Savings> {
     loadYear();
     getDocIds();
     updateBalance();
-    getthesavingfromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
-    gettheexpensefromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
+    // getthesavingfromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
+    // gettheexpensefromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
     getSelectedMonth(DateFormat('MMMM').format(DateTime.now()));
     countpercent(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
   }
+
+
   Future<String> getDocIds() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     User? user = _auth.currentUser;
@@ -255,17 +257,22 @@ class _SavingsState extends State<Savings> {
           .doc(username)
           .collection('Savings')
           .where('Year', isEqualTo: int.parse(year))
+          .orderBy('Timest', descending: true)
           .get();
 
 
       incomeSnapshot.docs.forEach((cDoc) {
         currentExpense.insert(0,cDoc.get('Expense'));
       });
-      for(int i=0;i<currentExpense.length-1;i++){
-        sum=sum+currentExpense[i];
-      }
 
-      expense=(expensevalue-sum);
+
+      for (int i = 0; i < currentExpense.length-1; i++) {
+       sum=sum+currentExpense[i];
+      }
+      expense=await getExpence()-sum;
+      print(expense);
+
+
 
       return expense;
     } catch (ex) {
@@ -288,16 +295,21 @@ class _SavingsState extends State<Savings> {
           .doc(username)
           .collection('Savings')
           .where('Year', isEqualTo: int.parse(year))
+          .orderBy('Timest', descending: true)
           .get();
 
 
       incomeSnapshot.docs.forEach((cDoc) {
         currentIncome.insert(0,cDoc.get('Income'));
       });
-      for(int i=0;i<currentIncome.length-1;i++){
+
+
+      for (int i = 0; i < currentIncome.length-1; i++) {
         sum=sum+currentIncome[i];
       }
-      income=(incomevalue-sum);
+      income=await getIncome()-sum;
+      print(income);
+
 
       return income;
     } catch (ex) {
@@ -319,7 +331,12 @@ class _SavingsState extends State<Savings> {
           .doc(username)
           .collection('Savings')
           .where('Year', isEqualTo: int.parse(year))
-          .get();
+          .orderBy('Timest', descending: true)
+          .get()
+          .catchError((error) {
+        print('Error executing Firestore query: $error');
+      });
+
 
       incomeSnapshot.docs.forEach((cDoc) {
         currentBalance.insert(0,cDoc.get('Balance'));
@@ -329,6 +346,59 @@ class _SavingsState extends State<Savings> {
     } catch (ex) {
       print('calculating total balance failed');
       return [];
+    }
+  }
+  Future<int> getExpence() async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Balance')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Assuming 'Balance' is a field in your Firestore document
+       expensev = querySnapshot.docs.first['Expences'];
+        print(expensev);
+        return expensev;
+      } else {
+        // No entry found
+        return 0;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return 0;
+    }
+  }
+  Future<int> getIncome() async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('Balance')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+
+        incomev = querySnapshot.docs.first['Income'];
+        print(incomev);
+        return  incomev;
+
+      } else {
+        // No entry found
+        return 0;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return 0;
     }
   }
   Future<List> gettheMonthfromDB(String year) async {
@@ -345,7 +415,12 @@ class _SavingsState extends State<Savings> {
           .doc(username)
           .collection('Savings')
           .where('Year', isEqualTo: int.parse(year))
-          .get();
+          .orderBy('Timest', descending: true)
+          .get()
+          .catchError((error) {
+        print('Error executing Firestore query: $error');
+      });
+
 
       incomeSnapshot.docs.forEach((dDoc) {
         currentMonth.insert(0,dDoc.get('Month'));
@@ -394,6 +469,7 @@ class _SavingsState extends State<Savings> {
           int.parse(selectedyear!),
           incomev,
           expensev,
+          DateTime.now(),
         ).toString();
       }
     } catch (ex) {
@@ -450,7 +526,7 @@ class _SavingsState extends State<Savings> {
       int balance,
       String Day,
       int year,
-      int income,int expense
+      int income,int expense,DateTime time
       ) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -469,6 +545,7 @@ class _SavingsState extends State<Savings> {
         'Year': year,
         'Income':income,
         'Expense':expense,
+      'Timest':time,
       });
 
       final String newDocumentId = newDocument.id;
@@ -486,6 +563,11 @@ class _SavingsState extends State<Savings> {
     if (percentage >= 0 && percentage <= 1) {
       setState(() {
         this.percent=percentage;
+      });
+    }
+    else if(percentage>1){
+      setState(() {
+        this.percent=1.0;
       });
     }
     else {

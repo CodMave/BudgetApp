@@ -10,12 +10,12 @@ import '../components/tranaction.dart';
 import 'homePage.dart';
 
 
- int count=0;
- int newbalance=0;
+int count=0;
+int newbalance=0;
 class TextScanner extends StatefulWidget {
 
- TextScanner({super.key, required int num, required int newBalance}){
-   newbalance=newBalance;
+  TextScanner({super.key, required int num, required int newBalance}){
+    newbalance=newBalance;
     count=num;
   }
 
@@ -39,19 +39,19 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);//widget binding occurs
     future=requestCameraPermission();//get the camer permission to the future
-}
-void dispose(){
-  WidgetsBinding.instance.removeObserver(this);
-  StopCamera();
-  textrecognise.close();
-  super.dispose();
+  }
+  void dispose(){
+    WidgetsBinding.instance.removeObserver(this);
+    StopCamera();
+    textrecognise.close();
+    super.dispose();
 
-}
-Future<void>requestCameraPermission()async{//this method occurs when the user granted only to access the permission to use camera
+  }
+  Future<void>requestCameraPermission()async{//this method occurs when the user granted only to access the permission to use camera
     final status=await Permission.camera.request();
     ispermissiongot=status==PermissionStatus.granted;
-}
-void initCamera(List<CameraDescription>cameras){
+  }
+  void initCamera(List<CameraDescription>cameras){
     if(cameraController!=null){//check whether the camera controller is initialized or not
       return;
     }
@@ -68,8 +68,8 @@ void initCamera(List<CameraDescription>cameras){
       cameraSelected(camera);
     }
 
-}
-Future<void>cameraSelected(CameraDescription camera)async{
+  }
+  Future<void>cameraSelected(CameraDescription camera)async{
     cameraController=CameraController(camera, ResolutionPreset.max,enableAudio: false);
     await cameraController?.initialize();
     if(!mounted){//check the avaibale quality of the camera
@@ -78,12 +78,12 @@ Future<void>cameraSelected(CameraDescription camera)async{
     setState(() {
 
     });
-}
-void StartCamera(){//start the camera
+  }
+  void StartCamera(){//start the camera
     if(cameraController!=null){
       cameraSelected(cameraController!.description);//starts the selected camera
     }
-}
+  }
   void StopCamera(){//start the camera
     if(cameraController!=null){
       cameraController?.dispose();
@@ -91,7 +91,7 @@ void StartCamera(){//start the camera
   }
   Future<void>scanImage()async{//In here the process of thescanning the images using the camera
     if(cameraController==null){
-    return;
+      return;
     }
     final navigator=Navigator.of(context);
     try{
@@ -133,7 +133,7 @@ void StartCamera(){//start the camera
                     future: availableCameras(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                       initCamera(snapshot.data!);
+                        initCamera(snapshot.data!);
                         return Center(
                           child: CameraPreview(cameraController!),
                         );
@@ -191,7 +191,7 @@ class Result extends StatefulWidget {
   State<Result> createState() => _ResultState(
     newBalance:balance1,
     text:text,
-    
+
   );
 }
 
@@ -222,33 +222,33 @@ class _ResultState extends State<Result> {
       }
     }
     print(transactiontype);
-        if( transactiontype=='Transport') {
-          for (String word in words) {
-            // if (word == 'ROUTE') {
-            //   print('Found the Word ROUTE');
-            // } else
-            if (word.startsWith(
-                "Rs.")) { //in here we check the word start with Rs.
+    if( transactiontype=='Transport') {
+      for (String word in words) {
+        // if (word == 'ROUTE') {
+        //   print('Found the Word ROUTE');
+        // } else
+        if (word.startsWith(
+            "Rs.")) { //in here we check the word start with Rs.
 
 
-              RegExp regex = RegExp(
-                  r'Rs\.(\d+\.\d+)'); //in we check the value if it is as the order of XXX.XX then we get it as integer value
-              Match? match = regex.firstMatch(
-                  word); //if the word is match then we get the value
+          RegExp regex = RegExp(
+              r'Rs\.(\d+\.\d+)'); //in we check the value if it is as the order of XXX.XX then we get it as integer value
+          Match? match = regex.firstMatch(
+              word); //if the word is match then we get the value
 
-              if (match != null) {
-                // Extracted value is stored in match.group(1)
-                extractedValue = match.group(1)!;
-                print('Found Rs.$extractedValue');
-              } else { //print the value when we unable to get the value
-                print('Found Rs. but couldn\'t extract a valid value');
-              }
-            }
+          if (match != null) {
+            // Extracted value is stored in match.group(1)
+            extractedValue = match.group(1)!;
+            print('Found Rs.$extractedValue');
+          } else { //print the value when we unable to get the value
+            print('Found Rs. but couldn\'t extract a valid value');
           }
-          print( transactiontype);
-          addtransaction( transactiontype,double.parse(extractedValue).toInt());
-
         }
+      }
+      print( transactiontype);
+      addtransaction( transactiontype,double.parse(extractedValue).toInt());
+
+    }
     showDialog(
       context: context, // Use the current context
       builder: (BuildContext context) {
@@ -280,7 +280,7 @@ class _ResultState extends State<Result> {
     int balance = (totalIncome - totalExpence).toInt();
 
     setState(() {
-    newBalance = balance;
+      newBalance = balance;
     });
 
     return newBalance;
@@ -293,7 +293,7 @@ class _ResultState extends State<Result> {
     //     .sort((a, b) => b.timestamp.compareTo(a.timestamp));
     //
     // Navigator.of(context).pop();
- setState(() {
+    setState(() {
       transactions.add(
         MyTransaction(
           transactionName:name,
@@ -304,13 +304,13 @@ class _ResultState extends State<Result> {
         ),
       );
     });
-   addExpenceToFireStore(username, transactiontype,double.parse(extractedValue).toInt());
-   final balance=await getTotalBalance(username);
-   final income=await calculateTotalIncome(username);
-   final expense= await getTotalExpence(username);
-   print(balance);
-   updateBalance(username,balance,income,expense);
-  print(await getBalance(username));
+    addExpenceToFireStore(username, transactiontype,double.parse(extractedValue).toInt());
+    final balance=await getTotalBalance(username);
+    final income=await calculateTotalIncome(username);
+    final expense= await getTotalExpence(username);
+    print(balance);
+    updateBalance(username,balance,income,expense);
+    print(await getBalance(username));
   }
   Future<int> calculateTotalIncome(String userId) async {
     try {
@@ -483,14 +483,14 @@ class _ResultState extends State<Result> {
         body: Container(
           padding: EdgeInsets.all(30.0),
           child: SingleChildScrollView(
-            child:Column(
-              children: [
-                Text(text),
-              SizedBox(height:10),
-                ElevatedButton(
-                    onPressed: ()=> SplitingText(text) , child: Text('Update the balance')),
-              ],
-            )
+              child:Column(
+                children: [
+                  Text(text),
+                  SizedBox(height:10),
+                  ElevatedButton(
+                      onPressed: ()=> SplitingText(text) , child: Text('Update the balance')),
+                ],
+              )
           ),
         ),
       ),

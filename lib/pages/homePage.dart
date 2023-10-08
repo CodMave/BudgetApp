@@ -1,3 +1,4 @@
+import 'package:budgettrack/pages/plans.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -192,7 +193,7 @@ class _ControllerState extends State<Controller> {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        // Assuming 'Balance' is a field in your Firestore document
+
         incomevalue = querySnapshot.docs.first['Income'];
         return  incomevalue;
       } else {
@@ -499,9 +500,7 @@ class _ControllerState extends State<Controller> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Savings(
-                        balance: newbalance, income:incomevalue, expense:expensevalue,
-                      )),
+                      builder: (context) =>PlansApp()),
                 );
               } else if (Index == 4) {
                 Navigator.push(

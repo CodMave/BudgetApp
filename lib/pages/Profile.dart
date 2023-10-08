@@ -250,15 +250,13 @@ class _Profile extends State<Profile> {
     Uint8List img = await PickImage(ImageSource.gallery);
     if (img != null) {
       saveImageToStorage(img); //save the image
-
       setState(() {
         _image = img;
       });
     }
   }
 
-  void
-  TakePhoto() async //allows to user to set the profile image as taken photo fro camera
+  void TakePhoto() async //allows to user to set the profile image as taken photo fro camera
       {
     Uint8List img = await PickImage(ImageSource.camera);
     if (img != null) {
@@ -269,10 +267,7 @@ class _Profile extends State<Profile> {
       });
     }
   }
-
-
-
-  static Future<String> getUserName() async {
+static Future<String> getUserName() async {
     //get the username of the current user and display it as text
     User? user = _auth.currentUser;
     email = user!.email!;

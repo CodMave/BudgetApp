@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-void main() {
-  runApp(PlansApp());
-}
+import 'homePage.dart';
+
+
 
 class PlansApp extends StatelessWidget {
   @override
@@ -38,8 +38,10 @@ class _PlansPageState extends State<PlansPage> {
           icon: Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () {
-            Navigator.pop(
+            Navigator.push(
               context,
+              MaterialPageRoute(
+                  builder: (context) =>HomePage()),
             ); // Navigate back when the arrow button is pressed
           },
         ),

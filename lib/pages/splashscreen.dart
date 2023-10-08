@@ -30,50 +30,53 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-
-                colors: [ Color(0xFF3AC6D5),Color(0xFFC2DAFF),]
-            ),
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [Color(0xFF3AC6D5),Color(0xFF85B6FF)],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
+        ),
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Image.asset(
-                    "lib/images/monkey.png",
-                    height: 200.0,
-                    width: 200.0,
+                  Column(
+                    children: [
+                      Image.asset(
+                        "lib/images/monkey.png",
+                        height: 200.0,
+                        width: 200.0,
+                      ),
+                      Text(
+                        "\n \n \n Hello!!!\n Take control of your finances\n like never before with our powerful budget\ntracking app.Whether you're a seasoned\npro or just starting your financial journey.\nBudget tracker is here to simplify your money \n management and help you achieve your\nfinancial goals",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF090950),
+                          fontWeight: FontWeight.bold,
+                          fontFamily:'Lexend-VariableFont',
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text("\n \n \n Hello!!!\n Take control of your finances\n like never before with our powerful budget\ntracking app.Whether you're a seasoned\npro or just stating uour financial journey.\nBudget tracker is here to simplify your money \n management and help you achieve your\nfinancial goals",textAlign:TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                    ),
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
                   ),
                 ],
               ),
-
-              CircularProgressIndicator(
-                valueColor:  AlwaysStoppedAnimation<Color>(Colors.red),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
-
-
-
-
 }

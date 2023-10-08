@@ -182,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
           .where('email', isEqualTo: user.email)
           .limit(1)
           .get(); //need to filter the current user's name by matching with the users male at the authentication and the username
-
+      print('document name issss${qs.docs}');
       if (qs.docs.isNotEmpty) {
         // Return the document ID of the existing entry
         return qs.docs.first.id;
@@ -339,7 +339,8 @@ class _LoginPageState extends State<LoginPage> {
 
                     if (googleSignInResult != null) {
                       // Check if the user details are already saved
-                      if (getUser() == null) {
+
+                      if (getUser() =='') {
                         final selectedCurrency = await showDialog<String>(
                           context: context,
                           builder: (context) {

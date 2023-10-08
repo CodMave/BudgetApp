@@ -354,6 +354,7 @@ class _HolderState extends State<Holder> {
           .collection('userDetails')
           .doc(username)
           .collection('ReceivedNotifications')
+          .orderBy('Time', descending:false)
           .get();
 
       List<String> fetchedMessages = [];
@@ -380,6 +381,7 @@ class _HolderState extends State<Holder> {
           .collection('userDetails')
           .doc(username)
           .collection('ReceivedNotifications')
+          .orderBy('Time',descending: false)
           .get();
 
       List<DateTime> fetchedTime = []; // Change the type to List<DateTime>
