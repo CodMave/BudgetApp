@@ -11,9 +11,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:budgettrack/pages/Notification.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../components/tranaction.dart';
 import 'Profile.dart';
 import 'Savings.dart';
-import 'Summery.dart';
 import 'expenceAndIncome.dart';
 import 'goals.dart';
 import 'TextScanner.dart';
@@ -48,7 +48,6 @@ class Controller extends StatefulWidget {
   int newbalance=0;
 
 
-
   final int num;
 
 
@@ -71,7 +70,8 @@ class _ControllerState extends State<Controller> {
   bool isContainerVisible = false;
   int newbalance = 0;
   String currency='';
-
+  MyTransaction? latestincome;
+  MyTransaction? latestexpense;
   _ControllerState(
       {required this.newbalance});
 
@@ -108,8 +108,63 @@ class _ControllerState extends State<Controller> {
       return ''; // Return an empty string or null based on your requirements
     }
   }
+
+  Future<void> fetchLatestTransactions() async {// This method is for get the recent expense and income name
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      //fetch the latest income
+      final incomeSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('incomeID')
+          .orderBy('timestamp', descending: true)
+          .limit(1)
+          .get();
+
+      if (incomeSnapshot.docs.isNotEmpty) {
+        final income = incomeSnapshot.docs[0];
+        setState(() {
+         this.latestincome= MyTransaction(
+            transactionName: income.get('transactionName'),
+            transactionAmount: income.get('transactionAmount'),
+            transactionType: 'Income',
+            timestamp: income.get('timestamp').toDate(),
+            currencySymbol:currency,
+          );
+        });
+      }
+
+      //fetch the latest expence
+      final expenceSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('expenceID')
+          .orderBy('timestamp', descending: true)
+          .limit(1)
+          .get();
+
+      if (expenceSnapshot.docs.isNotEmpty) {
+        final expence = expenceSnapshot.docs[0];
+        setState(() {
+    this.latestexpense = MyTransaction(
+            transactionName: expence.get('transactionName'),
+            transactionAmount: expence.get('transactionAmount'),
+            transactionType: 'Expence',
+            timestamp: expence.get('timestamp').toDate(),
+            currencySymbol: currency,
+          );
+        });
+      }
+    } catch (ex) {
+      print('fetching latest transactions failed');
+    }
+    print(  latestexpense?.transactionName);
+  }
    Future<String> getCurrency() async {
-    //get the currency that user selected and show it as text
+
     User? user = _auth.currentUser;
     email = user!.email!;
     if (user != null) {
@@ -233,6 +288,7 @@ class _ControllerState extends State<Controller> {
   void initState() {
     super.initState();
     getCurrency();
+    fetchLatestTransactions();
     getBalance();
     getIncome();
     getExpence();
@@ -492,10 +548,7 @@ class _ControllerState extends State<Controller> {
                       )),
                 );
               } else if (Index == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Pro()),
-                );
+               print('Summery');
               } else if (Index == 3) {
                 Navigator.push(
                   context,
@@ -780,7 +833,7 @@ class _ControllerState extends State<Controller> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Colors.blue,
+                                  color:const Color(0xFF090950),
                                   width: 3.0,
                                 ),
                               ),
@@ -789,24 +842,62 @@ class _ControllerState extends State<Controller> {
                                   shape: BoxShape.circle,
                                   color: Colors.white,
                                 ),
-                                child: IconButton(
-                                  icon: const Icon(
+                                child: this.latestexpense?.transactionName=='Transport'? Icon(
                                     FontAwesomeIcons.car,
                                     size: 40,
-                                    color: Colors.blue,
-                                  ),
-                                  onPressed: () {
-                                    print('clicked');
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Expence(
-                                          nume:0,
-
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                    color:const Color(0xFF090950)
+                                 )
+                                    :this.latestexpense?.transactionName=='Food'?Icon(
+                                  FontAwesomeIcons.burger,
+                                  size: 40,
+                                    color:const Color(0xFF090950)
+                                )
+                                    :this.latestexpense?.transactionName=='Health'?Icon(
+                                  FontAwesomeIcons.heartPulse,
+                                  size: 40,
+                                    color:const Color(0xFF090950)
+                                )
+                                    :this.latestexpense?.transactionName=='Education'?Icon(
+                                FontAwesomeIcons.book,
+                                size: 40,
+                                    color:const Color(0xFF090950)
+                              )
+                                    :this.latestexpense?.transactionName=='Fuel'?Icon(
+                                  FontAwesomeIcons.oilCan,
+                                  size: 40,
+                                    color:const Color(0xFF090950)
+                                )
+                                    :this.latestexpense?.transactionName=='Donations'?Icon(
+                                  FontAwesomeIcons.donate,
+                                  size: 40,
+                                    color:const Color(0xFF090950)
+                                )
+                                    :this.latestexpense?.transactionName=='Bills'?Icon(
+                                  FontAwesomeIcons.prescription,
+                                  size: 40,
+                                    color:const Color(0xFF090950)
+                                )
+                                    :this.latestexpense?.transactionName=='Entertainment'?Icon(
+                                  FontAwesomeIcons.microphone,
+                                  size: 40,
+                                    color:const Color(0xFF090950)
+                                )
+                                    :this.latestexpense?.transactionName=='Others'?Icon(
+                                  FontAwesomeIcons.handsAslInterpreting,
+                                  size: 40,
+                                    color:const Color(0xFF090950)
+                                )
+                                    :this.latestexpense?.transactionName=='Shopping'?Icon(
+                                  FontAwesomeIcons.shoppingCart,
+                                  size: 40,
+                                    color:const Color(0xFF090950)
+                                )
+                                    :this.latestexpense?.transactionName=='Rental'?Icon(
+                                  FontAwesomeIcons.house,
+                                  size: 40,
+                                    color:const Color(0xFF090950)
+                                )
+                                    :Container(
                                 ),
                               ),
                             ),
@@ -818,7 +909,7 @@ class _ControllerState extends State<Controller> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Colors.blue,
+                                  color:Color(0xFF3AC6D5),
                                   width: 3.0,
                                 ),
                               ),
@@ -827,23 +918,32 @@ class _ControllerState extends State<Controller> {
                                   shape: BoxShape.circle,
                                   color: Colors.white,
                                 ),
-                                child: IconButton(
-                                  icon: const Icon(
-                                    FontAwesomeIcons.burger,
-                                    size: 40,
-                            color: Colors.blue,
-                                  ),
-                                  onPressed: () {
-                                    print('clicked');
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Expence(
-                                            nume:0,
-                                          )),
-                                    );
-                                  },
-                                ),
+                                child: this.latestincome?.transactionName=='Salary'? Icon(
+                                  FontAwesomeIcons.wallet,
+                                  size: 40,
+                                  color:Color(0xFF3AC6D5),
+                                )
+                                    :this.latestincome?.transactionName=='Bonus'?Icon(
+                                  FontAwesomeIcons.clockRotateLeft,
+                                  size: 40,
+                                  color:Color(0xFF3AC6D5),
+                                )
+                                    :this.latestincome?.transactionName=='Gifts'?Icon(
+                                  FontAwesomeIcons.gift,
+                                  size: 40,
+                                  color:Color(0xFF3AC6D5),
+                                )
+                                    :this.latestincome?.transactionName=='Rental'?Icon(
+                                  Icons.add_card_rounded,
+                                  size: 40,
+                                  color:Color(0xFF3AC6D5),
+                                )
+                                    :this.latestincome?.transactionName=='Others'?Icon(
+                                  FontAwesomeIcons.handsClapping,
+                                  size: 40,
+                                  color:Color(0xFF3AC6D5),
+                                )
+                                    :Container(),
                               ),
                             ),
                             Container(

@@ -356,6 +356,7 @@ class _ExpenceState extends State<Expence> {
     } catch (ex) {
       print('fetching latest transactions failed');
     }
+    print(   lastExpenseTransaction?.transactionName);
   }
 
   //method to calculate total income from firestore

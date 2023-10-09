@@ -280,7 +280,7 @@ class _SavingsState extends State<Savings> {
       return 0;
     }
   }
-  Future<int>changeincome(String year,String month,int incomevalue)async{
+  Future<int>changeincome(String year,String month,int incomevalue)async{//change the income of the user
     List<int>currentIncome=[];
     int income = 0;
     int sum=0;
@@ -318,7 +318,7 @@ class _SavingsState extends State<Savings> {
     }
   }
 
-  Future<List> getthebalancefromDB(String year) async {
+  Future<List> getthebalancefromDB(String year) async {//get the total balance upto now
     List<int> currentBalance = [];
     User? user = _auth
         .currentUser; //created an instance to the User of Firebase authorized
@@ -348,7 +348,7 @@ class _SavingsState extends State<Savings> {
       return [];
     }
   }
-  Future<int> getExpence() async {
+  Future<int> getExpence() async {//get the total expense upto now
     User? user = _auth.currentUser;
     String username = user!.uid;
     try {
@@ -374,7 +374,7 @@ class _SavingsState extends State<Savings> {
       return 0;
     }
   }
-  Future<int> getIncome() async {
+  Future<int> getIncome() async {//get the total income upto now
     User? user = _auth.currentUser;
     String username = user!.uid;
     try {
@@ -401,7 +401,7 @@ class _SavingsState extends State<Savings> {
       return 0;
     }
   }
-  Future<List> gettheMonthfromDB(String year) async {
+  Future<List> gettheMonthfromDB(String year) async {// get the month to a list
 
     List<String> currentMonth = [];
     User? user = _auth

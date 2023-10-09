@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 import '../pages/Profile.dart';
-import '../pages/Summery.dart';
 import '../pages/goals.dart';
 import '../pages/homePage.dart';
 
