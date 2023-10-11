@@ -17,6 +17,7 @@ import 'Savings.dart';
 import 'expenceAndIncome.dart';
 import 'goals.dart';
 import 'TextScanner.dart';
+import 'Summery.dart';
 
 int expensevalue=0;
 int incomevalue=0;
@@ -29,6 +30,7 @@ class HomePage extends StatelessWidget {
     return ScreenUtilInit(
       designSize: Size(325, 812),
       builder: (context, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,
         //remove the debug label
         home: MyWork(), //call to the class work
       ),
@@ -46,17 +48,10 @@ String name='';
 
 class Controller extends StatefulWidget {
   int newbalance=0;
-
-
-  final int num;
-
-
-  Controller({Key? key, required int balance,required this.num, }) : super(key: key) //one of the constructor to get the following values from Menu,Notification files
+ Controller({Key? key, required int balance }) : super(key: key) //one of the constructor to get the following values from Menu,Notification files
   {
     newbalance=balance;
-    count=num;
-
-  }
+ }
 
   @override
   _ControllerState createState() => _ControllerState(
@@ -162,6 +157,36 @@ class _ControllerState extends State<Controller> {
       print('fetching latest transactions failed');
     }
     print(  latestexpense?.transactionName);
+  }
+  Future<int>getcountfromdb()async{
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('NotificationCount')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+
+        int count = querySnapshot.docs.first['Count'];
+
+        print(count);
+        return  count;
+
+      } else {
+        // No entry found
+        return 0;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return 0;
+    }
   }
    Future<String> getCurrency() async {
 
@@ -461,52 +486,66 @@ class _ControllerState extends State<Controller> {
             Icons.waving_hand,
             color:Color(0xFF85B6FF),
             size: 30,),
-          count == 0
-              ? IconButton(
-            //if the count value is 0 then badge won't show otherwise it dissplays the unseen notification count
-            onPressed: () {
-              Navigator.push(
-                context,
-
-                MaterialPageRoute(
-                    builder: (context) => Holder(
-                      totalBalance: newbalance,
-                    )), //create a constructor to the Holder class to display the notification list
+        FutureBuilder<int>(
+          future: getcountfromdb(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // While the future is still loading, you can show a loading indicator or placeholder
+              return CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.transparent),
               );
-            },
-            icon: Icon(
-              Icons.notifications_active_outlined,
-              size: 40,
-            ),
+            } else if (snapshot.hasError) {
+              // If there's an error, you can handle it here
+              return Text('Error: ${snapshot.error}');
+            } else {
+              // If the future has completed successfully, display the data
+              return snapshot.data==0 ? IconButton(
+                //if the count value is 0 then badge won't show otherwise it dissplays the unseen notification count
+                onPressed: () {
+                  Navigator.push(
+                    context,
 
-          )
-              : badges.Badge(
-            badgeContent: Text('${count}'),
-            position: badges.BadgePosition.topEnd(top: 2, end: 0),
-            badgeAnimation: badges.BadgeAnimation.slide(),
-            badgeStyle: badges.BadgeStyle(
-              shape: badges.BadgeShape.circle,
-              padding: EdgeInsets.all(8.0),
-              badgeColor: Colors.red,
-            ),
-            child: IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Holder(
-                        totalBalance: newbalance,
-                      )),
-                );
-              },
-              icon: Icon(
-                Icons.notifications_active_outlined,
-                size: 40,
-              ),
-            ),
-          ),
+                    MaterialPageRoute(
+                        builder: (context) => Holder(
+                          totalBalance: newbalance,
+                        )), //create a constructor to the Holder class to display the notification list
+                  );
+                },
+                icon: Icon(
+                  Icons.notifications_active_outlined,
+                  size: 40,
+                ),
 
-        ],
+              )
+                  : badges.Badge(
+                badgeContent: Text('${snapshot.data}'),
+                position: badges.BadgePosition.topEnd(top: 2, end: 0),
+                badgeAnimation: badges.BadgeAnimation.slide(),
+                badgeStyle: badges.BadgeStyle(
+                  shape: badges.BadgeShape.circle,
+                  padding: EdgeInsets.all(8.0),
+                  badgeColor: Colors.red,
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Holder(
+                            totalBalance: newbalance,
+                          )),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.notifications_active_outlined,
+                    size: 40,
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+           ],
       ),
 
       //bottom navigation bar
@@ -534,7 +573,6 @@ class _ControllerState extends State<Controller> {
                   MaterialPageRoute(
                       builder: (context) => Controller(
                         balance: newbalance,
-                        num: 0,
                       )),
                 );
               } else if (Index == 1) {
@@ -548,7 +586,11 @@ class _ControllerState extends State<Controller> {
                       )),
                 );
               } else if (Index == 2) {
-               print('Summery');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>Pro()),
+                );
               } else if (Index == 3) {
                 Navigator.push(
                   context,

@@ -472,7 +472,7 @@ class _ResultState extends State<Result> {
         // Define your custom logic here for what happens when the back button is pressed.
         // You can navigate to a different screen or perform any other action.
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) =>  Controller(balance:newBalance,num:count)),
+          MaterialPageRoute(builder: (context) =>  Controller(balance:newBalance)),
         );
         return false; // Return true if you want to allow the back button, or false to prevent it.
       },
