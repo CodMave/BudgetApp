@@ -161,43 +161,19 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void saveUserDetails(String?currency) async {
-    print('works');
+  void saveUserDetails(String?currency) async {//this method stores the data of the user who sign in with google account
+
     final FirebaseAuth _auth = FirebaseAuth.instance;
     User? user = _auth.currentUser;
+    List<String>? nameParts = user?.displayName?.split(' ');
     await FirebaseFirestore.instance.collection('userDetails').add({
-      'username':user?.displayName,
+      'username':nameParts?.first,
       'email':user?.email,
       'currency': currency,
     }
     );
   }
-  Future<String>getUser() async {//this is what I did to get the current user 
-    //get the username from Profile file
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    User? user = _auth.currentUser;
-    if (user != null) {
-      QuerySnapshot qs = await FirebaseFirestore.instance
-          .collection('userDetails')
-          .where('email', isEqualTo: user.email)
-          .limit(1)
-          .get(); //need to filter the current user's name by matching with the users male at the authentication and the username
-      print('document name issss${qs.docs}');
-      if (qs.docs.isNotEmpty) {
-        // Return the document ID of the existing entry
-        return qs.docs.first.id;
-      } else {
-        return '';
-      }
-      // Handle the case when no matching documents are found for the current user
-      print('No matching document found for the current user.');
-      return ''; // Return an empty string or null based on your requirements
-    } else {
-      // Handle the case when the user is not authenticated
-      print('User not authenticated.');
-      return ''; // Return an empty string or null based on your requirements
-    }
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -335,82 +311,72 @@ class _LoginPageState extends State<LoginPage> {
                   imagePath: 'lib/images/google.png',
                   onTap: () async {
                     // Sign in with Google
+                   selectedCurrency = await showDialog<String>(//get the currency from the user
+                      context: context,
+                      builder: (context) {
+
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: const BorderSide(color: Colors.white),
+                          ),
+                          backgroundColor: Colors.white,
+                          title: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                            child: StatefulBuilder(
+                              builder: (context, setState) {
+                                return DropdownButtonFormField(
+                                  value: selectedCurrency,
+                                  items: currency.map((listValue) {
+                                    return DropdownMenuItem(
+                                      value: listValue,
+                                      child: Text(listValue),
+                                    );
+                                  }).toList(),
+                                  onChanged: (valueSelected) {
+                                    setState(() {
+                                      selectedCurrency = valueSelected as String;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.arrow_downward_outlined,
+                                    color: Colors.grey[800],
+                                  ),
+                                  dropdownColor: Colors.grey[200],
+                                  decoration: InputDecoration(
+                                    labelText: "Select The Currency",
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey[700],
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.attach_money_sharp,
+                                      color: Colors.grey[700],
+                                      size: 40,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(selectedCurrency);
+                              },
+                              child: Text('Save'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                     final googleSignInResult = await AuthService().signInWithGoogle();
 
                     if (googleSignInResult != null) {
                       // Check if the user details are already saved
 
-                      if (getUser() =='') {
-                        final selectedCurrency = await showDialog<String>(
-                          context: context,
-                          builder: (context) {
-                            String selectedCurrency = 'USD'; // Default currency
-                            return AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                side: const BorderSide(color: Colors.white),
-                              ),
-                              backgroundColor: Colors.grey[700],
-                              title: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                                child: StatefulBuilder(
-                                  builder: (context, setState) {
-                                    return DropdownButtonFormField(
-                                      value: selectedCurrency,
-                                      items: currency.map((listValue) {
-                                        return DropdownMenuItem(
-                                          value: listValue,
-                                          child: Text(listValue),
-                                        );
-                                      }).toList(),
-                                      onChanged: (valueSelected) {
-                                        setState(() {
-                                          selectedCurrency = valueSelected as String;
-                                        });
-                                      },
-                                      icon: Icon(
-                                        Icons.arrow_downward_outlined,
-                                        color: Colors.grey[800],
-                                      ),
-                                      dropdownColor: Colors.grey[200],
-                                      decoration: InputDecoration(
-                                        labelText: "Select The Currency",
-                                        labelStyle: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        prefixIcon: Icon(
-                                          Icons.attach_money_sharp,
-                                          color: Colors.grey[700],
-                                          size: 40,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(selectedCurrency);
-                                  },
-                                  child: Text('Save'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-
-                        if (selectedCurrency != null) {
-                          // Save user details with selectedCurrency
-                          saveUserDetails(selectedCurrency);
-                        }
-                      } else {
-                        // User details already exist, handle navigation or other logic
-                        // For example:
-                        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-                      }
+                      saveUserDetails(selectedCurrency);
                     }
                   },
                 ),
