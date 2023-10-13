@@ -172,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
     }
     );
   }
-  Future<String>getUser() async {
+  Future<String>getUser() async {//this is what I did to get the current user 
     //get the username from Profile file
     final FirebaseAuth _auth = FirebaseAuth.instance;
     User? user = _auth.currentUser;
