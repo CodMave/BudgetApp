@@ -17,6 +17,7 @@ class MyWork extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: MyHomePage(),
     );
   }
@@ -31,6 +32,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String counID='';
   int flag = 0;
   String name='';
   FirebaseMessaging msg = FirebaseMessaging.instance;
@@ -150,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: 'Hello!!',
           body: message,
         );
-        counter();
+       updateCount();
         addNotificationToFirestore(message,time);
       }
 
@@ -189,19 +191,9 @@ class _MyHomePageState extends State<MyHomePage> {
     WidgetsFlutterBinding.ensureInitialized();
     initNotification();
     getToken();
+ }
 
-    getNewMessagesCount().then((value) {
-      setState(() {
-        flag = value;
-      });
-    });
 
-  }
-
-  Future<int> getNewMessagesCount() async {
-    _prefs = await SharedPreferences.getInstance();
-    return _prefs?.getInt('newMessagesCount') ?? 0;
-  }
 
 
   void addNotificationToFirestore(String message,DateTime time) async {
@@ -238,24 +230,139 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void addNotificationcountToFirestore() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
 
+    try {
 
+      try {
+        final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+        final CollectionReference incomeCollection = firestore
+            .collection('userDetails')
+            .doc(username)
+            .collection('NotificationCount');
 
-  Future<void> counter() async {
-    final newCount = flag + 1;
-    _prefs = await SharedPreferences.getInstance();
-    _prefs?.setInt('newMessagesCount', newCount);
+        final DocumentReference newDocument = await incomeCollection.add({
+          'Count':await counter(),
+           // Use the formatted time as a DateTime
+        });
+
+        final String newDocumentId = newDocument.id;
+        print('New document created with ID: $newDocumentId');
+      } catch (ex) {
+        print('Notification adding failed: $ex');
+        // Handle the error appropriately, e.g., show a message to the user
+      }
+      // }
+    }
+    catch (ex) {
+      print('Error occurs: $ex');
+      // Handle any unexpected errors here
+    }
+  }
+  Future<void> updateCount() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    try {
+      final existingEntry = await  getCountExist();
+
+      if (existingEntry != null) {
+        final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+        final DocumentReference documentReference = firestore
+            .collection('userDetails')
+            .doc(username)
+            .collection('NotificationCount')
+            .doc(existingEntry);
+
+        // Use the update method to update the "Balance" field
+        await documentReference.update({
+          'Count':await counter(),
+        });
+
+        print('Count updated successfully!');
+      } else {
+       addNotificationcountToFirestore();
+      }
+    } catch (ex) {
+      print('Error updating noticount: $ex');
+    }
+    setState(() {});
+  }
+  Future<int>getcountfromdb()async{
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('NotificationCount')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+
+        int count = querySnapshot.docs.first['Count'];
+
+        print(count);
+        return  count;
+
+      } else {
+        // No entry found
+        return 0;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return 0;
+    }
+  }
+
+  Future<String?> getCountExist() async {
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('NotificationCount')
+          .where('Count', isEqualTo:await getcountfromdb() )
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the document ID of the existing entry
+        return querySnapshot.docs.first.id;
+      } else {
+        // No entry found
+        return null;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return null;
+    }
+  }
+
+ Future<int> counter() async {
+    final newCount = await getcountfromdb() + 1;
     setState(() {
       flag = newCount;
     });
+    return flag;
   }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Controller(
         balance: totalBalance,
-        num: flag,
       ),
 
     );
@@ -272,13 +379,15 @@ class Holder extends StatefulWidget {
 
   @override
   State<Holder> createState() => _HolderState(
-
+Balance:totalBalance
 
   );
 }
 
 class _HolderState extends State<Holder> {
-
+  int Balance;
+  _HolderState({required this.Balance});
+MyHomePage obj=new MyHomePage();
   List<DateTime> time = [];
   void onDeleteNotification(int index) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -339,8 +448,37 @@ class _HolderState extends State<Holder> {
   void initState() {
     super.initState();
     getDocCount();
+    updateCount1();
     fetchMessages();
     fetchTime();// Fetch messages when the widget is initialized
+  }
+  Future<void> updateCount1() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+    try {
+      final existingEntry = await  getCountExist();
+
+      if (existingEntry != null) {
+        final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+        final DocumentReference documentReference = firestore
+            .collection('userDetails')
+            .doc(username)
+            .collection('NotificationCount')
+            .doc(existingEntry);
+
+        // Use the update method to update the "Balance" field
+        await documentReference.update({
+          'Count':0,
+        });
+
+        print('Count updated successfully!');
+      }
+    } catch (ex) {
+      print('Error updating noticount: $ex');
+    }
+    setState(() {});
   }
 
   Future<void> fetchMessages() async {
@@ -368,6 +506,34 @@ class _HolderState extends State<Holder> {
       });
     } catch (ex) {
       print('Getting the messages failed: $ex');
+    }
+  }
+
+  Future<String?> getCountExist() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('NotificationCount')
+          .where('Count', isEqualTo:await getcountfromdb() )
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the document ID of the existing entry
+        return querySnapshot.docs.first.id;
+      } else {
+        // No entry found
+        return null;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return null;
     }
   }
   Future<void> fetchTime() async {
@@ -400,8 +566,39 @@ class _HolderState extends State<Holder> {
       print('Getting the messages failed: $ex');
     }
   }
+  Future<int>getcountfromdb()async{
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('NotificationCount')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+
+        int count = querySnapshot.docs.first['Count'];
+
+        print(count);
+        return  count;
+
+      } else {
+        // No entry found
+        return 0;
+      }
+    } catch (ex) {
+      print('Error getting existing entry: $ex');
+      return 0;
+    }
+  }
   Widget build(BuildContext context) {
     return Scaffold(
+
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
@@ -412,7 +609,8 @@ class _HolderState extends State<Holder> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const HomePage(),
+                builder: (context) =>HomePage(
+               ),
               ),
             );
           },

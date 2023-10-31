@@ -21,6 +21,7 @@ const MyApp({super.key});
   Widget build(BuildContext context) {
     return  MaterialApp(
         title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
         home:WillPopScope(
             onWillPop: () async{
 
