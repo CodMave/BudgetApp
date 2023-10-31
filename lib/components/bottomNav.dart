@@ -24,7 +24,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       //onDeleteNotification: (index) => {},
     ),
     const Goals(),
-     Check(),
+    Check(),
   ];
 
   void onTap(int index) {
@@ -47,7 +47,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           child: SafeArea(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+              const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
               child: GNav(
                 rippleColor: Colors.grey[300]!,
                 hoverColor: Colors.grey[100]!,
@@ -62,10 +62,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   GButton(
                     icon: Icons.home,
                     text: 'Home',
-                  ),
-                  GButton(
-                    icon: Icons.add_circle,
-                    text: 'Add',
                   ),
                   GButton(
                     icon: Icons.track_changes_rounded,

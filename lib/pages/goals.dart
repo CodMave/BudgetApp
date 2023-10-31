@@ -1,4 +1,6 @@
+import 'package:budgettrack/pages/plans.dart';
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import '../components/bottomNav.dart';
 import '../components/datePicker.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +9,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../components/goalTiles.dart';
+import 'Summery.dart';
+import 'TextScanner.dart';
+import 'homePage.dart';
 
 class Goals extends StatefulWidget {
   final Function()? onTap;
@@ -570,7 +575,82 @@ class _GoalsState extends State<Goals> {
         centerTitle: true,
         elevation: 0.0,
       ),
-      //bottomNavigationBar: BottomNavigation(),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 3,
+          ),
+          child: GNav(
+            backgroundColor: Colors.transparent,
+            color: const Color(0xFF85B6FF),
+            activeColor: const Color.fromARGB(255, 31, 96, 192),
+            tabBackgroundColor: Colors.grey.shade400,
+            gap:6,
+            onTabChange: (Index) {
+              //if the user click on the bottom navigation bar then it will move to the following pages
+              if (Index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Controller(
+                        balance: newbalance,
+                      )),
+                );
+              } else if (Index == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>Pro()),
+                );
+              } else if (Index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>PlansApp()),
+                );
+              } else if (Index == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Goals()),
+                );
+              } else if (Index ==4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
+                );
+              }
+            },
+            padding: const EdgeInsets.all(15),
+            tabs: const [
+              GButton(
+                icon: Icons.home,
+                //text: 'Home',
+              ),
+              GButton(
+                icon: Icons.align_vertical_bottom_outlined,
+                //text: 'Summary',
+              ),
+              GButton(
+                icon: Icons.account_balance_wallet_outlined,
+                //text: 'Savings',
+              ),
+              GButton(
+                icon: Icons.track_changes_rounded,
+                //text: 'Plans',
+              ),
+              GButton(
+                icon: Icons.document_scanner_outlined,
+                //text: 'Scan',
+              ),
+            ],
+          ),
+        ),
+      ),
       body: Column(
         children: [
           const SizedBox(height: 5),

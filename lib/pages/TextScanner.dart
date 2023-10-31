@@ -14,25 +14,25 @@ int count=0;
 int newbalance=0;
 class TextScanner extends StatefulWidget {
 
-  TextScanner({super.key, required int num, required int newBalance}){
+  TextScanner({super.key, required int newBalance}){
     newbalance=newBalance;
-    count=num;
+
   }
 
   @override
   State<TextScanner> createState() => _TextScannerState(
     balance:newbalance,
-    newcount:count,
+
   );
 }
 
 class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
   int balance=0;
   bool ispermissiongot=false;
-  int newcount=0;
+
   late final Future <void> future;
   CameraController?cameraController;
-  _TextScannerState({required this.balance,required this.newcount});
+  _TextScannerState({required this.balance});
   final textrecognise=TextRecognizer();
 
   void initState(){
@@ -57,7 +57,7 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
     }
     CameraDescription?camera;//selec the camera first
     for(var a=0;a<cameras.length;a++){
-      final CameraDescription current =cameras[a];//heck whether what are the available cameras
+      final CameraDescription current =cameras[a];//check whether what are the available cameras
       if(current.lensDirection==CameraLensDirection.back){
         camera=current;
         break;
@@ -99,7 +99,7 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
       final file=File(pictureFile.path);
       final inputImage=InputImage.fromFile(file);
       final recognizeText=await textrecognise.processImage(inputImage);
-      await navigator.push(MaterialPageRoute(builder: (context)=>Result(balance:balance,newcount:newcount,text:recognizeText.text)));
+      await navigator.push(MaterialPageRoute(builder: (context)=>Result(balance:balance,text:recognizeText.text)));
     }
     catch(e){
       ScaffoldMessenger.of(context).showSnackBar(
@@ -143,7 +143,15 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
                     }),
               Scaffold(
                 appBar: AppBar(
-                  title: const Text('Text Recognition Sample'),
+                  backgroundColor: Colors.white,
+                  title: Text('Scan Your printed bill here',  style: TextStyle(
+
+                    fontFamily:'Lexend-VariableFont',
+                    color: Colors.black,
+                    fontSize: 20.0,
+                    //fontWeight: FontWeight.bold,
+                  ),
+                  ),
                 ),
                 backgroundColor:
                 ispermissiongot ? Colors.transparent : null,
@@ -182,9 +190,9 @@ int balance1=0;
 class Result extends StatefulWidget {
   final String text;
 
-  Result({super.key, required this.text, required int newcount, required int balance}){
+  Result({super.key, required this.text, required int balance}){
     balance1=balance;
-    value=newcount;
+
   }
 
   @override
@@ -216,7 +224,7 @@ class _ResultState extends State<Result> {
       words.addAll(lineWords);
     }
     for (word in words) {
-      if (word == 'ROUTE:'||word == 'ROUTE'||word == 'RoUTE') {
+      if (word == 'ROUTE:'||word == 'ROUTE'||word == 'RoUTE'||word == 'ROUTE:') {
         transactiontype='Transport';
         print('Found the Word ROUTE');
       }
@@ -224,9 +232,6 @@ class _ResultState extends State<Result> {
     print(transactiontype);
     if( transactiontype=='Transport') {
       for (String word in words) {
-        // if (word == 'ROUTE') {
-        //   print('Found the Word ROUTE');
-        // } else
         if (word.startsWith(
             "Rs.")) { //in here we check the word start with Rs.
 
@@ -246,31 +251,86 @@ class _ResultState extends State<Result> {
         }
       }
       print( transactiontype);
-      addtransaction( transactiontype,double.parse(extractedValue).toInt());
+      double paresdevalue=double.parse(extractedValue);
+      try {
+
+        addtransaction(transactiontype, paresdevalue.toInt());
+      }
+      catch(e){
+        showDialog(
+          context: context, // Use the current context
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Color(0xFFC2DAFF), // Set background color
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0), // Add circular border
+              ),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the alert dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
 
     }
-    showDialog(
-      context: context, // Use the current context
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Color(0xFFC2DAFF), // Set background color
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0), // Add circular border
-          ),
-          title: Text('Transaction'),
-          content: Text('Transaction:($transactiontype) occured successfully\n The transaction amount is Rs.${double.parse(extractedValue).toInt()}'),
-          actions: [
-            TextButton(
-
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the alert dialog
-              },
+    try {
+      final parsedValue = double.parse(extractedValue).toInt();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Color(0xFFC2DAFF),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
             ),
-          ],
-        );
-      },
-    );
+            title: Text('Transaction'),
+            content: Text(
+              'Transaction: ($transactiontype) occurred successfully\n The transaction amount is Rs.${parsedValue}',
+            ),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      // Handle the parsedValue here as needed (e.g., add to transactions).
+    } catch (e) {
+      // Handle the parsing error
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Color(0xFFC2DAFF),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            content: Text('Any floating value not contains in the scanned text Please sacanned agin'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
   }
   Future<int> getTotalBalance(String userId) async {
     int totalIncome = await calculateTotalIncome(userId);
@@ -478,14 +538,43 @@ class _ResultState extends State<Result> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Text Recognition'),
+          title: Text('Text Recognition',
+            style: TextStyle(
+                color: Colors.black
+            ),),
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon:Icon(Icons.arrow_back,
+              color: Colors.black,
+              size: 40,),
+            onPressed:  () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>HomePage()
+                ),
+              );
+            },
+          ),
+          centerTitle: true,
         ),
         body: Container(
           padding: EdgeInsets.all(30.0),
           child: SingleChildScrollView(
               child:Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(text),
+                  text==''?
+                  Container()
+                      :Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        color: Color(0xFFC2DAFF),
+                      ),
+                      child: Center(
+                          child: Text(text))
+                  ),
+
                   SizedBox(height:10),
                   ElevatedButton(
                       onPressed: ()=> SplitingText(text) , child: Text('Update the balance')),

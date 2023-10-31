@@ -209,8 +209,6 @@ class _RegisterPage extends State<RegisterPage> {
 
             const SizedBox(height: 15),
 
-            //currency selection
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: DropdownButtonFormField(

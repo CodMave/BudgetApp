@@ -1,4 +1,4 @@
-import 'package:budgettrack/pages/Startup.dart';
+
 import 'package:budgettrack/pages/authPage.dart';
 import 'package:budgettrack/pages/homePage.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ const MyApp({super.key});
                 return true;
 
             },
-            child: Myclass()),
+            child:AuthPage()),
       );
   }
 }

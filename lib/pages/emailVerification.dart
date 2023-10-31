@@ -88,7 +88,7 @@ class _EmailVerification extends State<EmailVerification> {
   @override
   Widget build(BuildContext context) {
     if (isEmailVerified) {
-      return const HomePage();
+      return LoginPage(onTap: onTap);
     }
     else {
       return Scaffold(

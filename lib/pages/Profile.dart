@@ -1,15 +1,20 @@
 import 'dart:convert';
 import 'dart:core';
 import 'dart:typed_data';
+import 'package:budgettrack/pages/authPage.dart';
+import 'package:budgettrack/pages/plans.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:image_picker/image_picker.dart';
-import 'Startup.dart';
+import 'Summery.dart';
+import 'TextScanner.dart';
 import 'forgotPassword.dart';
+import 'goals.dart';
 import 'homePage.dart';
 
 
@@ -118,10 +123,10 @@ class _Profile extends State<Profile> {
                   ),
                 ),
                 ElevatedButton(
-                    onPressed: (){
-                      updateCurrency(selectedCurrency!);
-                    },
-                    child: Text('Ok'),
+                  onPressed: (){
+                    updateCurrency(selectedCurrency!);
+                  },
+                  child: Text('Ok'),
                 ),
               ],
             ),
@@ -267,7 +272,7 @@ class _Profile extends State<Profile> {
       });
     }
   }
-static Future<String> getUserName() async {
+  static Future<String> getUserName() async {
     //get the username of the current user and display it as text
     User? user = _auth.currentUser;
     email = user!.email!;
@@ -375,7 +380,7 @@ static Future<String> getUserName() async {
     try {
       await _auth.signOut(); // Sign out the current user
       Navigator.of(context).popUntil((route) => route.isFirst); // Clear the navigation stack
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Myclass())); // Navigate to the initial route
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AuthPage())); // Navigate to the initial route
     } catch (e) {
       print('Error while signing out: $e');
     }
@@ -385,58 +390,170 @@ static Future<String> getUserName() async {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.grey[100],
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+
+        backgroundColor: Colors.grey[100],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
                   builder: (context) =>
-                   HomePage()
-                ),
-              );
-            },
-          ),
-          title: Text(
-            'P R O F I L E',
-            style: TextStyle(
-              fontFamily:'Lexend-VariableFont',
-              color: Colors.blue,
-              fontSize: 20.0,
-              //fontWeight: FontWeight.bold,
-            ),
-          ),
-          centerTitle: true,
-          elevation: 0,
+                      HomePage()
+              ),
+            );
+          },
         ),
-        body: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  alignment: Alignment.topCenter,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+        title: Text(
+          'P R O F I L E',
+          style: TextStyle(
+            fontFamily:'Lexend-VariableFont',
+            color: Colors.blue,
+            fontSize: 20.0,
+            //fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 3,
+          ),
+          child: GNav(
+            backgroundColor: Colors.transparent,
+            color: const Color(0xFF85B6FF),
+            activeColor: const Color.fromARGB(255, 31, 96, 192),
+            tabBackgroundColor: Colors.grey.shade400,
+            gap:6,
+            onTabChange: (Index) {
+              //if the user click on the bottom navigation bar then it will move to the following pages
+              if (Index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Controller(
+                        balance: newbalance,
+                      )),
+                );
+              } else if (Index == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>Pro()),
+                );
+              } else if (Index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>PlansApp()),
+                );
+              } else if (Index == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Goals()),
+                );
+              } else if (Index ==4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
+                );
+              }
+            },
+            padding: const EdgeInsets.all(15),
+            tabs: const [
+              GButton(
+                icon: Icons.home,
+                //text: 'Home',
+              ),
+              GButton(
+                icon: Icons.align_vertical_bottom_outlined,
+                //text: 'Summary',
+              ),
+              GButton(
+                icon: Icons.account_balance_wallet_outlined,
+                //text: 'Savings',
+              ),
+              GButton(
+                icon: Icons.track_changes_rounded,
+                //text: 'Plans',
+              ),
+              GButton(
+                icon: Icons.document_scanner_outlined,
+                //text: 'Scan',
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height:200,
+                    color: Colors.transparent,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top:20,
+                          left:125,
+                          child: _image != null
+                              ? CircleAvatar(
+                              radius: 80.0,
+                              backgroundImage: MemoryImage(_image!))
+                              : CircleAvatar(
+                              radius: 80.0,
+                              backgroundImage:
+                              AssetImage('lib/images/Profileimage.png')),
+                        ),
+                        Positioned(
+                          top:160,
+                          right:125.0,
+                          child: InkWell(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) => buttonsheet(context),
+                              );
+                            },
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: Colors.teal,
+                              size: 28.0,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height:10),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: double.infinity,
-                        height:275,
-                        color: Colors.transparent,
-                        child: Stack(
-                          children: [
-                            Container(
-                              height: 175,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
+                      Row(
+                        children: [
+                          Container(
+                            width:100,
+                            height:40,
+                            margin: EdgeInsets.only(left:50,),
+                            decoration: BoxDecoration(
                                 color:Colors.white,
-                                  image: DecorationImage(
-                                    image: AssetImage('lib/images/monkey.png'),
-                                    fit: BoxFit.cover,
-                                  ),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.5),
@@ -445,84 +562,26 @@ static Future<String> getUserName() async {
                                     offset: Offset(0,3),
                                   ),
                                 ],
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-
-                              margin: const EdgeInsets.symmetric(horizontal: 20),
+                                borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
                             ),
-                                  Positioned(
-                                    top:90,
-                                    left:125,
-                                    child: _image != null
-                                        ? CircleAvatar(
-                                        radius: 80.0,
-                                        backgroundImage: MemoryImage(_image!))
-                                        : CircleAvatar(
-                                        radius: 80.0,
-                                        backgroundImage:
-                                        AssetImage('lib/images/Profileimage.png')),
-                                  ),
-                        Positioned(
-                                  bottom:20.0,
-                                  right:125.0,
-                                  child: InkWell(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        builder: (context) => buttonsheet(context),
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.camera_alt,
-                                      color: Colors.teal,
-                                      size: 28.0,
-                                    ),
-                                  ),
+                            child: Center(
+                              child: Text(
+                                'Name',
+                                style: TextStyle(
+                                  fontFamily:'Lexend-VariableFont',
+                                  fontSize:17,
+                                  color: Colors.black,
                                 ),
-                          ],
-                        ),
-                      ),
-
-
-                      Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width:100,
-                          height:40,
-                          margin: EdgeInsets.only(left:50,),
-                          decoration: BoxDecoration(
-                            color:Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius:8,
-                                offset: Offset(0,3),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Name',
-                              style: TextStyle(
-                                fontFamily:'Lexend-VariableFont',
-                                fontSize:17,
-                                color: Colors.black,
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          //this container display the current user's name as text
-                          width:180,
-                          height:45,
-                          margin:EdgeInsets.only(left:20),
-                          decoration: BoxDecoration(
-                            color:Color(0xFF85B6FF),
+                          Container(
+                            //this container display the current user's name as text
+                            width:180,
+                            height:45,
+                            margin:EdgeInsets.only(left:20),
+                            decoration: BoxDecoration(
+                              color:Color(0xFF85B6FF),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.5),
@@ -532,296 +591,296 @@ static Future<String> getUserName() async {
                                 ),
                               ],
                               borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: FutureBuilder<String>(
-                              future: getUserName(),
-                              builder: (context, snapshot) {
-                                return Center(
-                                  child: Text(
-                                    "${snapshot.data}",
-                                    style: TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
-                                      color: Colors.black,
-                                      fontSize:17,
+                            ),
+                            child: FutureBuilder<String>(
+                                future: getUserName(),
+                                builder: (context, snapshot) {
+                                  return Center(
+                                    child: Text(
+                                      "${snapshot.data}",
+                                      style: TextStyle(
+                                        fontFamily:'Lexend-VariableFont',
+                                        color: Colors.black,
+                                        fontSize:17,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              }),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height:5,),
-                    Row(
-                      children: [
-                        Container(
-                          width:100,
-                          height:45,
-                          margin: EdgeInsets.only(top:5,left:50,),
-                          decoration: BoxDecoration(
-                              color:Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius:8,
-                                  offset: Offset(0,3),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Currency',
-                              style: TextStyle(
-                                fontFamily:'Lexend-VariableFont',
-                                fontSize:17,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          //this container display the current user's name as text
-                          width:180,
-                          height:40,
-                          margin:EdgeInsets.only(left:20),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF85B6FF),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius:8,
-                                offset: Offset(0,3),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: FutureBuilder<String>(
-                              future: getCurrency(),
-                              builder: (context, snapshot) {
-                                return Center(
-                                  child: Text(
-                                    "${snapshot.data}",
-                                    style: TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
-                                      color: Colors.black,
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                );
-                              }),
-                        ),
-
-                      ],
-                    ),
-                     Container(
-                       margin:EdgeInsets.only(top:10),
-                       height:40,
-                       width:double.infinity,
-                       color: Color(0xFF85B6FF),
-                       child:Align(
-                         alignment: Alignment.centerLeft,
-                         child: Padding(
-                           padding: EdgeInsets.only(left:30,),
-                           child: Text(
-                             'Settings',
-                             style: TextStyle(
-                             fontFamily:'Lexend-VariableFont',
-                             color: Colors.black,
-                             fontSize: 17,
-                           ),
-                           ),
-                         ),
-                       ),
-                     ),
-                    SizedBox(height:5),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        margin:EdgeInsets.only(left:30),
-                        width:350, // Set the desired width
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ForgotPassword(),
-                              ),
-                            );
-                          },
-
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary:  Color(0xFF090950),
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 20),
-                              child: Text(
-                                'Change Password',
-                                style: TextStyle(
-                                  fontFamily: 'Lexend-VariableFont',
-                                  fontSize: 17,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height:5),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        margin:EdgeInsets.only(left:30),
-                        width:350, // Set the desired width
-                        child: ElevatedButton(
-                          onPressed: () {
-                            ChangeCurrency();
-                          },
-
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary:  Color(0xFF090950),
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 20),
-                              child: Text(
-                                'Change Currency',
-                                style: TextStyle(
-                                  fontFamily: 'Lexend-VariableFont',
-                                  fontSize: 17,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin:EdgeInsets.only(top:5),
-                      height:40,
-                      width:double.infinity,
-                      color: Color(0xFF85B6FF),
-                      child:Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(left:30,),
-                          child: Text(
-                            'Version                       1.0.0',
-                            style: TextStyle(
-                              fontFamily:'Lexend-VariableFont',
-                              color: Colors.black,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin:EdgeInsets.only(top:5),
-                      height:40,
-                      width:double.infinity,
-                      color: Color(0xFF85B6FF),
-                      child:Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(left:30,),
-                          child: Text(
-                            'Rate Us',
-                            style: TextStyle(
-                              fontFamily:'Lexend-VariableFont',
-                              color: Colors.black,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin:EdgeInsets.only(top:10),
-                      width:350,height:40,
-                      decoration: BoxDecoration(
-                        color:Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius:8,
-                            offset: Offset(0,3),
+                                  );
+                                }),
                           ),
                         ],
-                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: RatingBar.builder(
-                          itemBuilder: (context, _) => Icon(
-                              Icons.star_border,
-                              color:Color(0xFF85B6FF)),
-                          minRating: 1,
-                          itemSize: 40,
-                          itemPadding: EdgeInsets.symmetric(
-                              horizontal:14),
-                          updateOnDrag: true,
-                          onRatingUpdate: (newRating) {
-                            setState(() {
-                              // this.rating = newRating;
-                            });
-                          }),
-                    ),
-                    SizedBox(height:5),
-                    Divider( // Add a Divider here
-                      height: 3, // You can adjust the height of the divider
-                      thickness:1, // You can adjust the thickness of the divider
-                      color: Colors.grey, // You can set the color of the divider
-                    ),
-                    Container(
-                      //this button allows to user to log out from the account
-                        margin: EdgeInsets.only(top:5),
-                        child: ElevatedButton(
-                          onPressed: () => _signOut(context),
-                          // Use _signOut as the onPressed callback
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Color(0xFF090950),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(
-                                color:  Color(0xFF090950), // Set the border color
-                                width: 2, // Set the border width
+                      SizedBox(height:5,),
+                      Row(
+                        children: [
+                          Container(
+                            width:100,
+                            height:45,
+                            margin: EdgeInsets.only(top:5,left:50,),
+                            decoration: BoxDecoration(
+                                color:Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius:8,
+                                    offset: Offset(0,3),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Currency',
+                                style: TextStyle(
+                                  fontFamily:'Lexend-VariableFont',
+                                  fontSize:17,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 40, vertical: 12),
-                            textStyle: TextStyle(
-                                fontFamily:'Lexend-VariableFont',
-                                fontSize: 20),
-                            elevation: 2,
                           ),
-                          child: Text('Log Out'),
-                        )
+                          Container(
+                            //this container display the current user's name as text
+                            width:180,
+                            height:40,
+                            margin:EdgeInsets.only(left:20),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF85B6FF),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius:8,
+                                  offset: Offset(0,3),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: FutureBuilder<String>(
+                                future: getCurrency(),
+                                builder: (context, snapshot) {
+                                  return Center(
+                                    child: Text(
+                                      "${snapshot.data}",
+                                      style: TextStyle(
+                                        fontFamily:'Lexend-VariableFont',
+                                        color: Colors.black,
+                                        fontSize: 17,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          ),
 
-                    )
-                  ],
-                )
-              ],
+                        ],
+                      ),
+                      Container(
+                        margin:EdgeInsets.only(top:10),
+                        height:40,
+                        width:double.infinity,
+                        color: Color(0xFF85B6FF),
+                        child:Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(left:30,),
+                            child: Text(
+                              'Settings',
+                              style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                color: Colors.black,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height:5),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          margin:EdgeInsets.only(left:30),
+                          width:350, // Set the desired width
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ForgotPassword(),
+                                ),
+                              );
+                            },
+
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary:  Color(0xFF090950),
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Text(
+                                  'Change Password',
+                                  style: TextStyle(
+                                    fontFamily: 'Lexend-VariableFont',
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height:5),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          margin:EdgeInsets.only(left:30),
+                          width:350, // Set the desired width
+                          child: ElevatedButton(
+                            onPressed: () {
+                              ChangeCurrency();
+                            },
+
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary:  Color(0xFF090950),
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Text(
+                                  'Change Currency',
+                                  style: TextStyle(
+                                    fontFamily: 'Lexend-VariableFont',
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin:EdgeInsets.only(top:5),
+                        height:40,
+                        width:double.infinity,
+                        color: Color(0xFF85B6FF),
+                        child:Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(left:30,),
+                            child: Text(
+                              'Version                       1.0.0',
+                              style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                color: Colors.black,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin:EdgeInsets.only(top:5),
+                        height:40,
+                        width:double.infinity,
+                        color: Color(0xFF85B6FF),
+                        child:Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(left:30,),
+                            child: Text(
+                              'Rate Us',
+                              style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                color: Colors.black,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin:EdgeInsets.only(top:10),
+                        width:350,height:40,
+                        decoration: BoxDecoration(
+                          color:Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius:8,
+                              offset: Offset(0,3),
+                            ),
+                          ],
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: RatingBar.builder(
+                            itemBuilder: (context, _) => Icon(
+                                Icons.star_border,
+                                color:Color(0xFF85B6FF)),
+                            minRating: 1,
+                            itemSize: 40,
+                            itemPadding: EdgeInsets.symmetric(
+                                horizontal:14),
+                            updateOnDrag: true,
+                            onRatingUpdate: (newRating) {
+                              setState(() {
+                                // this.rating = newRating;
+                              });
+                            }),
+                      ),
+                      SizedBox(height:5),
+                      Divider( // Add a Divider here
+                        height: 3, // You can adjust the height of the divider
+                        thickness:1, // You can adjust the thickness of the divider
+                        color: Colors.grey, // You can set the color of the divider
+                      ),
+                      Container(
+                        //this button allows to user to log out from the account
+                          margin: EdgeInsets.only(top:5),
+                          child: ElevatedButton(
+                            onPressed: () => _signOut(context),
+                            // Use _signOut as the onPressed callback
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary: Color(0xFF090950),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: BorderSide(
+                                  color:  Color(0xFF090950), // Set the border color
+                                  width: 2, // Set the border width
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 40, vertical: 12),
+                              textStyle: TextStyle(
+                                  fontFamily:'Lexend-VariableFont',
+                                  fontSize: 20),
+                              elevation: 2,
+                            ),
+                            child: Text('Log Out'),
+                          )
+
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-      ],
+          ],
+        ),
       ),
-      ),
-     );
-}
+    );
+  }
 }
 

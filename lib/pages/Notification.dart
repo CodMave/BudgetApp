@@ -1,16 +1,21 @@
 import 'dart:convert';
 
+import 'package:budgettrack/pages/plans.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:http/http.dart' as http;
 import '../firebase_options.dart';
+import 'Summery.dart';
+import 'TextScanner.dart';
+import 'goals.dart';
 import 'homePage.dart';
 
 class MyWork extends StatelessWidget {
@@ -152,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: 'Hello!!',
           body: message,
         );
-       updateCount();
+        updateCount();
         addNotificationToFirestore(message,time);
       }
 
@@ -191,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
     WidgetsFlutterBinding.ensureInitialized();
     initNotification();
     getToken();
- }
+  }
 
 
 
@@ -247,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         final DocumentReference newDocument = await incomeCollection.add({
           'Count':await counter(),
-           // Use the formatted time as a DateTime
+          // Use the formatted time as a DateTime
         });
 
         final String newDocumentId = newDocument.id;
@@ -286,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         print('Count updated successfully!');
       } else {
-       addNotificationcountToFirestore();
+        addNotificationcountToFirestore();
       }
     } catch (ex) {
       print('Error updating noticount: $ex');
@@ -351,7 +356,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
- Future<int> counter() async {
+  Future<int> counter() async {
     final newCount = await getcountfromdb() + 1;
     setState(() {
       flag = newCount;
@@ -379,7 +384,7 @@ class Holder extends StatefulWidget {
 
   @override
   State<Holder> createState() => _HolderState(
-Balance:totalBalance
+      Balance:totalBalance
 
   );
 }
@@ -387,7 +392,7 @@ Balance:totalBalance
 class _HolderState extends State<Holder> {
   int Balance;
   _HolderState({required this.Balance});
-MyHomePage obj=new MyHomePage();
+  MyHomePage obj=new MyHomePage();
   List<DateTime> time = [];
   void onDeleteNotification(int index) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -610,7 +615,7 @@ MyHomePage obj=new MyHomePage();
               context,
               MaterialPageRoute(
                 builder: (context) =>HomePage(
-               ),
+                ),
               ),
             );
           },
@@ -622,6 +627,82 @@ MyHomePage obj=new MyHomePage();
             )),
         centerTitle: true,
         elevation: 0,
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 3,
+          ),
+          child: GNav(
+            backgroundColor: Colors.transparent,
+            color: const Color(0xFF85B6FF),
+            activeColor: const Color.fromARGB(255, 31, 96, 192),
+            tabBackgroundColor: Colors.grey.shade400,
+            gap:6,
+            onTabChange: (Index) {
+              //if the user click on the bottom navigation bar then it will move to the following pages
+              if (Index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Controller(
+                        balance: newbalance,
+                      )),
+                );
+              } else if (Index == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>Pro()),
+                );
+              } else if (Index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>PlansApp()),
+                );
+              } else if (Index == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Goals()),
+                );
+              } else if (Index ==4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
+                );
+              }
+            },
+            padding: const EdgeInsets.all(15),
+            tabs: const [
+              GButton(
+                icon: Icons.home,
+                //text: 'Home',
+              ),
+              GButton(
+                icon: Icons.align_vertical_bottom_outlined,
+                //text: 'Summary',
+              ),
+              GButton(
+                icon: Icons.account_balance_wallet_outlined,
+                //text: 'Savings',
+              ),
+              GButton(
+                icon: Icons.track_changes_rounded,
+                //text: 'Plans',
+              ),
+              GButton(
+                icon: Icons.document_scanner_outlined,
+                //text: 'Scan',
+              ),
+            ],
+          ),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

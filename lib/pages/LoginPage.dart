@@ -182,21 +182,21 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             const SizedBox(height: 50),
-          Column(
-            children: [
-              Container(
-                alignment: Alignment.topCenter,
-                width:180,
-                  height:180,
-                  decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('lib/images/monkey.png'),
-                  fit: BoxFit.cover,
-                ),
-                borderRadius: BorderRadius.circular(20),
-              )),
-            ],
-          ),
+            Column(
+              children: [
+                Container(
+                    alignment: Alignment.topCenter,
+                    width:180,
+                    height:180,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('lib/images/monkey.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    )),
+              ],
+            ),
 
 
             const SizedBox(height: 40),
@@ -311,7 +311,7 @@ class _LoginPageState extends State<LoginPage> {
                   imagePath: 'lib/images/google.png',
                   onTap: () async {
                     // Sign in with Google
-                   selectedCurrency = await showDialog<String>(//get the currency from the user
+                    selectedCurrency = await showDialog<String>(//get the currency from the user
                       context: context,
                       builder: (context) {
 
