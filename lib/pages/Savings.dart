@@ -10,33 +10,38 @@ import 'homePage.dart';
 
 class Savings extends StatefulWidget {
   int balance = 0;
-  int income=0;
-  int expense=0;
-  Savings({Key? key, required int balance,required int income,required int expense}) : super(key: key) {
+  int income = 0;
+  int expense = 0;
+  Savings(
+      {Key? key,
+      required int balance,
+      required int income,
+      required int expense})
+      : super(key: key) {
     this.balance = balance;
-    this.income=income;
-    this.expense=expense;
-
+    this.income = income;
+    this.expense = expense;
   }
-
 
   @override
   State<Savings> createState() => _SavingsState(
-    savingbalance: balance, incomev:income, expensev: expense,
-  );
+        savingbalance: balance,
+        incomev: income,
+        expensev: expense,
+      );
 }
 
 String documentId = '';
 
 class _SavingsState extends State<Savings> {
-  double percent=0.0;
+  double percent = 0.0;
   SharedPreferences? _prefs;
   String? selectedyear = "23";
-  int savingbalance=0,incomev=0,expensev=0;
-  String month='';
-  String username='';
-  DateTime now=DateTime.now();
-  List<dynamic> mon=[];
+  int savingbalance = 0, incomev = 0, expensev = 0;
+  String month = '';
+  String username = '';
+  DateTime now = DateTime.now();
+  List<dynamic> mon = [];
 
   final items = [
     '23',
@@ -70,8 +75,11 @@ class _SavingsState extends State<Savings> {
   ];
   // Default time: 12:00
 
-  _SavingsState({required this.savingbalance,required this.incomev,required this.expensev});
- String currencySymbol='';
+  _SavingsState(
+      {required this.savingbalance,
+      required this.incomev,
+      required this.expensev});
+  String currencySymbol = '';
   DateTime lastDate = DateTime.now();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -83,9 +91,9 @@ class _SavingsState extends State<Savings> {
     // getthesavingfromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
     // gettheexpensefromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
     getSelectedMonth(DateFormat('MMMM').format(DateTime.now()));
-    countpercent(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
+    countpercent(getLastTwoDigitsOfCurrentYear().toString(),
+        DateFormat('MMMM').format(DateTime.now()));
   }
-
 
   Future<String> getDocIds() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -93,7 +101,7 @@ class _SavingsState extends State<Savings> {
     email = user!.email!;
     if (user != null) {
       QuerySnapshot qs = await FirebaseFirestore.instance.collection(
-        //the query check wither the authentication email match with the email which is taken at the user details
+          //the query check wither the authentication email match with the email which is taken at the user details
           'userDetails').where('email', isEqualTo: email).limit(1).get();
 
       if (qs.docs.isNotEmpty) {
@@ -103,26 +111,20 @@ class _SavingsState extends State<Savings> {
             // Get the 'username' field from the matching document
             currencySymbol = doc.get('currency');
             print(currencySymbol);
-            if(currencySymbol=='SLR'){
-              currencySymbol='Rs.';
-            }
-            else if(currencySymbol=='USD'){
-              currencySymbol='\$';
-            }
-            else if(currencySymbol=='EUR'){
-              currencySymbol='€';
-            }
-            else if(currencySymbol=='INR'){
-              currencySymbol='₹';
-            }
-            else if(currencySymbol=='GBP'){
-              currencySymbol='£';
-            }
-            else if(currencySymbol== 'AUD'){
-              currencySymbol='A\$';
-            }
-            else if(currencySymbol=='CAD'){
-              currencySymbol='C\$';
+            if (currencySymbol == 'SLR') {
+              currencySymbol = 'Rs.';
+            } else if (currencySymbol == 'USD') {
+              currencySymbol = '\$';
+            } else if (currencySymbol == 'EUR') {
+              currencySymbol = '€';
+            } else if (currencySymbol == 'INR') {
+              currencySymbol = '₹';
+            } else if (currencySymbol == 'GBP') {
+              currencySymbol = '£';
+            } else if (currencySymbol == 'AUD') {
+              currencySymbol = 'A\$';
+            } else if (currencySymbol == 'CAD') {
+              currencySymbol = 'C\$';
             }
 
             return currencySymbol; //return the currency
@@ -138,6 +140,7 @@ class _SavingsState extends State<Savings> {
       return ''; // Return an empty string or null based on your requirements
     }
   }
+
   int getLastTwoDigitsOfCurrentYear() {
     DateTime now = DateTime.now();
     int currentYear = now.year;
@@ -148,16 +151,14 @@ class _SavingsState extends State<Savings> {
     return lastTwoDigits;
   }
 
-
   void getSelectedMonth(String month) {
-    this.month= month;
-
+    this.month = month;
   }
 
-  Future<int> gettheincomefromDB(String year,String month) async {
-
+  Future<int> gettheincomefromDB(String year, String month) async {
     int income = 0;
-    User? user = _auth.currentUser; //created an instance to the User of Firebase authorized
+    User? user = _auth
+        .currentUser; //created an instance to the User of Firebase authorized
     username = user!.uid;
 
     try {
@@ -170,9 +171,8 @@ class _SavingsState extends State<Savings> {
           .where('Month', isEqualTo: month)
           .get();
 
-
       incomeSnapshot.docs.forEach((cDoc) {
-        income=(cDoc.get('Income'));
+        income = (cDoc.get('Income'));
       });
 
       return income;
@@ -181,13 +181,12 @@ class _SavingsState extends State<Savings> {
       return 0;
     }
   }
-  Future<int> getthesavingfromDB(String year,String month) async {
 
+  Future<int> getthesavingfromDB(String year, String month) async {
     int balance = 0;
     User? user = _auth
         .currentUser; //created an instance to the User of Firebase authorized
     username = user!.uid;
-
 
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -199,9 +198,8 @@ class _SavingsState extends State<Savings> {
           .where('Month', isEqualTo: month)
           .get();
 
-
       incomeSnapshot.docs.forEach((cDoc) {
-        balance=(cDoc.get('Balance'));
+        balance = (cDoc.get('Balance'));
       });
 
       return balance;
@@ -211,9 +209,7 @@ class _SavingsState extends State<Savings> {
     }
   }
 
-
-  Future<int> gettheexpensefromDB(String year,String month) async {
-
+  Future<int> gettheexpensefromDB(String year, String month) async {
     int expense = 0;
 
     User? user = _auth
@@ -230,11 +226,9 @@ class _SavingsState extends State<Savings> {
           .where('Month', isEqualTo: month)
           .get();
 
-
       incomeSnapshot.docs.forEach((cDoc) {
-        expense=(cDoc.get('Expense'));
+        expense = (cDoc.get('Expense'));
       });
-
 
       return expense;
     } catch (ex) {
@@ -242,10 +236,11 @@ class _SavingsState extends State<Savings> {
       return 0;
     }
   }
-  Future<int>changeexpense(String year,String month,int expensevalue)async{
-    List<int>currentExpense=[];
+
+  Future<int> changeexpense(String year, String month, int expensevalue) async {
+    List<int> currentExpense = [];
     int expense = 0;
-    int sum=0;
+    int sum = 0;
     User? user = _auth
         .currentUser; //created an instance to the User of Firebase authorized
     username = user!.uid;
@@ -260,30 +255,28 @@ class _SavingsState extends State<Savings> {
           .orderBy('Timest', descending: true)
           .get();
 
-
       incomeSnapshot.docs.forEach((cDoc) {
-        currentExpense.insert(0,cDoc.get('Expense'));
+        currentExpense.insert(0, cDoc.get('Expense'));
       });
 
-
-      for (int i = 0; i < currentExpense.length-1; i++) {
-       sum=sum+currentExpense[i];
+      for (int i = 0; i < currentExpense.length - 1; i++) {
+        sum = sum + currentExpense[i];
       }
-      expense=await getExpence()-sum;
+      expense = await getExpence() - sum;
       print(expense);
 
-
-
       return expense;
     } catch (ex) {
       print('calculating total expense failed');
       return 0;
     }
   }
-  Future<int>changeincome(String year,String month,int incomevalue)async{//change the income of the user
-    List<int>currentIncome=[];
+
+  Future<int> changeincome(String year, String month, int incomevalue) async {
+    //change the income of the user
+    List<int> currentIncome = [];
     int income = 0;
-    int sum=0;
+    int sum = 0;
     User? user = _auth
         .currentUser; //created an instance to the User of Firebase authorized
     username = user!.uid;
@@ -298,18 +291,15 @@ class _SavingsState extends State<Savings> {
           .orderBy('Timest', descending: true)
           .get();
 
-
       incomeSnapshot.docs.forEach((cDoc) {
-        currentIncome.insert(0,cDoc.get('Income'));
+        currentIncome.insert(0, cDoc.get('Income'));
       });
 
-
-      for (int i = 0; i < currentIncome.length-1; i++) {
-        sum=sum+currentIncome[i];
+      for (int i = 0; i < currentIncome.length - 1; i++) {
+        sum = sum + currentIncome[i];
       }
-      income=await getIncome()-sum;
+      income = await getIncome() - sum;
       print(income);
-
 
       return income;
     } catch (ex) {
@@ -318,7 +308,8 @@ class _SavingsState extends State<Savings> {
     }
   }
 
-  Future<List> getthebalancefromDB(String year) async {//get the total balance upto now
+  Future<List> getthebalancefromDB(String year) async {
+    //get the total balance upto now
     List<int> currentBalance = [];
     User? user = _auth
         .currentUser; //created an instance to the User of Firebase authorized
@@ -337,9 +328,8 @@ class _SavingsState extends State<Savings> {
         print('Error executing Firestore query: $error');
       });
 
-
       incomeSnapshot.docs.forEach((cDoc) {
-        currentBalance.insert(0,cDoc.get('Balance'));
+        currentBalance.insert(0, cDoc.get('Balance'));
       });
 
       return currentBalance;
@@ -348,7 +338,9 @@ class _SavingsState extends State<Savings> {
       return [];
     }
   }
-  Future<int> getExpence() async {//get the total expense upto now
+
+  Future<int> getExpence() async {
+    //get the total expense upto now
     User? user = _auth.currentUser;
     String username = user!.uid;
     try {
@@ -362,7 +354,7 @@ class _SavingsState extends State<Savings> {
 
       if (querySnapshot.docs.isNotEmpty) {
         // Assuming 'Balance' is a field in your Firestore document
-       expensev = querySnapshot.docs.first['Expences'];
+        expensev = querySnapshot.docs.first['Expences'];
         print(expensev);
         return expensev;
       } else {
@@ -374,7 +366,9 @@ class _SavingsState extends State<Savings> {
       return 0;
     }
   }
-  Future<int> getIncome() async {//get the total income upto now
+
+  Future<int> getIncome() async {
+    //get the total income upto now
     User? user = _auth.currentUser;
     String username = user!.uid;
     try {
@@ -387,11 +381,9 @@ class _SavingsState extends State<Savings> {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-
         incomev = querySnapshot.docs.first['Income'];
         print(incomev);
-        return  incomev;
-
+        return incomev;
       } else {
         // No entry found
         return 0;
@@ -401,7 +393,9 @@ class _SavingsState extends State<Savings> {
       return 0;
     }
   }
-  Future<List> gettheMonthfromDB(String year) async {// get the month to a list
+
+  Future<List> gettheMonthfromDB(String year) async {
+    // get the month to a list
 
     List<String> currentMonth = [];
     User? user = _auth
@@ -421,28 +415,24 @@ class _SavingsState extends State<Savings> {
         print('Error executing Firestore query: $error');
       });
 
-
       incomeSnapshot.docs.forEach((dDoc) {
-        currentMonth.insert(0,dDoc.get('Month'));
+        currentMonth.insert(0, dDoc.get('Month'));
       });
 
-      return  currentMonth;
+      return currentMonth;
     } catch (ex) {
       print('Getting the month failed');
       return [];
     }
   }
 
-
   Future<void> updateBalance() async {
-
     final currentMonth = DateFormat('MMMM').format(DateTime.now());
-
 
     // Update the balance for the current month
     try {
-      final existingEntry = await getExistingEntry(
-          currentMonth, int.parse(selectedyear!));
+      final existingEntry =
+          await getExistingEntry(currentMonth, int.parse(selectedyear!));
 
       if (existingEntry != null) {
         final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -456,8 +446,8 @@ class _SavingsState extends State<Savings> {
         // Use the update method to update the "Balance" field
         await documentReference.update({
           'Balance': savingbalance,
-          'Income':await changeincome(selectedyear!,currentMonth,incomev),
-          'Expense':await changeexpense(selectedyear!,currentMonth,expensev),
+          'Income': await changeincome(selectedyear!, currentMonth, incomev),
+          'Expense': await changeexpense(selectedyear!, currentMonth, expensev),
         });
 
         print('Balance updated successfully!');
@@ -477,7 +467,6 @@ class _SavingsState extends State<Savings> {
     }
     setState(() {});
   }
-
 
   Future<String?> getExistingEntry(String month, int year) async {
     User? user = _auth.currentUser;
@@ -507,7 +496,6 @@ class _SavingsState extends State<Savings> {
     }
   }
 
-
   Future<int> loadYear() async {
     _prefs = await SharedPreferences.getInstance();
     final selectedYear = _prefs?.getString('selectedYear');
@@ -520,14 +508,8 @@ class _SavingsState extends State<Savings> {
     return int.parse(selectedyear!);
   }
 
-
-
-  Future<String> addSavingsToFireStore(
-      int balance,
-      String Day,
-      int year,
-      int income,int expense,DateTime time
-      ) async {
+  Future<String> addSavingsToFireStore(int balance, String Day, int year,
+      int income, int expense, DateTime time) async {
     User? user = _auth.currentUser;
     String username = user!.uid;
 
@@ -543,9 +525,9 @@ class _SavingsState extends State<Savings> {
         'Balance': balance,
         'Month': Day,
         'Year': year,
-        'Income':income,
-        'Expense':expense,
-      'Timest':time,
+        'Income': income,
+        'Expense': expense,
+        'Timest': time,
       });
 
       final String newDocumentId = newDocument.id;
@@ -557,29 +539,28 @@ class _SavingsState extends State<Savings> {
       return ''; // Return an empty string to indicate failure
     }
   }
-  Future<void>countpercent(String year,String month)async{
 
-    double percentage = (await getthesavingfromDB(year,month)).toDouble() /(await gettheincomefromDB(year,month)).toDouble();
+  Future<void> countpercent(String year, String month) async {
+    double percentage = (await getthesavingfromDB(year, month)).toDouble() /
+        (await gettheincomefromDB(year, month)).toDouble();
     if (percentage >= 0 && percentage <= 1) {
       setState(() {
-        this.percent=percentage;
+        this.percent = percentage;
       });
-    }
-    else if(percentage>1){
+    } else if (percentage > 1) {
       setState(() {
-        this.percent=1.0;
+        this.percent = 1.0;
       });
-    }
-    else {
+    } else {
       percentage = 0.0;
       setState(() {
-        this.percent=percentage;
+        this.percent = percentage;
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -589,43 +570,42 @@ class _SavingsState extends State<Savings> {
             color: Colors.black,
             onPressed: () {
               Navigator.of(context).pop();
-              },
+            },
           ),
           actions: [
             Icon(
               CupertinoIcons.money_dollar_circle,
               size: 30,
               color: Color(0xFF3AC6D5),
-
             ),
           ],
           title: const Text('S A V I N G S',
               style: TextStyle(
                 color: const Color(0xFF090950),
                 fontSize: 20,
-                fontFamily:'Lexend-VariableFont',
+                fontFamily: 'Lexend-VariableFont',
               )),
           centerTitle: true,
-
           elevation: 0,
         ),
-
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Divider( // Add a Divider here
+              Divider(
+                // Add a Divider here
                 height: 3, // You can adjust the height of the divider
-                thickness:1, // You can adjust the thickness of the divider
+                thickness: 1, // You can adjust the thickness of the divider
                 color: Colors.grey, // You can set the color of the divider
               ),
               Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(top: 20,),
-                    height:40,
-                    width:130,
+                    margin: EdgeInsets.only(
+                      top: 20,
+                    ),
+                    height: 40,
+                    width: 130,
                     decoration: BoxDecoration(
-
                       border: Border.all(
                         color: Colors.grey,
                         width: 2,
@@ -635,14 +615,15 @@ class _SavingsState extends State<Savings> {
                     child: Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(left:30),
+                          padding: const EdgeInsets.only(left: 30),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Adjust alignment as needed
+                            mainAxisAlignment: MainAxisAlignment
+                                .spaceBetween, // Adjust alignment as needed
                             children: [
                               Text(
                                 '20',
                                 style: TextStyle(
-                                  fontFamily:'Lexend-VariableFont',
+                                  fontFamily: 'Lexend-VariableFont',
                                   fontSize: 20,
                                   color: Colors.black,
                                   // fontWeight: FontWeight.bold,
@@ -650,7 +631,7 @@ class _SavingsState extends State<Savings> {
                               ),
                               VerticalDivider(
                                 width: 10,
-                                color:Colors.black,
+                                color: Colors.black,
                               ),
                               DropdownButton<String>(
                                 value: selectedyear,
@@ -658,20 +639,25 @@ class _SavingsState extends State<Savings> {
                                   setState(() {
                                     selectedyear = newValue!;
                                   });
-                                  _prefs?.setString('selectedYear', selectedyear!);
+                                  _prefs?.setString(
+                                      'selectedYear', selectedyear!);
                                 },
                                 underline: Container(),
-                                itemHeight: 70, // Adjust the item height as needed
+                                itemHeight:
+                                    70, // Adjust the item height as needed
                                 items: items.map((String item) {
                                   return DropdownMenuItem<String>(
                                     value: item,
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(vertical:0), // Adjust the padding as needed
+                                      padding: EdgeInsets.symmetric(
+                                          vertical:
+                                              0), // Adjust the padding as needed
                                       child: Text(
                                         item,
                                         style: TextStyle(
                                           fontFamily: 'Lexend-VariableFont',
-                                          fontSize: 20, // Adjust the font size as needed
+                                          fontSize:
+                                              20, // Adjust the font size as needed
                                           // Add more styling properties here if desired
                                         ),
                                       ),
@@ -679,19 +665,16 @@ class _SavingsState extends State<Savings> {
                                   );
                                 }).toList(),
                               )
-
                             ],
                           ),
                         )
-
                       ],
                     ),
                   ),
                   Container(
-
                     margin: EdgeInsets.only(top: 20),
-                    height:400,
-                    width:350,
+                    height: 400,
+                    width: 350,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
@@ -700,29 +683,26 @@ class _SavingsState extends State<Savings> {
                             color: Colors.grey.withOpacity(0.8),
                             spreadRadius: 5,
                             blurRadius: 10,
-                            offset: Offset(0,10),
+                            offset: Offset(0, 10),
                           ),
-                        ]
-                    ),
+                        ]),
                     child: Column(
                       children: [
                         Align(
-                          alignment:Alignment.topLeft,
+                          alignment: Alignment.topLeft,
                           child: Padding(
-                            padding: const EdgeInsets.only(top:15.0,left:10),
-                            child: Text(
-                                this.month,
-                                style:TextStyle(
-                                  fontFamily:'Lexend-VariableFont',
+                            padding: const EdgeInsets.only(top: 15.0, left: 10),
+                            child: Text(this.month,
+                                style: TextStyle(
+                                  fontFamily: 'Lexend-VariableFont',
                                   fontSize: 20,
-                                  color:const Color(0xFF090950),
-                                )
-                            ),
+                                  color: const Color(0xFF090950),
+                                )),
                           ),
                         ),
                         Container(
                           // Container which carries the percentage indicator
-                          height:240,
+                          height: 240,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.transparent,
@@ -732,37 +712,42 @@ class _SavingsState extends State<Savings> {
                             alignment: Alignment.topCenter,
                             children: [
                               Container(
-                                margin:EdgeInsets.only(left:20),
-                                width: 200, // Adjust the width and height as needed
-                                height:206,
+                                margin: EdgeInsets.only(left: 20),
+                                width:
+                                    200, // Adjust the width and height as needed
+                                height: 206,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color:const Color(0xFF090950), // Set the border color
-                                    width:3.0, // Set the border width
+                                    color: const Color(
+                                        0xFF090950), // Set the border color
+                                    width: 3.0, // Set the border width
                                   ),
                                 ),
 
                                 child: CircularPercentIndicator(
                                   radius: 100,
                                   lineWidth: 30,
-                                  percent:percent,
+                                  percent: percent,
                                   circularStrokeCap: CircularStrokeCap.round,
-                                  progressColor: Color(0xFF3AC6D5), // Progress color
+                                  progressColor:
+                                      Color(0xFF3AC6D5), // Progress color
                                   backgroundColor: const Color(0xFFC2DAFF),
                                   animation: true,
-                                  animationDuration: 1000, // Start from 12 o'clock
+                                  animationDuration:
+                                      1000, // Start from 12 o'clock
                                 ),
                               ),
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Container(
-                                  margin:EdgeInsets.only(left:8,top:50),
-                                  width: 10, // Adjust the width and height as needed
-                                  height:10,
+                                  margin: EdgeInsets.only(left: 8, top: 50),
+                                  width:
+                                      10, // Adjust the width and height as needed
+                                  height: 10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color:  Color(0xFF3AC6D5),
+                                    color: Color(0xFF3AC6D5),
                                   ),
                                 ),
                               ),
@@ -772,11 +757,13 @@ class _SavingsState extends State<Savings> {
                                 child: Align(
                                   alignment: Alignment.topLeft,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(top: 50.0, left: 20), // Adjust top padding here
+                                    padding: const EdgeInsets.only(
+                                        top: 50.0,
+                                        left: 20), // Adjust top padding here
                                     child: Text(
                                       'Savings',
                                       style: const TextStyle(
-                                        fontFamily:'Lexend-VariableFont',
+                                        fontFamily: 'Lexend-VariableFont',
                                         fontSize: 10,
                                         color: Colors.black,
                                       ),
@@ -787,9 +774,10 @@ class _SavingsState extends State<Savings> {
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Container(
-                                  margin:EdgeInsets.only(left:8,top:90),
-                                  width: 10, // Adjust the width and height as needed
-                                  height:10,
+                                  margin: EdgeInsets.only(left: 8, top: 90),
+                                  width:
+                                      10, // Adjust the width and height as needed
+                                  height: 10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: const Color(0xFFC2DAFF),
@@ -802,11 +790,13 @@ class _SavingsState extends State<Savings> {
                                 child: Align(
                                   alignment: Alignment.topLeft,
                                   child: Padding(
-                                    padding: EdgeInsets.only(top: 90.0, left: 22), // Adjust top padding here
+                                    padding: EdgeInsets.only(
+                                        top: 90.0,
+                                        left: 22), // Adjust top padding here
                                     child: Text(
                                       'Expenses',
                                       style: TextStyle(
-                                        fontFamily:'Lexend-VariableFont',
+                                        fontFamily: 'Lexend-VariableFont',
                                         fontSize: 10,
                                         color: Colors.black,
                                       ),
@@ -824,33 +814,37 @@ class _SavingsState extends State<Savings> {
                               Text(
                                 'Savings',
                                 style: TextStyle(
-                                  fontFamily:'Lexend-VariableFont',
+                                  fontFamily: 'Lexend-VariableFont',
                                   color: const Color(0xFF090950),
                                   fontSize: 20,
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left:60.0), // Adjust left padding here
+                                padding: const EdgeInsets.only(
+                                    left: 60.0), // Adjust left padding here
                                 child: Row(
                                   children: [
                                     Text(
                                       '$currencySymbol',
                                       style: TextStyle(
-                                        fontFamily:'Lexend-VariableFont',
+                                        fontFamily: 'Lexend-VariableFont',
                                         color: const Color(0xFF090950),
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     FutureBuilder<int>(
-                                      future: getthesavingfromDB(selectedyear!, month),
+                                      future: getthesavingfromDB(
+                                          selectedyear!, month),
                                       builder: (context, snapshot) {
-                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
                                           // While the future is still loading, you can show a loading indicator or placeholder
                                           return CircularProgressIndicator();
                                         } else if (snapshot.hasError) {
                                           // If there's an error, you can handle it here
-                                          return Text('Error: ${snapshot.error}');
+                                          return Text(
+                                              'Error: ${snapshot.error}');
                                         } else {
                                           // If the future has completed successfully, display the data
                                           return Text(
@@ -870,103 +864,118 @@ class _SavingsState extends State<Savings> {
                             ],
                           ),
                         ),
-
                         Expanded(
                           child: Align(
-                            alignment:Alignment.bottomCenter,
+                            alignment: Alignment.bottomCenter,
                             child: Container(
                               width: double.infinity,
-                              height:70,
+                              height: 70,
                               decoration: const BoxDecoration(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20),
-
                                 ),
                                 color: Color(0xffEEEEEE),
                               ),
                               child: Row(
                                 children: [
                                   Container(
-                                    width:165,
+                                    width: 165,
                                     height: double.infinity,
                                     color: Colors.transparent,
                                     child: Column(
                                       children: [
                                         Expanded(
                                           child: Align(
-                                            alignment:Alignment.topLeft,
+                                            alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.only(top:10.0,left:30),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10.0, left: 30),
                                                   child: Icon(
                                                       Icons.add_card_rounded,
-                                                      color:const Color(0xFF090950)
-                                                  ),
+                                                      color: const Color(
+                                                          0xFF090950)),
                                                 ),
                                                 Padding(
-                                                  padding: const EdgeInsets.only(top:10.0,left:10),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10.0, left: 10),
                                                   child: Text(
-
                                                     'Expense',
                                                     style: TextStyle(
-                                                      fontFamily:'Lexend-VariableFont',
-                                                      fontSize:20,
+                                                      fontFamily:
+                                                          'Lexend-VariableFont',
+                                                      fontSize: 20,
                                                     ),
                                                   ),
                                                 ),
                                               ],
                                             ),
-
                                           ),
                                         ),
                                         Expanded(
                                           child: Align(
-                                            alignment:Alignment.topLeft,
+                                            alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.only(top:5.0,left:30.0),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 5.0, left: 30.0),
                                                   child: Row(
                                                     children: [
                                                       Text(
-                                                        '$currencySymbol',//curency of income
+                                                        '$currencySymbol', //curency of income
                                                         style: TextStyle(
-                                                            fontFamily:'Lexend-VariableFont',
-                                                            fontSize:20,
-                                                            fontWeight: FontWeight.bold,
-                                                            color:const Color(0xFF090950)
-                                                        ),
+                                                            fontFamily:
+                                                                'Lexend-VariableFont',
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: const Color(
+                                                                0xFF090950)),
                                                       ),
                                                       FutureBuilder<int>(
-                                                        future: gettheexpensefromDB(selectedyear!,month),
-                                                        builder: (context, snapshot) {
-                                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                                        future:
+                                                            gettheexpensefromDB(
+                                                                selectedyear!,
+                                                                month),
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting) {
                                                             // While the future is still loading, you can show a loading indicator or placeholder
                                                             return CircularProgressIndicator();
-                                                          } else if (snapshot.hasError) {
+                                                          } else if (snapshot
+                                                              .hasError) {
                                                             // If there's an error, you can handle it here
-                                                            return Text('Error: ${snapshot.error}');
+                                                            return Text(
+                                                                'Error: ${snapshot.error}');
                                                           } else {
                                                             // If the future has completed successfully, display the data
                                                             return Text(
-                                                              snapshot.data.toString(),
+                                                              snapshot.data
+                                                                  .toString(),
                                                               style: TextStyle(
-                                                                fontFamily: 'Lexend-VariableFont',
+                                                                fontFamily:
+                                                                    'Lexend-VariableFont',
                                                                 fontSize: 20,
-                                                                color: const Color(0xFF090950),
+                                                                color: const Color(
+                                                                    0xFF090950),
                                                               ),
                                                             );
                                                           }
                                                         },
                                                       ),
-
                                                     ],
                                                   ),
                                                 ),
                                               ],
                                             ),
-
                                           ),
                                         ),
                                       ],
@@ -974,78 +983,98 @@ class _SavingsState extends State<Savings> {
                                   ),
                                   VerticalDivider(
                                     width: 10,
-                                    color:Colors.black,
+                                    color: Colors.black,
                                   ),
                                   Container(
-                                    width:175,
+                                    width: 175,
                                     height: double.infinity,
                                     color: Colors.transparent,
                                     child: Column(
                                       children: [
                                         Expanded(
                                           child: Align(
-                                            alignment:Alignment.topRight,
+                                            alignment: Alignment.topRight,
                                             child: Row(
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.only(top:10.0,left:20,),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                    top: 10.0,
+                                                    left: 20,
+                                                  ),
                                                   child: Icon(
                                                     Icons.add_card_rounded,
-                                                    color:Color(0xFF3AC6D5),
+                                                    color: Color(0xFF3AC6D5),
                                                   ),
                                                 ),
                                                 Padding(
-                                                  padding: const EdgeInsets.only(top:10.0,left:10),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10.0, left: 10),
                                                   child: Text(
-
                                                     'Income',
                                                     style: TextStyle(
-                                                      fontFamily:'Lexend-VariableFont',
-                                                      fontSize:20,
-
+                                                      fontFamily:
+                                                          'Lexend-VariableFont',
+                                                      fontSize: 20,
                                                     ),
                                                   ),
                                                 ),
                                               ],
                                             ),
-
                                           ),
                                         ),
                                         Expanded(
                                           child: Align(
-                                            alignment:Alignment.topLeft,
+                                            alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.only(top:5.0,left:20.0),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 5.0, left: 20.0),
                                                   child: Row(
                                                     children: [
                                                       Text(
-                                                        '$currencySymbol',//curency of expense
+                                                        '$currencySymbol', //curency of expense
                                                         style: TextStyle(
-                                                            fontFamily:'Lexend-VariableFont',
-                                                            fontSize:20,
-                                                            fontWeight: FontWeight.bold,
-                                                            color:const Color(0xFF090950)
-                                                        ),
+                                                            fontFamily:
+                                                                'Lexend-VariableFont',
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: const Color(
+                                                                0xFF090950)),
                                                       ),
                                                       FutureBuilder<int>(
-                                                        future: gettheincomefromDB(selectedyear!, month),
-                                                        builder: (context, snapshot) {
-                                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                                        future:
+                                                            gettheincomefromDB(
+                                                                selectedyear!,
+                                                                month),
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting) {
                                                             // While the future is still loading, you can show a loading indicator or placeholder
                                                             return CircularProgressIndicator();
-                                                          } else if (snapshot.hasError) {
+                                                          } else if (snapshot
+                                                              .hasError) {
                                                             // If there's an error, you can handle it here
-                                                            return Text('Error: ${snapshot.error}');
+                                                            return Text(
+                                                                'Error: ${snapshot.error}');
                                                           } else {
                                                             // If the future has completed successfully, display the data
                                                             return Text(
-                                                              snapshot.data.toString(),
+                                                              snapshot.data
+                                                                  .toString(),
                                                               style: TextStyle(
-                                                                fontFamily: 'Lexend-VariableFont',
+                                                                fontFamily:
+                                                                    'Lexend-VariableFont',
                                                                 fontSize: 20,
-                                                                color: const Color(0xFF090950),
+                                                                color: const Color(
+                                                                    0xFF090950),
                                                               ),
                                                             );
                                                           }
@@ -1056,7 +1085,6 @@ class _SavingsState extends State<Savings> {
                                                 ),
                                               ],
                                             ),
-
                                           ),
                                         ),
                                       ],
@@ -1071,25 +1099,24 @@ class _SavingsState extends State<Savings> {
                     ),
                   ),
                   SizedBox(
-                    height:15,
+                    height: 15,
                   ),
-                  Divider( // Add a Divider here
+                  Divider(
+                    // Add a Divider here
                     height: 3, // You can adjust the height of the divider
-                    thickness:1, // You can adjust the thickness of the divider
+                    thickness: 1, // You can adjust the thickness of the divider
                     color: Colors.grey, // You can set the color of the divider
                   ),
                   Align(
-                    alignment:Alignment.centerLeft,
+                    alignment: Alignment.centerLeft,
                     child: Padding(
-                      padding: const EdgeInsets.only(top:15.0,left:30),
-                      child: Text(
-                          'All savings',
-                          style:TextStyle(
-                            fontFamily:'Lexend-VariableFont',
+                      padding: const EdgeInsets.only(top: 15.0, left: 30),
+                      child: Text('All savings',
+                          style: TextStyle(
+                            fontFamily: 'Lexend-VariableFont',
                             fontSize: 20,
-                            color:const Color(0xFF090950),
-                          )
-                      ),
+                            color: const Color(0xFF090950),
+                          )),
                     ),
                   ),
                   Container(
@@ -1111,7 +1138,8 @@ class _SavingsState extends State<Savings> {
                     child: FutureBuilder<List>(
                       future: getthebalancefromDB(selectedyear!),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Center(
                             child: CircularProgressIndicator(),
                           );
@@ -1122,18 +1150,17 @@ class _SavingsState extends State<Savings> {
                                 fontFamily: 'Lexend-VariableFont',
                                 fontSize: 16,
                                 color: Colors.black,
-                                fontWeight: FontWeight.bold
-                            ),
+                                fontWeight: FontWeight.bold),
                           );
-                        } else if (!snapshot.hasData || snapshot.data?.isEmpty == true) {
+                        } else if (!snapshot.hasData ||
+                            snapshot.data?.isEmpty == true) {
                           return Text(
                             'No data available.',
                             style: TextStyle(
                                 fontFamily: 'Lexend-VariableFont',
                                 fontSize: 16,
                                 color: Colors.black,
-                                fontWeight: FontWeight.bold
-                            ),
+                                fontWeight: FontWeight.bold),
                           );
                         } else {
                           final balanceList = snapshot.data!;
@@ -1150,69 +1177,96 @@ class _SavingsState extends State<Savings> {
                                     children: [
                                       ListTile(
                                         title: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Column(
-                                                  children:[FutureBuilder<List>(
-                                                    future: gettheMonthfromDB(selectedyear!),
-                                                    builder: (context, snapshot) {
-                                                      final MonthList = snapshot.data;
-                                                      mon=MonthList ??[];
-                                                      return Padding(
-                                                        padding: const EdgeInsets.only(left: 5.0),
-                                                        child: Align(
-                                                          alignment: Alignment.center,
-                                                          child: Text(
-                                                            '${MonthList?[index]}',
-                                                            style: TextStyle(
-                                                              fontFamily: 'Lexend-VariableFont',
-                                                              color: const Color(0xFF090950),
-                                                              fontSize: 15,
+                                                  children: [
+                                                    FutureBuilder<List>(
+                                                      future: gettheMonthfromDB(
+                                                          selectedyear!),
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        final MonthList =
+                                                            snapshot.data;
+                                                        mon = MonthList ?? [];
+                                                        return Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  left: 5.0),
+                                                          child: Align(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            child: Text(
+                                                              '${MonthList?[index]}',
+                                                              style: TextStyle(
+                                                                fontFamily:
+                                                                    'Lexend-VariableFont',
+                                                                color: const Color(
+                                                                    0xFF090950),
+                                                                fontSize: 15,
+                                                              ),
                                                             ),
                                                           ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
+                                                        );
+                                                      },
+                                                    ),
                                                   ],
                                                 ),
                                                 Column(
-
-                                                  children:[
+                                                  children: [
                                                     Text(
                                                       '$currencySymbol ${balanceList[index]}',
                                                       style: TextStyle(
                                                         fontSize: 15,
-                                                        fontFamily: 'Lexend-VariableFont',
-                                                        color: const Color(0xFF3AC6D5),
+                                                        fontFamily:
+                                                            'Lexend-VariableFont',
+                                                        color: const Color(
+                                                            0xFF3AC6D5),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                                 ElevatedButton(
                                                   onPressed: () {
-                                                    countpercent(selectedyear!,mon[index]);
-                                                    getSelectedMonth(mon[index]);
-
+                                                    countpercent(selectedyear!,
+                                                        mon[index]);
+                                                    getSelectedMonth(
+                                                        mon[index]);
                                                   },
                                                   style: ButtonStyle(
-                                                    backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                                                    shape: MaterialStateProperty.all<OutlinedBorder>(
+                                                    backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all<Color>(Colors
+                                                                .transparent),
+                                                    shape: MaterialStateProperty
+                                                        .all<OutlinedBorder>(
                                                       RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(30.0),
-                                                        side: BorderSide(color: const Color(0xFFAAB2BE)),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(30.0),
+                                                        side: BorderSide(
+                                                            color: const Color(
+                                                                0xFFAAB2BE)),
                                                       ),
                                                     ),
-                                                    elevation: MaterialStateProperty.all<double>(0),
+                                                    elevation:
+                                                        MaterialStateProperty
+                                                            .all<double>(0),
                                                   ),
                                                   child: Text(
                                                     'View',
                                                     style: TextStyle(
-                                                      fontFamily: 'Lexend-VariableFont',
-                                                      color: const Color(0xFFAAB2BE),
+                                                      fontFamily:
+                                                          'Lexend-VariableFont',
+                                                      color: const Color(
+                                                          0xFFAAB2BE),
                                                     ),
                                                   ),
                                                 ),
@@ -1221,7 +1275,10 @@ class _SavingsState extends State<Savings> {
                                           ],
                                         ),
                                       ),
-                                      if (index < balanceList.length - 1) Divider(height: 0,),
+                                      if (index < balanceList.length - 1)
+                                        Divider(
+                                          height: 0,
+                                        ),
                                     ],
                                   );
                                 },
@@ -1232,7 +1289,6 @@ class _SavingsState extends State<Savings> {
                       },
                     ),
                   ),
-
                 ],
               ),
             ],
@@ -1240,7 +1296,3 @@ class _SavingsState extends State<Savings> {
         ));
   }
 }
-
-
-
-
