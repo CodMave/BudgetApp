@@ -531,7 +531,7 @@ class _ControllerState extends State<Controller> {
                   backgroundImage: MemoryImage(minpic!))
                   : CircleAvatar(
                 radius:40,
-                backgroundColor: Colors.transparent,),
+               backgroundImage:  AssetImage('lib/images/Profile.png')),
             ),
             FutureBuilder<String>(
                 future: getUserName(),
@@ -1088,7 +1088,7 @@ class _ControllerState extends State<Controller> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                Savings(balance: newbalance, income:incomevalue, expense:expensevalue,),
+                                Savings(),
                           ),
                         );
                         //user can move to the Savings file

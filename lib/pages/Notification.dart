@@ -1,18 +1,13 @@
-import 'dart:convert';
-
 import 'package:budgettrack/pages/plans.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:http/http.dart' as http;
-import '../firebase_options.dart';
 import 'Summery.dart';
 import 'TextScanner.dart';
 import 'goals.dart';
@@ -46,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String? mtoken = " ";
   String titleText='';
   String bodyText=' ';
+
   final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -115,7 +111,6 @@ class _MyHomePageState extends State<MyHomePage> {
             importance: Importance.max),
         iOS: DarwinNotificationDetails());
   }
-
   Future showNotification(
       {int id = 0, String? title, String? body, String? payLoad}) async {
     return notificationsPlugin.show(
@@ -296,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (ex) {
       print('Error updating noticount: $ex');
     }
-    setState(() {});
+    // setState(() {});
   }
   Future<int>getcountfromdb()async{
     final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -394,6 +389,7 @@ class _HolderState extends State<Holder> {
   _HolderState({required this.Balance});
   MyHomePage obj=new MyHomePage();
   List<DateTime> time = [];
+
   void onDeleteNotification(int index) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     User? user = _auth.currentUser;

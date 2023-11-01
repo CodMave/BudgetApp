@@ -250,27 +250,73 @@ class _Profile extends State<Profile> {
     }
   }
 
-  void SelectImageFromGalery() async {
-    //allows user to select an image from the gallery
-    Uint8List img = await PickImage(ImageSource.gallery);
-    if (img != null) {
-      saveImageToStorage(img); //save the image
+  void   SelectImageFromGalery() async {
+    try {
+      Uint8List? img = await PickImage(ImageSource.gallery);
+
+      if (img != null && img is Uint8List) {
+        saveImageToStorage(img); // Save the image
+        setState(() {
+          _image = img;
+        });
+      } else {
+        setState(() {
+          _image = null;
+        });
+      }
+    } catch (e) {
+
+      print('Error selecting image: $e');
       setState(() {
-        _image = img;
+        _image = null;
       });
     }
   }
 
+  void removeImage() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    String username = user!.uid;
+
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+
+      final CollectionReference image = firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('ProfileImage');
+      QuerySnapshot existingImages = await image.get();
+      DocumentSnapshot existingImage = existingImages.docs.first;
+      await existingImage.reference.delete();
+     loadStoredImage();
+
+    } catch (ex) {
+      print('Error deleting image: $ex');
+    }
+  }
+
+
   void TakePhoto() async //allows to user to set the profile image as taken photo fro camera
       {
-    Uint8List img = await PickImage(ImageSource.camera);
-    if (img != null) {
-      saveImageToStorage(img); //save the image
+        try {
+          Uint8List img = await PickImage(ImageSource.camera);
+          if (img != null) {
+            saveImageToStorage(img); //save the image
 
-      setState(() {
-        _image = img;
-      });
-    }
+            setState(() {
+              _image = img;
+            });
+          }
+        }
+        catch(e) {
+            print('Displaying image error ');
+  setState(() {
+  _image = null;
+  });
+
+  }
+
   }
   static Future<String> getUserName() async {
     //get the username of the current user and display it as text
@@ -352,6 +398,7 @@ class _Profile extends State<Profile> {
             style: TextStyle(fontSize: 20.0),
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               TextButton.icon(
                 onPressed: () {
@@ -368,7 +415,14 @@ class _Profile extends State<Profile> {
                 icon: Icon(Icons.image), //gallery option to set the image
                 label: Text('Galery'),
               ),
+              TextButton.icon(
+                onPressed: () {
+                removeImage();
 
+                },
+                icon: Icon(Icons.delete), //gallery option to set the image
+                label: Text('Remove'),
+              ),
             ],
           )
         ],
@@ -520,7 +574,7 @@ class _Profile extends State<Profile> {
                               : CircleAvatar(
                               radius: 80.0,
                               backgroundImage:
-                              AssetImage('lib/images/Profileimage.png')),
+                              AssetImage('lib/images/Profile.png')),
                         ),
                         Positioned(
                           top:160,

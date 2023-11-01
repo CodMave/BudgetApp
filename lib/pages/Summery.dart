@@ -32,12 +32,9 @@ class _ProState extends State<Pro> {
   bool showContainer3 = false;
   bool showTitle = false;
   DateTime currentDate = DateTime.now();
-  List<int>? monthlyincome = List.filled(
-      (DateTime(DateTime.now().year, DateTime.now().month + 1, 0)).day, 0);
-  List<int>? monthlyexpense = List.filled(
-      (DateTime(DateTime.now().year, DateTime.now().month + 1, 0)).day, 0);
-  List<int>? monthlysavings = List.filled(
-      (DateTime(DateTime.now().year, DateTime.now().month + 1, 0)).day, 0);
+  List<int>? monthlyincome = [];
+  List<int>? monthlyexpense = [];
+  List<int>? monthlysavings = [];
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   Color dailyButtonColor = const Color.fromARGB(255, 24, 30, 170);
   late DateTime startDate;
@@ -57,63 +54,7 @@ class _ProState extends State<Pro> {
   }
 
   final dateFormat = DateFormat('dd-MM-yyyy');
-  Future<int> gettheincomefromDB(String year, String month) async {
-    //get the total income for the month
 
-    int income = 0;
-    User? user = _auth.currentUser;
-    username = user!.uid;
-
-    try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final incomeSnapshot = await firestore
-          .collection('userDetails')
-          .doc(username)
-          .collection('Savings')
-          .where('Year', isEqualTo: int.parse(year))
-          .where('Month', isEqualTo: month)
-          .get();
-
-      incomeSnapshot.docs.forEach((cDoc) {
-        income = (cDoc.get('Income'));
-      });
-
-      return income;
-    } catch (ex) {
-      print('calculating total income failed');
-      return 0;
-    }
-  }
-
-  Future<int> gettheexpensefromDB(String year, String month) async {
-    //get total expense for month
-
-    int expense = 0;
-
-    User? user = _auth
-        .currentUser; //created an instance to the User of Firebase authorized
-    username = user!.uid;
-
-    try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final incomeSnapshot = await firestore
-          .collection('userDetails')
-          .doc(username)
-          .collection('Savings')
-          .where('Year', isEqualTo: int.parse(year))
-          .where('Month', isEqualTo: month)
-          .get();
-
-      incomeSnapshot.docs.forEach((cDoc) {
-        expense = (cDoc.get('Expense'));
-      });
-
-      return expense;
-    } catch (ex) {
-      print('calculating total expense failed');
-      return 0;
-    }
-  }
 
   Future<List<String>?> getexpenseNameforweek() async {
     try {
@@ -159,8 +100,7 @@ class _ProState extends State<Pro> {
 
       String username = user.uid;
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      Set<String> items =
-          Set<String>(); // Using a Set to store unique expense names
+      Set<String> items = Set<String>(); // Using a Set to store unique expense names
 
       DateTime now = DateTime.now();
       int currentYear = now.year;
@@ -432,11 +372,8 @@ class _ProState extends State<Pro> {
       DateTime now = DateTime.now();
       int currentYear = now.year;
       int currentMonth = now.month;
-
-      DateTime lastDayOfMonth = DateTime(currentYear, currentMonth + 1, 0);
-
-      int daysInMonth = lastDayOfMonth.day;
-      List<int> monthlyExpense = List.filled(daysInMonth, 0);
+      int currentDay=now.day;
+   List<int> monthlyExpense = List.filled(currentDay, 0);
 
       final expenseSnapshot = await firestore
           .collection('userDetails')
@@ -593,11 +530,9 @@ class _ProState extends State<Pro> {
       int currentYear = now.year;
 
       int currentMonth = now.month;
+      int currentDay=now.day;
 
-      DateTime lastDayOfMonth = DateTime(currentYear, currentMonth + 1, 0);
-
-      int daysInMonth = lastDayOfMonth.day;
-      List<int> monthlyIncome = List.filled(daysInMonth, 0);
+      List<int> monthlyIncome = List.filled(currentDay, 0);
 
       final expenseSnapshot = await firestore
           .collection('userDetails')
@@ -735,20 +670,14 @@ class _ProState extends State<Pro> {
           await getSumOfTransactionAmountsForUniqueExpensesForMonth();
       final amountforyear =
           await getSumOfTransactionAmountsForUniqueExpensesForYear();
-      final incomemonth = await gettheincomefromDB(
-          getLastTwoDigitsOfCurrentYear().toString(),
-          DateFormat('MMMM').format(DateTime.now()));
-      final expensemonth = await gettheexpensefromDB(
-          getLastTwoDigitsOfCurrentYear().toString(),
-          DateFormat('MMMM').format(DateTime.now()));
+
+
       setState(() {
         this.yearly_expense = totalexpenseforyear;
         this.uniqueexpensesformonth = amountformonth;
         this.uniqueexpensesforyear = amountforyear;
         this.monthlyexpense = totexpenseformonth;
         this.monthlyincome = totincomeformonth;
-        this.totalincomeformonth = incomemonth;
-        this.totalexpenseformonth = expensemonth;
         this.uniqueexpenses = amount;
         items = expenseNames;
         this.itemsformonth = expenseNamesformonth;
@@ -770,13 +699,21 @@ class _ProState extends State<Pro> {
             monthlysavings![i] = 0;
           }
         }
+        for(int i=0;i<monthlyexpense!.length;i++){
+          this.totalexpenseformonth=this.totalexpenseformonth+monthlyexpense![i];
+        }
+        for(int i=0;i<monthlyincome!.length;i++){
+          this.totalincomeformonth=this.totalincomeformonth+monthlyincome![i];
+        }
         for (int i = 0; i < this.yearly_savings!.length; i++) {
           yearly_savings![i] = totalincomeforyear![i] - this.yearly_expense![i];
           if (yearly_savings![i] < 0) {
             yearly_savings![i] = 0;
           }
         }
+
       });
+
     } catch (ex) {
       print('Fetching expenses and income failed: $ex');
     }
@@ -793,6 +730,7 @@ class _ProState extends State<Pro> {
     updateYearDates();
     _showContainer(1);
     _fetchTotalExpensesAndIncome();
+
   }
 
   @override
@@ -836,7 +774,7 @@ class _ProState extends State<Pro> {
               Container(
                 margin: EdgeInsets.only(top: 20),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: () {
@@ -845,6 +783,13 @@ class _ProState extends State<Pro> {
                       style: ElevatedButton.styleFrom(
                         primary: Colors.white,
                         onPrimary: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),bottomLeft: Radius.circular(20)),
+                          side: BorderSide(
+                            color:Colors.grey, // Set the border color
+                            width: 2, // Set the border width
+                          ),
+                        ),
                         onSurface: Color.fromARGB(255, 113, 120, 222),
                       ),
                       child: Text(
@@ -860,8 +805,15 @@ class _ProState extends State<Pro> {
                         _showContainer(2);
                       },
                       style: ElevatedButton.styleFrom(
+
                         primary: Colors.white,
                         onPrimary: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color:Colors.grey, // Set the border color
+                            width: 2, // Set the border width
+                          ),
+                        ),
                         onSurface: Color.fromARGB(255, 113, 120, 222),
                       ),
                       child: Text(
@@ -879,6 +831,13 @@ class _ProState extends State<Pro> {
                       style: ElevatedButton.styleFrom(
                         primary: Colors.white,
                         onPrimary: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(topRight: Radius.circular(20),bottomRight: Radius.circular(20)),
+                          side: BorderSide(
+                            color:Colors.grey, // Set the border color
+                            width: 2, // Set the border width
+                          ),
+                        ),
                         onSurface: Color.fromARGB(255, 113, 120, 222),
                       ),
                       child: Text(
@@ -899,7 +858,7 @@ class _ProState extends State<Pro> {
                     SizedBox(height: 15),
                     Container(
                       height: 30,
-                      width: 200,
+                      width:250,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
                         borderRadius: BorderRadius.circular(15),
@@ -1078,141 +1037,22 @@ class _ProState extends State<Pro> {
                               borderData: FlBorderData(show: false),
                               gridData: FlGridData(show: false),
                               barGroups: [
+                                for(int i=0;i<savings!.length;i++)
                                 BarChartGroupData(
-                                  x: 1,
+                                  x: i+1,
                                   barRods: [
                                     BarChartRodData(
-                                        toY: this.savings![0].toDouble(),
+                                        toY: this.savings![i].toDouble(),
                                         width: 15,
-                                        color: const Color(0xFF090950),
+                                        color:  Color.fromARGB(255, 134, 209, 249),
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(0),
                                         )),
                                     BarChartRodData(
-                                        toY: this.expense![0].toDouble(),
+                                        toY: expense![i].toDouble(),
                                         width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 2,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.savings![1].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.expense![1].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 3,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.savings![2].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.expense![2].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 4,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.savings![3].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.expense![3].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 5,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.savings![4].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.expense![4].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 6,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.savings![5].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.expense![5].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 7,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.savings![6].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: expense![6].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
+                                        color:const Color(0xFF090950),
+
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(0),
                                         )),
@@ -1235,7 +1075,7 @@ class _ProState extends State<Pro> {
                                   height: 10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: const Color(0xFF090950),
+                                    color: Color.fromARGB(255, 134, 209, 249),
                                   ),
                                 ),
                                 Padding(
@@ -1263,7 +1103,7 @@ class _ProState extends State<Pro> {
                                   height: 10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Color.fromARGB(255, 134, 209, 249),
+                                    color: const Color(0xFF090950),
                                   ),
                                 ),
                                 Padding(
@@ -1405,7 +1245,7 @@ class _ProState extends State<Pro> {
                     SizedBox(height: 15),
                     Container(
                       height: 30,
-                      width: 200,
+                      width:250,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
                         borderRadius: BorderRadius.circular(15),
@@ -1560,27 +1400,13 @@ class _ProState extends State<Pro> {
                             LineChartData(
                               gridData: FlGridData(show: true),
                               titlesData: FlTitlesData(
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: false,
-                                  ),
-                                ),
-                                rightTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: false,
-                                  ),
-                                ),
                                 bottomTitles: AxisTitles(
                                   sideTitles: SideTitles(
                                     reservedSize: 30,
                                     showTitles: true,
                                   ),
                                 ),
-                                topTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: false,
-                                  ),
-                                ),
+
                               ),
                               borderData: FlBorderData(
                                 show: false,
@@ -1589,40 +1415,35 @@ class _ProState extends State<Pro> {
                                   width: 1,
                                 ),
                               ),
-                              minX: 0,
-                              maxX:
-                                  30, // Adjust the maximum X value for the number of months
+                              minX: 1,
+                              maxX: 31, // Adjust the maximum X value for the number of months
                               minY: 0,
                               maxY:
                                   100000, // Adjust the maximum Y value as needed
                               lineBarsData: [
                                 LineChartBarData(
                                   spots: [
-                                    for (int i = 0;
-                                        i < this.monthlysavings!.length;
-                                        i++)
-                                      FlSpot(
-                                          i + 1, monthlysavings![i].toDouble()),
+                                    for (int i = 0;i < this.monthlysavings!.length; i++)
+                                      FlSpot(i+1.toDouble(), monthlysavings![i].toDouble()),
                                   ],
-                                  isCurved: false,
-                                  color: const Color(0xFF090950),
-                                  dotData: FlDotData(show: false),
+                                  isCurved: true,
+                                  color: const  Color.fromARGB(255, 134, 209, 249),
+                                  dotData: FlDotData(show: true),
                                   belowBarData: BarAreaData(show: false),
                                 ),
                                 LineChartBarData(
                                   spots: [
-                                    for (int i = 0;
-                                        i < this.monthlyexpense!.length;
-                                        i++)
-                                      FlSpot(
-                                          i + 1, monthlyexpense![i].toDouble()),
+                                    for (int i = 0;i < this.monthlyexpense!.length; i++)
+                                      FlSpot(i+1.toDouble(), monthlyexpense![i].toDouble()),
                                   ],
-                                  isCurved: false,
-                                  color: Color.fromARGB(255, 134, 209, 249),
-                                  dotData: FlDotData(show: false),
+                                  isCurved:true,
+                                  color: const Color(0xFF090950),
+                                  dotData: FlDotData(show:true),
                                   belowBarData: BarAreaData(show: false),
                                 ),
+
                               ],
+
                             ),
                           ),
                         ),
@@ -1639,7 +1460,7 @@ class _ProState extends State<Pro> {
                                   height: 10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: const Color(0xFF090950),
+                                    color:Color.fromARGB(255, 134, 209, 249),
                                   ),
                                 ),
                                 Padding(
@@ -1667,7 +1488,7 @@ class _ProState extends State<Pro> {
                                   height: 10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Color.fromARGB(255, 134, 209, 249),
+                                    color:const Color(0xFF090950),
                                   ),
                                 ),
                                 Padding(
@@ -1809,7 +1630,7 @@ class _ProState extends State<Pro> {
                     SizedBox(height: 15),
                     Container(
                       height: 30,
-                      width: 200,
+                      width:250,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
                         borderRadius: BorderRadius.circular(15),
@@ -1963,270 +1784,35 @@ class _ProState extends State<Pro> {
                           child: BarChart(
                             BarChartData(
                               titlesData: FlTitlesData(
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: false,
-                                  ),
-                                ),
-                                rightTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: false,
-                                  ),
-                                ),
                                 bottomTitles: AxisTitles(
                                   sideTitles: SideTitles(
                                     reservedSize: 30,
                                     showTitles: true,
                                   ),
                                 ),
-                                topTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: false,
-                                  ),
-                                ),
                               ),
                               borderData: FlBorderData(show: false),
                               gridData: FlGridData(show: false),
                               barGroups: [
+                                for(int i=0;i<yearly_savings!.length;i++)
                                 BarChartGroupData(
-                                  x: 1,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![0].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![0].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 2,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![1].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![1].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 3,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![2].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![2].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 4,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![3].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![3].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 5,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![4].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![4].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 6,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![5].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![5].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 7,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![6].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![6].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 8,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![7].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![7].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 9,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![8].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![8].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 10,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY: this.yearly_savings![9].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY: this.yearly_expense![9].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 11,
+                                  x: i+1,
                                   barRods: [
                                     BarChartRodData(
                                         toY:
-                                            this.yearly_savings![10].toDouble(),
+                                            this.yearly_savings![i].toDouble(),
                                         width: 15,
-                                        color: const Color(0xFF090950),
+                                        color:  Color.fromARGB(255, 134, 209, 249),
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(0),
                                         )),
+
                                     BarChartRodData(
                                         toY:
-                                            this.yearly_expense![10].toDouble(),
+                                            this.yearly_expense![i].toDouble(),
                                         width: 15,
                                         color:
-                                            Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                  ],
-                                ),
-                                BarChartGroupData(
-                                  x: 12,
-                                  barRods: [
-                                    BarChartRodData(
-                                        toY:
-                                            this.yearly_savings![11].toDouble(),
-                                        width: 15,
-                                        color: const Color(0xFF090950),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
-                                    BarChartRodData(
-                                        toY:
-                                            this.yearly_expense![11].toDouble(),
-                                        width: 15,
-                                        color:
-                                            Color.fromARGB(255, 134, 209, 249),
+                                        const Color(0xFF090950),
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(0),
                                         )),

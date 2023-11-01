@@ -14,20 +14,14 @@ import 'goals.dart';
 import 'homePage.dart';
 
 class Savings extends StatefulWidget {
-  int balance = 0;
-  int income=0;
-  int expense=0;
-  Savings({Key? key, required int balance,required int income,required int expense}) : super(key: key) {
-    this.balance = balance;
-    this.income=income;
-    this.expense=expense;
 
+  Savings({Key? key}) : super(key: key) {
   }
 
 
   @override
   State<Savings> createState() => _SavingsState(
-    savingbalance: balance, incomev:income, expensev: expense,
+
   );
 }
 
@@ -75,7 +69,6 @@ class _SavingsState extends State<Savings> {
   ];
   // Default time: 12:00
 
-  _SavingsState({required this.savingbalance,required this.incomev,required this.expensev});
   String currencySymbol='';
   DateTime lastDate = DateTime.now();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -84,10 +77,11 @@ class _SavingsState extends State<Savings> {
     super.initState();
     loadYear();
     getDocIds();
+    getSelectedMonth(DateFormat('MMMM').format(DateTime.now()));
     updateBalance();
     // getthesavingfromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
     // gettheexpensefromDB(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
-    getSelectedMonth(DateFormat('MMMM').format(DateTime.now()));
+
     countpercent(getLastTwoDigitsOfCurrentYear().toString(),DateFormat('MMMM').format(DateTime.now()));
   }
 
@@ -141,6 +135,51 @@ class _SavingsState extends State<Savings> {
       // Handle the case when the user is not authenticated
       print('User not authenticated.');
       return ''; // Return an empty string or null based on your requirements
+    }
+  }
+  Future<int> getTotalIncomeForMonth() async {
+    try {
+      int sum=0;
+      User? user = _auth.currentUser;
+      if (user == null) return 0;
+
+      String username = user.uid;
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      DateTime now = DateTime.now();
+      int currentYear = now.year;
+
+      int currentMonth = now.month;
+
+      DateTime lastDayOfMonth = DateTime(currentYear, currentMonth + 1, 0);
+
+      int daysInMonth = lastDayOfMonth.day;
+      List<int> monthlyIncome = List.filled(daysInMonth, 0);
+
+      final expenseSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('incomeID')
+          .get();
+
+      expenseSnapshot.docs.forEach((income2Doc) {
+        final timestamp = income2Doc.get('timestamp') as Timestamp;
+        final timestampDate = timestamp.toDate();
+
+        if (timestampDate.year == currentYear &&
+            timestampDate.month == currentMonth) {
+          int dayOfMonth = timestampDate.day - 1;
+          monthlyIncome[dayOfMonth] +=
+              (income2Doc.get('transactionAmount') as num).toInt();
+        }
+      });
+      for(int i=0;i<monthlyIncome.length;i++){
+        sum=sum+monthlyIncome[i];
+      }
+      return sum;
+    } catch (ex) {
+      print('Calculating monthly income failed: $ex');
+      return 0;
     }
   }
   int getLastTwoDigitsOfCurrentYear() {
@@ -438,6 +477,16 @@ class _SavingsState extends State<Savings> {
     }
   }
 
+Future<int>Balancet()async{
+    int savings=await getTotalIncomeForMonth()-await getTotalExpenseForMonth();
+    if(savings<0){
+      savings=0;
+      return savings;
+    }
+    else{
+      return savings;
+    }
+}
 
   Future<void> updateBalance() async {
 
@@ -460,20 +509,20 @@ class _SavingsState extends State<Savings> {
 
         // Use the update method to update the "Balance" field
         await documentReference.update({
-          'Balance': savingbalance,
-          'Income':await changeincome(selectedyear!,currentMonth,incomev),
-          'Expense':await changeexpense(selectedyear!,currentMonth,expensev),
+          'Balance':await Balancet(),
+          'Income':await getTotalIncomeForMonth(),
+          'Expense':await getTotalExpenseForMonth(),
         });
 
         print('Balance updated successfully!');
       } else {
         // No entry for the current month, add a new one
         documentId = await addSavingsToFireStore(
-          savingbalance,
+          await Balancet(),
           DateFormat('MMMM').format(DateTime.now()),
           int.parse(selectedyear!),
-          incomev,
-          expensev,
+          await getTotalIncomeForMonth(),
+          await getTotalExpenseForMonth(),
           DateTime.now(),
         ).toString();
       }
@@ -562,10 +611,54 @@ class _SavingsState extends State<Savings> {
       return ''; // Return an empty string to indicate failure
     }
   }
+  Future<int> getTotalExpenseForMonth() async {
+    try {
+      int sum=0;
+      User? user = _auth.currentUser;
+      if (user == null) return 0;
+
+      String username = user.uid;
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      DateTime now = DateTime.now();
+      int currentYear = now.year;
+      int currentMonth = now.month;
+
+      DateTime lastDayOfMonth = DateTime(currentYear, currentMonth + 1, 0);
+
+      int daysInMonth = lastDayOfMonth.day;
+      List<int> monthlyExpense = List.filled(daysInMonth, 0);
+
+      final expenseSnapshot = await firestore
+          .collection('userDetails')
+          .doc(username)
+          .collection('expenceID')
+          .get();
+
+      expenseSnapshot.docs.forEach((expense2Doc) {
+        final timestamp = expense2Doc.get('timestamp') as Timestamp;
+        final timestampDate = timestamp.toDate();
+
+        if (timestampDate.year == currentYear &&
+            timestampDate.month == currentMonth) {
+          int dayOfMonth = timestampDate.day - 1;
+          monthlyExpense[dayOfMonth] +=
+              (expense2Doc.get('transactionAmount') as num).toInt();
+        }
+      });
+        for(int i=0;i<monthlyExpense.length;i++){
+          sum=sum+monthlyExpense[i];
+        }
+      return sum;
+    } catch (ex) {
+      print('Calculating monthly income failed: $ex');
+      return 0;
+    }
+  }
   Future<void>countpercent(String year,String month)async{
-    final savings=(await getthesavingfromDB(year,month)).toDouble();
-    final income=(await gettheincomefromDB(year,month)).toDouble();
-    double percentage = savings/income;
+    final income=(await gettheincomefromDB(year, month)).toDouble();
+    final expense=(await gettheexpensefromDB(year, month)).toDouble();
+    double percentage =(income-expense)/income;
     if (percentage >= 0 && percentage <= 1) {
       setState(() {
         this.percent=percentage;
