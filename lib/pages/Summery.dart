@@ -693,12 +693,7 @@ class _ProState extends State<Pro> {
             savings![i] = 0;
           }
         }
-        for (int i = 0; i < this.monthlysavings!.length; i++) {
-          monthlysavings![i] = monthlyincome![i] - monthlyexpense![i];
-          if (monthlysavings![i] < 0) {
-            monthlysavings![i] = 0;
-          }
-        }
+
         for(int i=0;i<monthlyexpense!.length;i++){
           this.totalexpenseformonth=this.totalexpenseformonth+monthlyexpense![i];
         }
@@ -1406,7 +1401,24 @@ class _ProState extends State<Pro> {
                                     showTitles: true,
                                   ),
                                 ),
-
+                          leftTitles:  AxisTitles(
+                            sideTitles: SideTitles(
+                              reservedSize: 30,
+                              showTitles: false,
+                            ),
+                          ),
+                                rightTitles:  AxisTitles(
+                                  sideTitles: SideTitles(
+                                    reservedSize: 30,
+                                    showTitles: false,
+                                  ),
+                                ),
+                                topTitles:  AxisTitles(
+                                  sideTitles: SideTitles(
+                                    reservedSize: 30,
+                                    showTitles: false,
+                                  ),
+                                ),
                               ),
                               borderData: FlBorderData(
                                 show: false,
@@ -1423,8 +1435,10 @@ class _ProState extends State<Pro> {
                               lineBarsData: [
                                 LineChartBarData(
                                   spots: [
-                                    for (int i = 0;i < this.monthlysavings!.length; i++)
-                                      FlSpot(i+1.toDouble(), monthlysavings![i].toDouble()),
+                                    for (int i = 0;i < this.monthlyexpense!.length; i++)
+                                      monthlyincome![i].toDouble()-monthlyexpense![i].toDouble()<0?
+                                      FlSpot(i+1.toDouble(), 0):
+                                      FlSpot(i+1.toDouble(), monthlyincome![i].toDouble()-monthlyexpense![i].toDouble()),
                                   ],
                                   isCurved: true,
                                   color: const  Color.fromARGB(255, 134, 209, 249),
@@ -1786,8 +1800,26 @@ class _ProState extends State<Pro> {
                               titlesData: FlTitlesData(
                                 bottomTitles: AxisTitles(
                                   sideTitles: SideTitles(
-                                    reservedSize: 30,
+                                    reservedSize:30,
                                     showTitles: true,
+                                  ),
+                                ),
+                                leftTitles:  AxisTitles(
+                                  sideTitles: SideTitles(
+                                    reservedSize: 30,
+                                    showTitles: false,
+                                  ),
+                                ),
+                                rightTitles:  AxisTitles(
+                                  sideTitles: SideTitles(
+                                    reservedSize: 30,
+                                    showTitles: false,
+                                  ),
+                                ),
+                                topTitles:  AxisTitles(
+                                  sideTitles: SideTitles(
+                                    reservedSize: 30,
+                                    showTitles: false,
                                   ),
                                 ),
                               ),
@@ -1796,7 +1828,7 @@ class _ProState extends State<Pro> {
                               barGroups: [
                                 for(int i=0;i<yearly_savings!.length;i++)
                                 BarChartGroupData(
-                                  x: i+1,
+                                  x: i+2022,
                                   barRods: [
                                     BarChartRodData(
                                         toY:
