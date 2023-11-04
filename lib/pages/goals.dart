@@ -1,6 +1,4 @@
-import 'package:budgettrack/pages/plans.dart';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import '../components/bottomNav.dart';
 import '../components/datePicker.dart';
 import 'package:intl/intl.dart';
@@ -9,9 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../components/goalTiles.dart';
-import 'Summery.dart';
-import 'TextScanner.dart';
-import 'homePage.dart';
 
 class Goals extends StatefulWidget {
   final Function()? onTap;
@@ -69,17 +64,17 @@ class _GoalsState extends State<Goals> {
   //Method add goals to the database
 
   Future<void> addGoalsToFirestore(
-      String userId,
-      String selectedCategory,
-      int planAmountController,
-      DateTime selectedStartDate,
-      DateTime selectedEndDate,
-      ) async {
+    String userId,
+    String selectedCategory,
+    int planAmountController,
+    DateTime selectedStartDate,
+    DateTime selectedEndDate,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
       final CollectionReference goalsCollection =
-      firestore.collection('userDetails').doc(userId).collection('goalsID');
+          firestore.collection('userDetails').doc(userId).collection('goalsID');
 
       await goalsCollection.add({
         'amount': planAmountController,
@@ -96,49 +91,31 @@ class _GoalsState extends State<Goals> {
   //Function to show the date picker for start date
 
   Future<void> _selectStartDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2015),
       lastDate: DateTime(2101),
-    );
-
-    if (picked != null && picked != startDate) {
+    ).then((value) {
       setState(() {
-        startDate = picked;
+        startDate = value;
       });
-    }
+    });
   }
 
   //Function to show the date picker for end date
 
   Future<void> _selectEndDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2015),
       lastDate: DateTime(2101),
-    );
-
-    if (picked != null && picked != endDate) {
-      if (startDate != null && picked.isAfter(startDate!)) {
-        setState(() {
-          endDate = picked;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-              'End date should be after start date',
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            backgroundColor: Colors.red[300],
-          ),
-        );
-      }
-    }
+    ).then((value) {
+      setState(() {
+        endDate = value;
+      });
+    });
   }
 
   //get the user selected currency from firestore
@@ -222,7 +199,7 @@ class _GoalsState extends State<Goals> {
             return AlertDialog(
               title: const Center(
                 child: Text(
-                  'ADD NEW PLAN',
+                  'Create a Goal',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -236,16 +213,16 @@ class _GoalsState extends State<Goals> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       //Expence text
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Expence Category',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
+                      // const Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Text(
+                      //     'Expence Category',
+                      //     style: TextStyle(
+                      //       fontSize: 18,
+                      //       color: Colors.black,
+                      //     ),
+                      //   ),
+                      // ),
 
                       const SizedBox(height: 10),
 
@@ -279,7 +256,7 @@ class _GoalsState extends State<Goals> {
                               },
                               items: expenceCategories
                                   .map<DropdownMenuItem<String>>(
-                                    (String value) {
+                                (String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Row(
@@ -302,17 +279,17 @@ class _GoalsState extends State<Goals> {
 
                       // plan amount title
 
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Amount',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            //fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      // const Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Text(
+                      //     'Amount',
+                      //     style: TextStyle(
+                      //       color: Colors.black,
+                      //       fontSize: 18,
+                      //       //fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
 
                       const SizedBox(height: 10),
 
@@ -354,17 +331,17 @@ class _GoalsState extends State<Goals> {
 
                       //Start Date picker
 
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Start Date',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            //fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      // const Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Text(
+                      //     'Start Date',
+                      //     style: TextStyle(
+                      //       color: Colors.black,
+                      //       fontSize: 18,
+                      //       //fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
 
                       const SizedBox(height: 10),
 
@@ -382,8 +359,8 @@ class _GoalsState extends State<Goals> {
                             child: InkWell(
                               onTap: () => _selectStartDate(context),
                               child: DatePick(
-                                selectedDate: startDate,
-                                hintText: 'Select start date',
+                                selectedDate: endDate,
+                                hintText: 'Select end date',
                               ),
                             ),
                           ),
@@ -392,17 +369,17 @@ class _GoalsState extends State<Goals> {
 
                       const SizedBox(height: 10),
 
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'End Date',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            //fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      // const Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Text(
+                      //     'End Date',
+                      //     style: TextStyle(
+                      //       color: Colors.black,
+                      //       fontSize: 18,
+                      //       //fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
 
                       const SizedBox(height: 10),
 
@@ -447,6 +424,13 @@ class _GoalsState extends State<Goals> {
                             ),
                             child: TextButton(
                               onPressed: () {
+                                //clear user inputs
+                                setState(() {
+                                  //selectedCategory = '';
+                                  planAmountController.clear();
+                                  startDate = null;
+                                  endDate = null;
+                                });
                                 Navigator.of(context).pop();
                               },
                               child: const Text(
@@ -477,7 +461,7 @@ class _GoalsState extends State<Goals> {
                                 amount = int.parse(planAmountController.text);
 
                                 setState(
-                                      () {
+                                  () {
                                     myGoals.add(MyGoal(
                                       userId: userId,
                                       category: selectedCategory,
@@ -515,17 +499,17 @@ class _GoalsState extends State<Goals> {
                                     .snapshots();
 
                                 _plansStream.listen(
-                                        (DocumentSnapshot<Map<String, dynamic>>
-                                    snapshot) {
-                                      if (snapshot.exists) {
-                                        setState(() {
-                                          amount = snapshot.data()!['amount'];
-                                          categoty = snapshot.data()!['category'];
-                                          startDate = snapshot.data()!['startDate'];
-                                          endDate = snapshot.data()!['endDate'];
-                                        });
-                                      }
+                                    (DocumentSnapshot<Map<String, dynamic>>
+                                        snapshot) {
+                                  if (snapshot.exists) {
+                                    setState(() {
+                                      amount = snapshot.data()!['amount'];
+                                      categoty = snapshot.data()!['category'];
+                                      startDate = snapshot.data()!['startDate'];
+                                      endDate = snapshot.data()!['endDate'];
                                     });
+                                  }
+                                });
 
                                 //selectedCategory = '';
                                 //planAmountController.clear();
@@ -558,7 +542,7 @@ class _GoalsState extends State<Goals> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () {
             Navigator.of(context).pop();
@@ -575,170 +559,95 @@ class _GoalsState extends State<Goals> {
         centerTitle: true,
         elevation: 0.0,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 3,
-          ),
-          child: GNav(
-            backgroundColor: Colors.transparent,
-            color: const Color(0xFF85B6FF),
-            activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.grey.shade400,
-            gap:6,
-            onTabChange: (Index) {
-              //if the user click on the bottom navigation bar then it will move to the following pages
-              if (Index == 0) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Controller(
-                        balance: newbalance,
-                      )),
-                );
-              } else if (Index == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>Pro()),
-                );
-              } else if (Index == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>PlansApp()),
-                );
-              } else if (Index == 3) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Goals()),
-                );
-              } else if (Index ==4) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
-                );
-              }
-            },
-            padding: const EdgeInsets.all(15),
-            tabs: const [
-              GButton(
-                icon: Icons.home,
-                //text: 'Home',
-              ),
-              GButton(
-                icon: Icons.align_vertical_bottom_outlined,
-                //text: 'Summary',
-              ),
-              GButton(
-                icon: Icons.account_balance_wallet_outlined,
-                //text: 'Savings',
-              ),
-              GButton(
-                icon: Icons.track_changes_rounded,
-                //text: 'Plans',
-              ),
-              GButton(
-                icon: Icons.document_scanner_outlined,
-                //text: 'Scan',
-              ),
-            ],
-          ),
-        ),
-      ),
+      //bottomNavigationBar: BottomNavigation(),
       body: Column(
         children: [
           const SizedBox(height: 5),
           //showing today date
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Row(
-              children: [
-                // Date
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // date
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          //   child: Row(
+          //     children: [
+          //       // Date
+          //       // Column(
+          //       //   crossAxisAlignment: CrossAxisAlignment.start,
+          //       //   children: [
+          //       //     // date
 
-                    const Text(
-                      'Today',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                        //fontWeight: FontWeight.bold,
-                      ),
-                    ),
+          //       //     const Text(
+          //       //       'Today',
+          //       //       style: TextStyle(
+          //       //         color: Colors.black,
+          //       //         fontSize: 22,
+          //       //         //fontWeight: FontWeight.bold,
+          //       //       ),
+          //       //     ),
 
-                    const SizedBox(height: 5),
+          //       //     const SizedBox(height: 5),
 
-                    // Today text
+          //       //     // Today text
 
-                    Text(
-                      DateFormat.yMMMMd().format(DateTime.now()),
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 20,
-                        //fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+          //       //     Text(
+          //       //       DateFormat.yMMMMd().format(DateTime.now()),
+          //       //       style: TextStyle(
+          //       //         color: Colors.grey[700],
+          //       //         fontSize: 20,
+          //       //         //fontWeight: FontWeight.bold,
+          //       //       ),
+          //       //     ),
+          //       //   ],
+          //       // ),
 
-                // Add plan button
+          //       // Add plan button
 
-                const SizedBox(width: 64),
+          //       //const SizedBox(width: 64),
 
-                GestureDetector(
-                  onTap: () {
-                    addNewPlan();
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.blue[300],
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.8),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Add Plan',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          //       // GestureDetector(
+          //       //   onTap: () {
+          //       //     addNewPlan();
+          //       //   },
+          //       //   child: Container(
+          //       //     height: 50,
+          //       //     width: 100,
+          //       //     decoration: BoxDecoration(
+          //       //       color: Colors.blue[300],
+          //       //       borderRadius: BorderRadius.circular(10),
+          //       //       boxShadow: [
+          //       //         BoxShadow(
+          //       //           color: Colors.grey.withOpacity(0.8),
+          //       //           blurRadius: 10,
+          //       //           offset: const Offset(0, 5),
+          //       //         ),
+          //       //       ],
+          //       //     ),
+          //       //     child: const Center(
+          //       //       child: Text(
+          //       //         'Add Plan',
+          //       //         style: TextStyle(
+          //       //           color: Colors.black,
+          //       //           fontWeight: FontWeight.bold,
+          //       //           fontSize: 20,
+          //       //         ),
+          //       //       ),
+          //       //     ),
+          //       //   ),
+          //       // ),
+          //     ],
+          //   ),
+          // ),
 
-          const SizedBox(height: 15),
+          //const SizedBox(height: 15),
 
           // underline
 
-          Container(
-            height: 1,
-            width: double.infinity,
-            color: Colors.grey[500],
-          ),
+          // Container(
+          //   height: 1,
+          //   width: double.infinity,
+          //   color: Colors.grey[500],
+          // ),
 
-          const SizedBox(height: 10),
+          //const SizedBox(height: 10),
 
           //user plans tiles
 
@@ -801,7 +710,7 @@ class _GoalsState extends State<Goals> {
                         Column(
                           children: goalDocs.map((goalDoc) {
                             final goalData =
-                            goalDoc.data() as Map<String, dynamic>;
+                                goalDoc.data() as Map<String, dynamic>;
                             return MyGoal(
                               userId: userId!,
                               category: goalData['category'],
@@ -821,6 +730,17 @@ class _GoalsState extends State<Goals> {
           ),
         ],
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: FloatingActionButton(
+          onPressed: () {
+            addNewPlan();
+          },
+          backgroundColor: Colors.blue[300],
+          child: const Icon(Icons.add),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 }
