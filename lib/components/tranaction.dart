@@ -38,7 +38,7 @@ class MyTransaction extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15),
           child: Container(
-            color: Colors.blueGrey[100],
+            color:  Color(0xFFF5F5F5),
             height: 70,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -61,13 +61,13 @@ class MyTransaction extends StatelessWidget {
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.grey.shade100,
+                            color:Colors.blueGrey.shade100,
                           ),
                           child: Icon(
                             Icons.add_card_rounded,
                             color: transactionType == "Expence"
-                                ? Colors.red
-                                : Colors.green,
+                                ?   const Color(0xFF090950)
+                                : Color(0xFF3AC6D5),
                           ),
                         ),
                       ),
@@ -79,6 +79,7 @@ class MyTransaction extends StatelessWidget {
                           Text(
                             transactionName,
                             style: const TextStyle(
+                              fontFamily:'Lexend-VariableFont',
                               color: Colors.black,
                               fontSize: 20,
                             ),
@@ -87,6 +88,7 @@ class MyTransaction extends StatelessWidget {
                           Text(
                             formattedTime,
                             style: const TextStyle(
+                              fontFamily:'Lexend-VariableFont',
                               color: Colors.black,
                               fontSize: 15,
                             ),
@@ -99,12 +101,13 @@ class MyTransaction extends StatelessWidget {
                   // Amount
                   Text(
                     transactionType == "Expence"
-                        ? "-$currencySymbol$transactionAmount"
-                        : "+$currencySymbol$transactionAmount",
+                        ? "-$currencySymbol${transactionAmount.toStringAsFixed(2)}"
+                        : "+$currencySymbol${transactionAmount.toStringAsFixed(2)}",
                     style: TextStyle(
+                      fontFamily:'Lexend-VariableFont',
                       color: transactionType == "Expence"
-                          ? Colors.red
-                          : Colors.green,
+                          ?const Color(0xFF090950)
+                          :Color(0xFF3AC6D5),
                       fontSize: 25,
                     ),
                   ),

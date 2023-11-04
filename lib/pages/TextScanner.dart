@@ -1,12 +1,16 @@
+import 'package:budgettrack/pages/plans.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 
 import '../components/tranaction.dart';
+import 'Summery.dart';
+import 'goals.dart';
 import 'homePage.dart';
 
 
@@ -143,14 +147,106 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
                     }),
               Scaffold(
                 appBar: AppBar(
+
                   backgroundColor: Colors.white,
-                  title: Text('Scan Your printed bill here',  style: TextStyle(
+                  title: Text('S C A N',  style: TextStyle(
 
                     fontFamily:'Lexend-VariableFont',
-                    color: Colors.black,
+                    color:    const Color(0xFF090950),
                     fontSize: 20.0,
                     //fontWeight: FontWeight.bold,
                   ),
+                  ),
+                  leading:  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    color: Colors.black,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  actions: [
+                    Icon(
+                      Icons.document_scanner_outlined,
+                      size: 30,
+                      color: Color(0xFF3AC6D5),
+                    ),
+                  ],
+                  centerTitle: true,
+                ),
+                bottomNavigationBar: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 3,
+                    ),
+                    child: GNav(
+                      backgroundColor: Colors.transparent,
+                      color: const Color(0xFF090950),
+                      activeColor: const Color.fromARGB(255, 31, 96, 192),
+                      tabBackgroundColor: Colors.white,
+                      gap:6,
+                      onTabChange: (Index) {
+                        //if the user click on the bottom navigation bar then it will move to the following pages
+                        if (Index == 0) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Controller(
+                                  balance: newbalance,
+                                )),
+                          );
+                        } else if (Index == 1) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>Pro()),
+                          );
+                        } else if (Index == 2) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>PlansApp()),
+                          );
+                        } else if (Index == 3) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const Goals()),
+                          );
+                        } else if (Index ==4) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
+                          );
+                        }
+                      },
+                      padding: const EdgeInsets.all(15),
+                      tabs: const [
+                        GButton(
+                          icon: Icons.home,
+                          //text: 'Home',
+                        ),
+                        GButton(
+                          icon: Icons.align_vertical_bottom_outlined,
+                          //text: 'Summary',
+                        ),
+                        GButton(
+                          icon: Icons.account_balance_wallet_outlined,
+                          //text: 'Savings',
+                        ),
+                        GButton(
+                          icon: Icons.track_changes_rounded,
+                          //text: 'Plans',
+                        ),
+                        GButton(
+                          icon: Icons.document_scanner_outlined,
+                          //text: 'Scan',
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 backgroundColor:
@@ -160,12 +256,35 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
                   children: [
                     Expanded(child: Container()),
                     Container(
-                      padding: EdgeInsets.only(bottom: 30),
-                      child: ElevatedButton(
-                          onPressed: (){
-                            scanImage();
-                          },
-                          child: Text('Scan Text')),
+                      padding: EdgeInsets.only(bottom: 50),
+                      // child: ElevatedButton(
+                      //     onPressed: (){
+                      //       scanImage();
+                      //     },
+                      //     child: Text('Scan Now')),
+                      child:ElevatedButton(
+                        onPressed: () {
+                          scanImage();
+                             },
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          onPrimary: Color(0xFF090950),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                              color:  Color(0xFF090950),
+                              width: 2,
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 12),
+                          textStyle: TextStyle(
+                              fontFamily:'Lexend-VariableFont',
+                              fontSize: 20),
+                          elevation: 2,
+                        ),
+                        child: Text('Scan Now'),
+                      )
                     ),
                   ],
                 )
@@ -538,10 +657,23 @@ class _ResultState extends State<Result> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Text Recognition',
-            style: TextStyle(
-                color: Colors.black
-            ),),
+          title:Text('S C A N',  style: TextStyle(
+
+            fontFamily:'Lexend-VariableFont',
+            color:    const Color(0xFF090950),
+            fontSize: 20.0,
+            //fontWeight: FontWeight.bold,
+          ),
+          ),
+
+          actions: [
+            Icon(
+              Icons.document_scanner_outlined,
+              size: 30,
+              color: Color(0xFF3AC6D5),
+            ),
+          ],
+          centerTitle: true,
           backgroundColor: Colors.white,
           leading: IconButton(
             icon:Icon(Icons.arrow_back,
@@ -556,28 +688,211 @@ class _ResultState extends State<Result> {
               );
             },
           ),
-          centerTitle: true,
+        ),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 3,
+            ),
+            child: GNav(
+              backgroundColor: Colors.transparent,
+              color: const Color(0xFF090950),
+              activeColor: const Color.fromARGB(255, 31, 96, 192),
+              tabBackgroundColor: Colors.white,
+              gap:6,
+              onTabChange: (Index) {
+                //if the user click on the bottom navigation bar then it will move to the following pages
+                if (Index == 0) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Controller(
+                          balance: newbalance,
+                        )),
+                  );
+                } else if (Index == 1) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>Pro()),
+                  );
+                } else if (Index == 2) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>PlansApp()),
+                  );
+                } else if (Index == 3) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Goals()),
+                  );
+                } else if (Index ==4) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
+                  );
+                }
+              },
+              padding: const EdgeInsets.all(15),
+              tabs: const [
+                GButton(
+                  icon: Icons.home,
+                  //text: 'Home',
+                ),
+                GButton(
+                  icon: Icons.align_vertical_bottom_outlined,
+                  //text: 'Summary',
+                ),
+                GButton(
+                  icon: Icons.account_balance_wallet_outlined,
+                  //text: 'Savings',
+                ),
+                GButton(
+                  icon: Icons.track_changes_rounded,
+                  //text: 'Plans',
+                ),
+                GButton(
+                  icon: Icons.document_scanner_outlined,
+                  //text: 'Scan',
+                ),
+              ],
+            ),
+          ),
         ),
         body: Container(
           padding: EdgeInsets.all(30.0),
           child: SingleChildScrollView(
               child:Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  text==''?
-                  Container()
-                      :Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        color: Color(0xFFC2DAFF),
-                      ),
-                      child: Center(
-                          child: Text(text))
-                  ),
+                  Container(
+                    margin:EdgeInsets.only(top:10,left:20,right:20),
+                    height:350,
+                    width:300,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        text==''?
+                        Container(
+                          child:Column(
+                            children: [
+                              Text('Payment Recipt',  style: TextStyle(
 
-                  SizedBox(height:10),
+                                fontFamily:'Lexend-VariableFont',
+                                color:    const Color(0xFF090950),
+                                fontSize:30.0,
+                                //fontWeight: FontWeight.bold,
+                              ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height:10),
+                              Text('Kaluthara BN KT SLTB Nomal CN: KT 23 RT :423/2f1 Ref : 7/1940506856 D : 23-09-01 T :02 :56 :01 ROUTE : 423/2/1 Kaluthara Hor ina Kaluthara Bombuwala (Journy 6.00 KM) Full :48 .00 =48 .00 Total :RS.48.00 Depot Hotline :034 22 70675',  style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily:'Lexend-VariableFont',
+                                color:    const Color(0xFF090950),
+                                fontSize:15.0,
+                                //fontWeight: FontWeight.bold,
+                              ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          )
+                        )
+                            :Container(
+
+                            child: Column(
+
+                              children: [
+                                Text('Payment Recipt',  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  fontFamily:'Lexend-VariableFont',
+                                  color:    const Color(0xFF090950),
+                                  fontSize: 40.0,
+                                  //fontWeight: FontWeight.bold,
+                                ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height:10),
+                              Text(text,style: TextStyle(
+
+                                fontFamily:'Lexend-VariableFont',
+                                color:    const Color(0xFF090950),
+                                fontSize: 40.0,
+                                //fontWeight: FontWeight.bold,
+                              ),  textAlign: TextAlign.center,),
+                              ],
+                            )
+                        ),
+
+                        SizedBox(height:30),
+                        ElevatedButton(
+                          onPressed: () {
+                            SplitingText(text);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white,
+                            onPrimary: Color(0xFF090950),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(
+                                color:  Color(0xFF090950),
+                                width: 2,
+                              ),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 12),
+                            textStyle: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                fontSize: 20),
+                            elevation: 2,
+                          ),
+                          child: Text('Update the balance'),
+                        )
+
+                      ],
+                    ),
+                  ),
+                  SizedBox(height:30),
                   ElevatedButton(
-                      onPressed: ()=> SplitingText(text) , child: Text('Update the balance')),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TextScanner(newBalance:this.newBalance)),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.white,
+                      onPrimary: Color(0xFF090950),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          color:  Color(0xFF090950),
+                          width: 2,
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 12),
+                      textStyle: TextStyle(
+                          fontFamily:'Lexend-VariableFont',
+                          fontSize: 20),
+                      elevation: 2,
+                    ),
+                    child: Text('Scan now'),
+                  )
                 ],
               )
           ),

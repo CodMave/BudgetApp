@@ -34,42 +34,56 @@ class _SplashScreenState extends State<SplashScreen> {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [Color(0xFF3AC6D5),Color(0xFF85B6FF)],
-          ),
+          color:Colors.white
         ),
         child: Scaffold(
           body: SingleChildScrollView(
             child: Container(
               width: double.infinity,
-              padding: EdgeInsets.all(16.0),
+              padding: EdgeInsets.only(top:160.0,left:20.0,right:20.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Column(
                     children: [
                       Image.asset(
-                        "lib/images/monkey.png",
+                        "lib/images/Logo.png",
                         height: 200.0,
                         width: 200.0,
                       ),
                       Text(
-                        "\n \n \n Hello!!!\n Take control of your finances\n like never before with our powerful budget\ntracking app.Whether you're a seasoned\npro or just starting your financial journey.\nBudget tracker is here to simplify your money \n management and help you achieve your\nfinancial goals",
+                        "M BUDDY",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF090950),
                           fontWeight: FontWeight.bold,
                           fontFamily:'Lexend-VariableFont',
-                          fontSize: 18.0,
+                          fontSize:40.0,
+                        ),
+                      ),
+                      Text(
+                        "The easiest way to track your spending and save money.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color:Color(0xFF316F9B),
+                          fontFamily:'Lexend-VariableFont',
+                          fontSize:20,
                         ),
                       ),
                     ],
                   ),
                   CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF316F9B)),
+                  ),
+                  SizedBox(height:200),
+                  Text(
+                    "Powered By MPSMACK.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color:Color(0xFF5C6C84),
+                      fontFamily:'Lexend-VariableFont',
+                      fontSize:20,
+                    ),
                   ),
                 ],
               ),

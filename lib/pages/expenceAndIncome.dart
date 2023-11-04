@@ -1,9 +1,14 @@
+import 'package:budgettrack/pages/plans.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
+import 'Summery.dart';
+import 'TextScanner.dart';
+import 'goals.dart';
 import 'homePage.dart';
 
 class Expence extends StatefulWidget {
@@ -624,6 +629,7 @@ class _ExpenceState extends State<Expence> {
                             const Text(
                               "Expence",
                               style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
                                 color: Colors.blueGrey,
                                 fontSize: 18,
                               ),
@@ -643,6 +649,7 @@ class _ExpenceState extends State<Expence> {
                             const Text(
                               "Income",
                               style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
                                 color: Colors.blueGrey,
                                 fontSize: 18,
                               ),
@@ -719,6 +726,7 @@ class _ExpenceState extends State<Expence> {
                     child: const Text(
                       'Cancel',
                       style: TextStyle(
+                        fontFamily:'Lexend-VariableFont',
                         color: Colors.white,
                       ),
                     ),
@@ -731,6 +739,7 @@ class _ExpenceState extends State<Expence> {
                     child: const Text(
                       'Enter',
                       style: TextStyle(
+                        fontFamily:'Lexend-VariableFont',
                         color: Colors.white,
                       ),
                     ),
@@ -806,9 +815,11 @@ class _ExpenceState extends State<Expence> {
         backgroundColor:
         Colors.grey[100], // Set the background color of the App Bar
         title: const Text(
+
           'T R A N S A C T I O N S',
           style: TextStyle(
-            color: Colors.blue,
+            fontFamily:'Lexend-VariableFont',
+            color:  const Color(0xFF090950),
           ),
         ),
         leading: IconButton(
@@ -823,11 +834,94 @@ class _ExpenceState extends State<Expence> {
             );
           },
         ),
+        actions: [
+          Icon(
+              Icons.compare_arrows,
+              size:40,
+              color: Color(0xFF3AC6D5)
+          ),
+        ],
         centerTitle: true, // Center the title
         elevation: 0.0, // Removes the shadow
         automaticallyImplyLeading: false,
+
       ),
-      //bottomNavigationBar: BottomNavigation(),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 3,
+          ),
+          child: GNav(
+            backgroundColor: Colors.transparent,
+            color: const Color(0xFF090950),
+            activeColor: const Color.fromARGB(255, 31, 96, 192),
+            tabBackgroundColor: Colors.white,
+            gap:6,
+            onTabChange: (Index) {
+              //if the user click on the bottom navigation bar then it will move to the following pages
+              if (Index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Controller(
+                        balance: newbalance,
+                      )),
+                );
+              } else if (Index == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>Pro()),
+                );
+              } else if (Index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>PlansApp()),
+                );
+              } else if (Index == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Goals()),
+                );
+              } else if (Index ==4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
+                );
+              }
+            },
+            padding: const EdgeInsets.all(15),
+            tabs: const [
+              GButton(
+                icon: Icons.home,
+                //text: 'Home',
+              ),
+              GButton(
+                icon: Icons.align_vertical_bottom_outlined,
+                //text: 'Summary',
+              ),
+              GButton(
+                icon: Icons.account_balance_wallet_outlined,
+                //text: 'Savings',
+              ),
+              GButton(
+                icon: Icons.track_changes_rounded,
+                //text: 'Plans',
+              ),
+              GButton(
+                icon: Icons.document_scanner_outlined,
+                //text: 'Scan',
+              ),
+            ],
+          ),
+        ),
+      ),
       body: Column(
         children: [
           const SizedBox(height: 10),
@@ -865,7 +959,7 @@ class _ExpenceState extends State<Expence> {
                     height: 70,
                     width: 400,
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 25, 86, 143),
+                      color: Color(0xFF85B6FF),
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20),
@@ -876,10 +970,12 @@ class _ExpenceState extends State<Expence> {
                       child: Row(
                         children: [
                           Text(
-                            "B A L A N C E",
+                            "BALANCE",
                             style: TextStyle(
+                              fontFamily:'Lexend-VariableFont',
                               color: Colors.grey[100],
-                              fontSize: 30,
+                              fontSize:45,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(width: 20),
@@ -903,14 +999,15 @@ class _ExpenceState extends State<Expence> {
                     height: 70,
                     width: 400,
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 71, 148, 221),
+                      color: Color(0xFFC2DAFF),
                     ),
                     child: Center(
                       child: Text(
-                        "$currencySymbol$totalBalance",
+                        "$currencySymbol${totalBalance.toStringAsFixed(2)}",
                         style: const TextStyle(
+                          fontFamily:'Lexend-VariableFont',
                           color: Colors.black,
-                          fontSize: 50,
+                          fontSize:40,
                         ),
                       ),
                     ),
@@ -946,12 +1043,13 @@ class _ExpenceState extends State<Expence> {
                                   Icon(
                                     Icons.add_card_rounded,
                                     size: 22,
-                                    color: Colors.green,
+                                    color:Color(0xFF3AC6D5),
                                   ),
                                   SizedBox(width: 5),
                                   Text(
                                     'Income',
                                     style: TextStyle(
+                                      fontFamily:'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 22,
                                     ),
@@ -964,13 +1062,15 @@ class _ExpenceState extends State<Expence> {
                                   Text(
                                     currencySymbol,
                                     style: const TextStyle(
+                                      fontFamily:'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 25,
                                     ),
                                   ),
                                   Text(
-                                    "${lastIncomeTransaction?.transactionAmount ?? '0'}",
+                                    "${lastIncomeTransaction?.transactionAmount.toStringAsFixed(2) ?? '0'}",
                                     style: const TextStyle(
+                                      fontFamily:'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 25,
                                     ),
@@ -995,12 +1095,13 @@ class _ExpenceState extends State<Expence> {
                                   Icon(
                                     Icons.add_card_rounded,
                                     size: 22,
-                                    color: Colors.red,
+                                    color:  const Color(0xFF090950),
                                   ),
                                   SizedBox(width: 5),
                                   Text(
                                     'Expence',
                                     style: TextStyle(
+                                      fontFamily:'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 22,
                                     ),
@@ -1013,13 +1114,15 @@ class _ExpenceState extends State<Expence> {
                                   Text(
                                     currencySymbol,
                                     style: const TextStyle(
+                                      fontFamily:'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 25,
                                     ),
                                   ),
                                   Text(
-                                    "${lastExpenseTransaction?.transactionAmount ?? '0'}",
+                                    "${lastExpenseTransaction?.transactionAmount.toStringAsFixed(2) ?? '0'}",
                                     style: const TextStyle(
+                                      fontFamily:'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 25,
                                     ),
@@ -1072,21 +1175,22 @@ class _ExpenceState extends State<Expence> {
                 padding: EdgeInsets.only(left: 50, right: 50),
                 child: Text(
                   'All',
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontFamily:'Lexend-VariableFont',fontSize: 18),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 25, right: 25),
                 child: Text(
+
                   'Income',
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontFamily:'Lexend-VariableFont',fontSize: 18),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: Text(
                   'Expence',
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontFamily:'Lexend-VariableFont',fontSize: 18),
                 ),
               ),
             ],
@@ -1127,6 +1231,7 @@ class _ExpenceState extends State<Expence> {
                 Positioned(
                   bottom: 20.0,
                   right: 20.0,
+
                   child: PlusButton(
                     function: newTransaction,
                   ),

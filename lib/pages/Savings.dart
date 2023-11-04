@@ -30,7 +30,7 @@ String documentId = '';
 class _SavingsState extends State<Savings> {
   double percent=0.0;
   SharedPreferences? _prefs;
-  String? selectedyear = "23";
+  String? selectedyear = "2023";
   int savingbalance=0,incomev=0,expensev=0;
   String month='';
   String username='';
@@ -38,33 +38,19 @@ class _SavingsState extends State<Savings> {
   List<dynamic> mon=[];
 
   final items = [
-    '23',
-    '24',
-    '25',
-    '26',
-    '27',
-    '28',
-    '29',
-    '30',
-    '32',
-    '33',
-    '34',
-    '35',
-    '36',
-    '37',
-    '38',
-    '39',
-    '40',
-    '41',
-    '42',
-    '43',
-    '44',
-    '45',
-    '46',
-    '47',
-    '48',
-    '49',
-    '50',
+    '2023',
+    '2024',
+    '2025',
+    '2026',
+    '2027',
+    '2028',
+    '2029',
+    '2030',
+    '2032',
+    '2033',
+    '2034',
+    '2035',
+
     // ADD MORE
   ];
   // Default time: 12:00
@@ -186,10 +172,8 @@ class _SavingsState extends State<Savings> {
     DateTime now = DateTime.now();
     int currentYear = now.year;
 
-    // Get the last two digits of the current year
-    int lastTwoDigits = currentYear % 100;
 
-    return lastTwoDigits;
+    return currentYear;
   }
 
 
@@ -720,9 +704,9 @@ Future<int>Balancet()async{
             ),
             child: GNav(
               backgroundColor: Colors.transparent,
-              color: const Color(0xFF85B6FF),
+              color: const Color(0xFF090950),
               activeColor: const Color.fromARGB(255, 31, 96, 192),
-              tabBackgroundColor: Colors.grey.shade400,
+              tabBackgroundColor: Colors.white,
               gap:6,
               onTabChange: (Index) {
                 //if the user click on the bottom navigation bar then it will move to the following pages
@@ -806,59 +790,35 @@ Future<int>Balancet()async{
                       ),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left:30),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Adjust alignment as needed
-                            children: [
-                              Text(
-                                '20',
+                    child: Padding(
+                      padding: const EdgeInsets.only(left:30),
+                      child: DropdownButton<String>(
+                        value: selectedyear,
+                        onChanged: (String? newValue) async {
+                          setState(() {
+                            selectedyear = newValue!;
+                          });
+                          _prefs?.setString('selectedYear', selectedyear!);
+                        },
+                        underline: Container(),
+                        itemHeight: 70, // Adjust the item height as needed
+                        items: items.map((String item) {
+                          return DropdownMenuItem<String>(
+                            value: item,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical:0), // Adjust the padding as needed
+                              child: Text(
+                                item,
                                 style: TextStyle(
-                                  fontFamily:'Lexend-VariableFont',
-                                  fontSize: 20,
-                                  color: Colors.black,
-                                  // fontWeight: FontWeight.bold,
+                                  fontFamily: 'Lexend-VariableFont',
+                                  fontSize: 20, // Adjust the font size as needed
+                                  // Add more styling properties here if desired
                                 ),
                               ),
-                              VerticalDivider(
-                                width: 10,
-                                color:Colors.black,
-                              ),
-                              DropdownButton<String>(
-                                value: selectedyear,
-                                onChanged: (String? newValue) async {
-                                  setState(() {
-                                    selectedyear = newValue!;
-                                  });
-                                  _prefs?.setString('selectedYear', selectedyear!);
-                                },
-                                underline: Container(),
-                                itemHeight: 70, // Adjust the item height as needed
-                                items: items.map((String item) {
-                                  return DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(vertical:0), // Adjust the padding as needed
-                                      child: Text(
-                                        item,
-                                        style: TextStyle(
-                                          fontFamily: 'Lexend-VariableFont',
-                                          fontSize: 20, // Adjust the font size as needed
-                                          // Add more styling properties here if desired
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              )
-
-                            ],
-                          ),
-                        )
-
-                      ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                   Container(
@@ -907,23 +867,34 @@ Future<int>Balancet()async{
                             children: [
                               Container(
                                 margin:EdgeInsets.only(left:20),
-                                width: 200, // Adjust the width and height as needed
-                                height:206,
+                                width: 210, // Adjust the width and height as needed
+                                height:210,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color:const Color(0xFF090950), // Set the border color
-                                    width:3.0, // Set the border width
+                                    color:const Color(0xFF5C6C84), // Set the border color
+                                    width:4.5, // Set the border width
                                   ),
                                 ),
 
                                 child: CircularPercentIndicator(
+                                  center: Container(
+                                    width:140,
+                                   height:140,
+                                   decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color:const Color(0xFF5C6C84), // Set the border color
+                                        width:2.0, // Set the border width
+                                      ),
+                                    ),
+                                  ),
                                   radius: 100,
                                   lineWidth: 30,
                                   percent:percent,
                                   circularStrokeCap: CircularStrokeCap.round,
-                                  progressColor: Color(0xFF3AC6D5), // Progress color
-                                  backgroundColor: const Color(0xFFC2DAFF),
+                                  progressColor: const Color(0xFFEEEEEE),// Progress color
+                                  backgroundColor: Color(0xFFC2DAFF),
                                   animation: true,
                                   animationDuration: 1000, // Start from 12 o'clock
                                 ),
@@ -936,7 +907,7 @@ Future<int>Balancet()async{
                                   height:10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color:  Color(0xFF3AC6D5),
+                                    color:  const Color(0xFFEEEEEE),
                                   ),
                                 ),
                               ),
@@ -966,7 +937,7 @@ Future<int>Balancet()async{
                                   height:10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: const Color(0xFFC2DAFF),
+                                    color:Color(0xFFC2DAFF),
                                   ),
                                 ),
                               ),
@@ -1028,7 +999,7 @@ Future<int>Balancet()async{
                                         } else {
                                           // If the future has completed successfully, display the data
                                           return Text(
-                                            snapshot.data.toString(),
+                                            snapshot.data!.toStringAsFixed(2),
                                             style: TextStyle(
                                               fontFamily: 'Lexend-VariableFont',
                                               fontSize: 20,
@@ -1124,7 +1095,7 @@ Future<int>Balancet()async{
                                                           } else {
                                                             // If the future has completed successfully, display the data
                                                             return Text(
-                                                              snapshot.data.toString(),
+                                                              snapshot.data!.toStringAsFixed(2),
                                                               style: TextStyle(
                                                                 fontFamily: 'Lexend-VariableFont',
                                                                 fontSize: 20,
@@ -1215,7 +1186,7 @@ Future<int>Balancet()async{
                                                           } else {
                                                             // If the future has completed successfully, display the data
                                                             return Text(
-                                                              snapshot.data.toString(),
+                                                              snapshot.data!.toStringAsFixed(2),
                                                               style: TextStyle(
                                                                 fontFamily: 'Lexend-VariableFont',
                                                                 fontSize: 20,
@@ -1271,7 +1242,7 @@ Future<int>Balancet()async{
                     height: 320,
                     width: 350,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFFF5F5F5),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
@@ -1319,89 +1290,82 @@ Future<int>Balancet()async{
                               child: ListView.builder(
                                 itemCount: balanceList.length,
                                 itemBuilder: (context, index) {
-                                  // String uniqueValue = "Unique Value ${index + 1}";
                                   return Column(
                                     children: [
                                       ListTile(
-                                        title: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                        title: Row(
                                           children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Column(
-                                                  children:[FutureBuilder<List>(
-                                                    future: gettheMonthfromDB(selectedyear!),
-                                                    builder: (context, snapshot) {
-                                                      final MonthList = snapshot.data;
-                                                      mon=MonthList ??[];
-                                                      return Padding(
-                                                        padding: const EdgeInsets.only(left: 5.0),
-                                                        child: Align(
-                                                          alignment: Alignment.center,
-                                                          child: Text(
-                                                            '${MonthList?[index]}',
-                                                            style: TextStyle(
-                                                              fontFamily: 'Lexend-VariableFont',
-                                                              color: const Color(0xFF090950),
-                                                              fontSize: 15,
-                                                            ),
-                                                          ),
+                                            SizedBox(
+                                              width:100,
+                                              child: FutureBuilder<List>(
+                                                future: gettheMonthfromDB(selectedyear!),
+                                                builder: (context, snapshot) {
+                                                  final MonthList = snapshot.data;
+                                                  mon = MonthList ?? [];
+                                                  return Padding(
+                                                    padding: const EdgeInsets.only(left: 5.0),
+                                                    child: Align(
+                                                      alignment: Alignment.center,
+                                                      child: Text(
+                                                        '${MonthList?[index]}',
+                                                        style: TextStyle(
+                                                          fontFamily: 'Lexend-VariableFont',
+                                                          color: const Color(0xFF090950),
+                                                          fontSize: 15,
                                                         ),
-                                                      );
-                                                    },
-                                                  ),
-                                                  ],
-                                                ),
-                                                Column(
-
-                                                  children:[
-                                                    Text(
-                                                      '$currencySymbol ${balanceList[index]}',
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontFamily: 'Lexend-VariableFont',
-                                                        color: const Color(0xFF3AC6D5),
                                                       ),
                                                     ),
-                                                  ],
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            SizedBox(width:20),
+                                            SizedBox(
+                                              width:120,
+                                              child: Text(
+                                                '$currencySymbol ${balanceList[index].toStringAsFixed(2)}',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontFamily: 'Lexend-VariableFont',
+                                                  color: const Color(0xFF3AC6D5),
                                                 ),
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    countpercent(selectedyear!,mon[index]);
-                                                    getSelectedMonth(mon[index]);
-
-                                                  },
-                                                  style: ButtonStyle(
-                                                    backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                                                    shape: MaterialStateProperty.all<OutlinedBorder>(
-                                                      RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(30.0),
-                                                        side: BorderSide(color: const Color(0xFFAAB2BE)),
-                                                      ),
-                                                    ),
-                                                    elevation: MaterialStateProperty.all<double>(0),
-                                                  ),
-                                                  child: Text(
-                                                    'View',
-                                                    style: TextStyle(
-                                                      fontFamily: 'Lexend-VariableFont',
-                                                      color: const Color(0xFFAAB2BE),
-                                                    ),
+                                              ),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                countpercent(selectedyear!, mon[index]);
+                                                getSelectedMonth(mon[index]);
+                                              },
+                                              style: ButtonStyle(
+                                                backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                                                shape: MaterialStateProperty.all<OutlinedBorder>(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(30.0),
+                                                    side: BorderSide(color: const Color(0xFFAAB2BE)),
                                                   ),
                                                 ),
-                                              ],
+                                                elevation: MaterialStateProperty.all<double>(0),
+                                              ),
+                                              child: Text(
+                                                'View',
+                                                style: TextStyle(
+                                                  fontFamily: 'Lexend-VariableFont',
+                                                  color: const Color(0xFFAAB2BE),
+                                                ),
+                                              ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                      if (index < balanceList.length - 1) Divider(height: 0,),
+                                      if (index < balanceList.length - 1) Divider(height: 0),
                                     ],
                                   );
                                 },
                               ),
                             ),
                           );
+
+
                         }
                       },
                     ),

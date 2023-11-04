@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
       designSize: Size(325, 812),
       builder: (context, child) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        //remove the debug label
+
         home: MyWork(), //call to the class work
       ),
     );
@@ -494,6 +494,7 @@ class _ControllerState extends State<Controller> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(
@@ -511,7 +512,8 @@ class _ControllerState extends State<Controller> {
           },
           icon: const Icon(Icons.menu),
         ),
-        titleSpacing: 5.0,
+        titleSpacing:20.0,
+        centerTitle: true,
         title:   Row(
           children: [
             Container(
@@ -533,24 +535,41 @@ class _ControllerState extends State<Controller> {
                 radius:40,
                backgroundImage:  AssetImage('lib/images/Profile.png')),
             ),
-            FutureBuilder<String>(
-                future: getUserName(),
-                builder: (context, snapshot) {
-                  return Center(
-                    child: Text(
-                      "Welcome,${snapshot.data}",
-                      textAlign: TextAlign.left,
-                      //print the user name who are currently using with
-                      style: TextStyle(
+            Padding(
+              padding: const EdgeInsets.only(left:10),
+              child: Column(
+                children: [
+              Text(
+              "Welcome!",
+                textAlign: TextAlign.center,
+                //print the user name who are currently using with
+                style: TextStyle(
+                  letterSpacing: 5.0,
+                  fontFamily:'Lexend-VariableFont',
+                  color: Colors.black,
+                  fontSize:25,
+                ),
+              ),
+                  FutureBuilder<String>(
+                      future: getUserName(),
+                      builder: (context, snapshot) {
+                        return Text(
+                          "${snapshot.data}",
+                          textAlign: TextAlign.center,
+                          //print the user name who are currently using with
+                          style: TextStyle(
+                            letterSpacing: 5.0,
+                            fontFamily:'Lexend-VariableFont',
+                            color: Colors.black,
+                            fontSize:25,
+                            fontWeight: FontWeight.bold,
 
-                        fontFamily:'Lexend-VariableFont',
-                        color: Colors.black,
-                        fontSize:25,
-
-                      ),
-                    ),
-                  );
-                }),
+                          ),
+                        );
+                      }),
+                ],
+              ),
+            ),
 
           ],
         ),
@@ -636,9 +655,9 @@ class _ControllerState extends State<Controller> {
           ),
           child: GNav(
             backgroundColor: Colors.transparent,
-            color: const Color(0xFF85B6FF),
+            color: const Color(0xFF090950),
             activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.grey.shade400,
+            tabBackgroundColor: Colors.white,
             gap:6,
             onTabChange: (Index) {
               //if the user click on the bottom navigation bar then it will move to the following pages
@@ -710,7 +729,7 @@ class _ControllerState extends State<Controller> {
               Container(
                 width:double.infinity,
                 height:300,
-                color:Color(0xFF85B6FF),
+                color:Colors.white,
                 child: Container(
                   //container which carries the percentage indicator
                   height: 270,
@@ -727,21 +746,30 @@ class _ControllerState extends State<Controller> {
                     ],
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-
-                      CircularPercentIndicator(
-                        radius: 130,
-                        lineWidth:30,
-                        percent:percentage1,
-                        animation: true,
-                        animationDuration: 1000,
-                        circularStrokeCap: CircularStrokeCap.round,
-                        progressColor: Color(0xFF3AC6D5), // Progress color
-                        backgroundColor: const Color(0xFFC2DAFF),
-                        center: TextButton(
+                  // margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: CircularPercentIndicator(
+                    radius: 130,
+                    lineWidth:30,
+                    percent:percentage1,
+                    animation: true,
+                    animationDuration: 1000,
+                    circularStrokeCap: CircularStrokeCap.round,
+                    progressColor: const Color(0xFFEEEEEE),// Progress color
+                    backgroundColor: Color(0xFFC2DAFF),
+                    center: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          DateFormat('MMM dd').format(DateTime.now()),
+                          //time and date format
+                          style: const TextStyle(
+                            fontFamily:'Lexend-VariableFont',
+                            fontSize:30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextButton(
                           onPressed: () {
                             ContainerVisibility();
                           },
@@ -764,7 +792,7 @@ class _ControllerState extends State<Controller> {
                                   style: TextStyle(
                                     fontFamily:'Lexend-VariableFont',
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 60,
+                                    fontSize: 50,
                                     color: Colors.black,
                                   ),
                                 );
@@ -776,48 +804,18 @@ class _ControllerState extends State<Controller> {
                             },
                           ),
                         ),
+                        Text(
+                          'Remaining',
+                          style: TextStyle(
+                            fontFamily:'Lexend-VariableFont',
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
 
-                      ),
-                      FractionallySizedBox(
-                        //this is for display the current date and time
-                        widthFactor: 1.0,
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 60.0),
-                            child: Text(
-                              DateFormat('MMM dd').format(DateTime.now()),
-                              //time and date format
-                              style: const TextStyle(
-                                fontFamily:'Lexend-VariableFont',
-                                fontSize:30,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const FractionallySizedBox(
-                        //this is for display 'Remaining' as a word
-                        widthFactor: 1.0,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 90.0),
-                            child: Text(
-                              'Remaining',
-                              style: TextStyle(
-                                fontFamily:'Lexend-VariableFont',
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),
@@ -871,7 +869,7 @@ class _ControllerState extends State<Controller> {
                                 style:TextStyle(
                                   fontFamily:'Lexend-VariableFont',
                                   fontSize:20,
-                                  color:Colors.white,
+                                  color:Colors.black,
                                 ),
                               ),
                             ],
@@ -885,11 +883,25 @@ class _ControllerState extends State<Controller> {
 
               ),
               const SizedBox(height: 10),
-
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left:15),
+                  child: Text(
+                    'Featured',
+                    style: TextStyle(
+                      fontFamily:'Lexend-VariableFont',
+                      fontSize: 20,
+                      color:Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
               Container(
                 width:double.infinity,
                 height:140,
-                color:Color(0xFF85B6FF),
+                color:Colors.white,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -946,7 +958,7 @@ class _ControllerState extends State<Controller> {
                                   color: Colors.white,
                                 ),
                                 child: this.latestexpense?.transactionName=='Transport'? Icon(
-                                    FontAwesomeIcons.car,
+                                    CupertinoIcons.car_detailed,
                                     size: 40,
                                     color:const Color(0xFF090950)
                                 )
@@ -956,12 +968,12 @@ class _ControllerState extends State<Controller> {
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Health'?Icon(
-                                    FontAwesomeIcons.heartPulse,
+                                  Icons.monitor_heart_rounded,
                                     size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Education'?Icon(
-                                    FontAwesomeIcons.book,
+                                    Icons.cast_for_education,
                                     size: 40,
                                     color:const Color(0xFF090950)
                                 )

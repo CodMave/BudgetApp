@@ -1,8 +1,12 @@
+import 'package:budgettrack/pages/plans.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'TextScanner.dart';
+import 'goals.dart';
 import 'homePage.dart';
 import 'package:intl/intl.dart';
 
@@ -756,6 +760,82 @@ class _ProState extends State<Pro> {
         centerTitle: true,
         elevation: 0,
       ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 3,
+          ),
+          child: GNav(
+            backgroundColor: Colors.transparent,
+            color: const Color(0xFF090950),
+            activeColor: const Color.fromARGB(255, 31, 96, 192),
+            tabBackgroundColor: Colors.white,
+            gap:6,
+            onTabChange: (Index) {
+              //if the user click on the bottom navigation bar then it will move to the following pages
+              if (Index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Controller(
+                        balance: newbalance,
+                      )),
+                );
+              } else if (Index == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>Pro()),
+                );
+              } else if (Index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>PlansApp()),
+                );
+              } else if (Index == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Goals()),
+                );
+              } else if (Index ==4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
+                );
+              }
+            },
+            padding: const EdgeInsets.all(15),
+            tabs: const [
+              GButton(
+                icon: Icons.home,
+                //text: 'Home',
+              ),
+              GButton(
+                icon: Icons.align_vertical_bottom_outlined,
+                //text: 'Summary',
+              ),
+              GButton(
+                icon: Icons.account_balance_wallet_outlined,
+                //text: 'Savings',
+              ),
+              GButton(
+                icon: Icons.track_changes_rounded,
+                //text: 'Plans',
+              ),
+              GButton(
+                icon: Icons.document_scanner_outlined,
+                //text: 'Scan',
+              ),
+            ],
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           child: Column(
@@ -900,8 +980,27 @@ class _ProState extends State<Pro> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Icon(Icons.add_card_rounded,
-                                  color: const Color(0xFF090950)),
+                              Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Container(
+
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color:Colors.white,
+                                  ),
+                                  child:      Icon(Icons.add_card_rounded,
+                                      color: const Color(0xFF3AC6D5),),
+                                ),
+                              ),
+
                               Text(
                                 'Income',
                                 style: TextStyle(
@@ -911,11 +1010,11 @@ class _ProState extends State<Pro> {
                                 ),
                               ),
                               Text(
-                                '$currencySymbol ${this.weekincome.toDouble()}', // Display the income here
+                                '$currencySymbol ${this.weekincome.toStringAsFixed(2)}', // Display the income here
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF090950),
+                                  color: const Color(0xFF3AC6D5),
                                 ),
                               ),
                             ],
@@ -943,8 +1042,28 @@ class _ProState extends State<Pro> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Icon(Icons.add_card_rounded,
-                                  color: const Color(0xFF3AC6D5)),
+                              Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Container(
+
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color:Colors.white,
+                                  ),
+                                  child: Icon(Icons.add_card_rounded,
+                                      color: const Color(0xFF090950)),
+                                ),
+                              ),
+
+
                               Text(
                                 'Expense',
                                 style: TextStyle(
@@ -954,7 +1073,7 @@ class _ProState extends State<Pro> {
                                 ),
                               ),
                               Text(
-                                '$currencySymbol ${this.weekexpense.toDouble()}',
+                                '$currencySymbol ${this.weekexpense.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -1040,16 +1159,19 @@ class _ProState extends State<Pro> {
                                         toY: this.savings![i].toDouble(),
                                         width: 15,
                                         color:  Color.fromARGB(255, 134, 209, 249),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
-                                        )),
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(6),
+                                            topRight: Radius.circular(6),
+                                          ),
+                                        ),
                                     BarChartRodData(
                                         toY: expense![i].toDouble(),
                                         width: 15,
                                         color:const Color(0xFF090950),
 
                                         borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(0),
+                                          topLeft: Radius.circular(6),
+                                          topRight: Radius.circular(6),
                                         )),
                                   ],
                                 ),
@@ -1133,86 +1255,73 @@ class _ProState extends State<Pro> {
                                   return Column(
                                     children: [
                                       ListTile(
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        title:Row(
+
                                           children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 5.0),
-                                                      child: Align(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: Text(
-                                                          items![index],
-                                                          style: TextStyle(
-                                                            fontFamily:
-                                                                'Lexend-VariableFont',
-                                                            color: const Color(
-                                                                0xFF090950),
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
+                                            SizedBox(
+                                              width:130,
+                                              child: Align(
+                                                alignment:
+                                                    Alignment.center,
+                                                child: Text(
+                                                  items![index],
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        'Lexend-VariableFont',
+                                                    color: const Color(
+                                                        0xFF090950),
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
                                                 ),
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      '$currencySymbol ${uniqueexpenses![index]}',
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontFamily:
-                                                            'Lexend-VariableFont',
-                                                        color: Color.fromARGB(
-                                                            236, 97, 183, 226),
-                                                      ),
-                                                    ),
-                                                  ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            SizedBox(
+                                              width:120,
+                                              child: Text(
+                                                '$currencySymbol ${uniqueexpenses![index].toStringAsFixed(2)}',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight:
+                                                  FontWeight.bold,
+                                                  fontFamily:
+                                                  'Lexend-VariableFont',
+                                                  color: Color.fromARGB(
+                                                      236, 97, 183, 226),
                                                 ),
-                                                Column(
-                                                  children: [
-                                                    Container(
-                                                      height: 20,
-                                                      width: 40,
-                                                      decoration: BoxDecoration(
-                                                        color: Color.fromARGB(
-                                                            255, 183, 203, 250),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          '${((uniqueexpenses![index] / weekexpense) * 100).toInt()}%',
-                                                          style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontFamily:
-                                                                'Lexend-VariableFont',
-                                                            color: Color(
-                                                                0xFC0095F2),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            Container(
+                                              height: 20,
+                                              width: 40,
+                                              decoration: BoxDecoration(
+                                                color: Color.fromARGB(
+                                                    255, 183, 203, 250),
+                                                borderRadius:
+                                                BorderRadius
+                                                    .circular(10),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '${((uniqueexpenses![index] / weekexpense) * 100).toInt()}%',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                    FontWeight.bold,
+                                                    fontFamily:
+                                                    'Lexend-VariableFont',
+                                                    color: Color(
+                                                        0xFC0095F2),
+                                                  ),
                                                 ),
-                                              ],
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -1287,8 +1396,26 @@ class _ProState extends State<Pro> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Icon(Icons.add_card_rounded,
-                                  color: const Color(0xFF090950)),
+                              Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Container(
+
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color:Colors.white,
+                                  ),
+                                  child:      Icon(Icons.add_card_rounded,
+                                    color: const Color(0xFF3AC6D5),),
+                                ),
+                              ),
                               Text(
                                 'Income',
                                 style: TextStyle(
@@ -1330,8 +1457,26 @@ class _ProState extends State<Pro> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Icon(Icons.add_card_rounded,
-                                  color: const Color(0xFF3AC6D5)),
+                              Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Container(
+
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color:Colors.white,
+                                  ),
+                                  child:      Icon(Icons.add_card_rounded,
+                                    color: Color(0xFF090950),),
+                                ),
+                              ),
                               Text(
                                 'Expense',
                                 style: TextStyle(
@@ -1537,86 +1682,73 @@ class _ProState extends State<Pro> {
                                   return Column(
                                     children: [
                                       ListTile(
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        title: Row(
                                           children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 5.0),
-                                                      child: Align(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: Text(
-                                                          itemsformonth![index],
-                                                          style: TextStyle(
-                                                            fontFamily:
-                                                                'Lexend-VariableFont',
-                                                            color: const Color(
-                                                                0xFF090950),
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ),
+                                            SizedBox(
+                                              width:130,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.only(
+                                                        left: 5.0),
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.center,
+                                                  child: Text(
+                                                    itemsformonth![index],
+                                                    style: TextStyle(
+                                                      fontFamily:
+                                                          'Lexend-VariableFont',
+                                                      color: const Color(
+                                                          0xFF090950),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      '$currencySymbol ${uniqueexpensesformonth![index]}',
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontFamily:
-                                                            'Lexend-VariableFont',
-                                                        color: Color.fromARGB(
-                                                            236, 97, 183, 226),
-                                                      ),
-                                                    ),
-                                                  ],
+                                              ),
+                                            ),
+                                            SizedBox(width:20),
+                                            SizedBox(
+                                              width:100,
+                                              child: Text(
+                                                '$currencySymbol ${uniqueexpensesformonth![index]}',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight:
+                                                      FontWeight.bold,
+                                                  fontFamily:
+                                                      'Lexend-VariableFont',
+                                                  color: Color.fromARGB(
+                                                      236, 97, 183, 226),
                                                 ),
-                                                Column(
-                                                  children: [
-                                                    Container(
-                                                      height: 20,
-                                                      width: 40,
-                                                      decoration: BoxDecoration(
-                                                        color: Color.fromARGB(
-                                                            255, 183, 203, 250),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          '${((uniqueexpensesformonth![index] / totalexpenseformonth) * 100).toInt()}%',
-                                                          style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontFamily:
-                                                                'Lexend-VariableFont',
-                                                            color: Color(
-                                                                0xFC0095F2),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
+                                              ),
+                                            ),
+                                            SizedBox(width:20),
+                                            Container(
+                                              height: 20,
+                                              width: 40,
+                                              decoration: BoxDecoration(
+                                                color: Color.fromARGB(
+                                                    255, 183, 203, 250),
+                                                borderRadius:
+                                                    BorderRadius
+                                                        .circular(10),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '${((uniqueexpensesformonth![index] / totalexpenseformonth) * 100).toInt()}%',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    fontFamily:
+                                                        'Lexend-VariableFont',
+                                                    color: Color(
+                                                        0xFC0095F2),
+                                                  ),
                                                 ),
-                                              ],
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -1691,8 +1823,27 @@ class _ProState extends State<Pro> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Icon(Icons.add_card_rounded,
-                                  color: const Color(0xFF090950)),
+                              Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Container(
+
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color:Colors.white,
+                                  ),
+                                  child:      Icon(Icons.add_card_rounded,
+                                    color: const Color(0xFF3AC6D5),),
+                                ),
+                              ),
+
                               Text(
                                 'Income',
                                 style: TextStyle(
@@ -1734,8 +1885,26 @@ class _ProState extends State<Pro> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Icon(Icons.add_card_rounded,
-                                  color: const Color(0xFF3AC6D5)),
+                              Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Container(
+
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color:Colors.white,
+                                  ),
+                                  child:      Icon(Icons.add_card_rounded,
+                                    color: const  Color(0xFF090950)),
+                                ),
+                              ),
                               Text(
                                 'Expense',
                                 style: TextStyle(
@@ -1828,7 +1997,7 @@ class _ProState extends State<Pro> {
                               barGroups: [
                                 for(int i=0;i<yearly_savings!.length;i++)
                                 BarChartGroupData(
-                                  x: i+2022,
+                                  x: i+22,
                                   barRods: [
                                     BarChartRodData(
                                         toY:
@@ -1867,7 +2036,7 @@ class _ProState extends State<Pro> {
                                   height: 10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: const Color(0xFF090950),
+                                    color: Color.fromARGB(255, 134, 209, 249),
                                   ),
                                 ),
                                 Padding(
@@ -1895,7 +2064,7 @@ class _ProState extends State<Pro> {
                                   height: 10,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Color.fromARGB(255, 134, 209, 249),
+                                    color: const Color(0xFF090950),
                                   ),
                                 ),
                                 Padding(
@@ -1930,86 +2099,72 @@ class _ProState extends State<Pro> {
                                   return Column(
                                     children: [
                                       ListTile(
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        title: Row(
                                           children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 5.0),
-                                                      child: Align(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: Text(
-                                                          itemsforyear![index],
-                                                          style: TextStyle(
-                                                            fontFamily:
-                                                                'Lexend-VariableFont',
-                                                            color: const Color(
-                                                                0xFF090950),
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ),
+                                            SizedBox(
+                                              width:130,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.only(
+                                                        left: 5.0),
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.center,
+                                                  child: Text(
+                                                    itemsforyear![index],
+                                                    style: TextStyle(
+                                                      fontFamily:
+                                                          'Lexend-VariableFont',
+                                                      color: const Color(
+                                                          0xFF090950),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      '$currencySymbol ${uniqueexpensesforyear![index]}',
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontFamily:
-                                                            'Lexend-VariableFont',
-                                                        color: Color.fromARGB(
-                                                            236, 97, 183, 226),
-                                                      ),
-                                                    ),
-                                                  ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width:100,
+                                              child: Text(
+                                                '$currencySymbol ${uniqueexpensesforyear![index]}',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight:
+                                                      FontWeight.bold,
+                                                  fontFamily:
+                                                      'Lexend-VariableFont',
+                                                  color: Color.fromARGB(
+                                                      236, 97, 183, 226),
                                                 ),
-                                                Column(
-                                                  children: [
-                                                    Container(
-                                                      height: 20,
-                                                      width: 40,
-                                                      decoration: BoxDecoration(
-                                                        color: Color.fromARGB(
-                                                            255, 183, 203, 250),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          '${((uniqueexpensesforyear![index] / this.yearly_expense![2023 % 100 - (currentDate.year.toInt() % 100)]) * 100).toInt()}%',
-                                                          style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontFamily:
-                                                                'Lexend-VariableFont',
-                                                            color: Color(
-                                                                0xFC0095F2),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
+                                              ),
+                                            ),
+                                            SizedBox(width:20),
+                                            Container(
+                                              height: 20,
+                                              width: 40,
+                                              decoration: BoxDecoration(
+                                                color: Color.fromARGB(
+                                                    255, 183, 203, 250),
+                                                borderRadius:
+                                                    BorderRadius
+                                                        .circular(10),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '${((uniqueexpensesforyear![index] / this.yearly_expense![2023 % 100 - (currentDate.year.toInt() % 100)]) * 100).toInt()}%',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    fontFamily:
+                                                        'Lexend-VariableFont',
+                                                    color: Color(
+                                                        0xFC0095F2),
+                                                  ),
                                                 ),
-                                              ],
+                                              ),
                                             ),
                                           ],
                                         ),

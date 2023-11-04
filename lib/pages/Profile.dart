@@ -558,181 +558,206 @@ class _Profile extends State<Profile> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  SizedBox(height:10),
                   Container(
+                    margin:EdgeInsets.only(left:20,right:20),
                     width: double.infinity,
-                    height:200,
-                    color: Colors.transparent,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          top:20,
-                          left:125,
-                          child: _image != null
-                              ? CircleAvatar(
-                              radius: 80.0,
-                              backgroundImage: MemoryImage(_image!))
-                              : CircleAvatar(
-                              radius: 80.0,
-                              backgroundImage:
-                              AssetImage('lib/images/Profile.png')),
-                        ),
-                        Positioned(
-                          top:160,
-                          right:125.0,
-                          child: InkWell(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (context) => buttonsheet(context),
-                              );
-                            },
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: Colors.teal,
-                              size: 28.0,
-                            ),
+                    height:320,
+
+                    decoration:BoxDecoration(
+                        color: Color(0xFF85B6FF),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius:8,
+                            offset: Offset(0,3),
                           ),
+                        ],
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height:200,
+                          color: Colors.transparent,
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                top:20,
+                                left:100,
+                                child: _image != null
+                                    ? CircleAvatar(
+                                    radius: 80.0,
+                                    backgroundImage: MemoryImage(_image!))
+                                    : CircleAvatar(
+                                    radius: 80.0,
+                                    backgroundImage:
+                                    AssetImage('lib/images/Profile.png')),
+                              ),
+                              Positioned(
+                                top:160,
+                                right:115.0,
+                                child: InkWell(
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (context) => buttonsheet(context),
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.teal,
+                                    size: 28.0,
+                                  ),
+                                ),
+                              ),
+
+                            ],
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              width:100,
+                              height:45,
+                              margin: EdgeInsets.only(left:30,),
+                              decoration: BoxDecoration(
+                                  color:Color(0xFFEEEEEE),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius:8,
+                                      offset: Offset(0,3),
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Name',
+                                  style: TextStyle(
+                                    fontFamily:'Lexend-VariableFont',
+                                    fontSize:17,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              //this container display the current user's name as text
+                              width:180,
+                              height:45,
+                              margin:EdgeInsets.only(left:20),
+                              decoration: BoxDecoration(
+                                  color:Color(0xFF85B6FF),
+                                  boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.white.withOpacity(1.0),
+                                    spreadRadius: 2,
+                                    blurRadius:8,
+                                    offset: Offset(0,3),
+                                  ),
+                                  ],
+                                  borderRadius: BorderRadius.only(topRight:Radius.circular(20),bottomRight:Radius.circular(20))
+                              ),
+                              child: FutureBuilder<String>(
+                                  future: getUserName(),
+                                  builder: (context, snapshot) {
+                                    return Center(
+                                      child: Text(
+                                        "${snapshot.data}",
+                                        style: TextStyle(
+                                          fontFamily:'Lexend-VariableFont',
+                                          color: Colors.black,
+                                          fontSize:17,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height:5,),
+                        Row(
+                          children: [
+                            Container(
+                              width:100,
+                              height:45,
+                              margin: EdgeInsets.only(top:5,left:30,),
+                              decoration: BoxDecoration(
+                                  color:Color(0xFFEEEEEE),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius:8,
+                                      offset: Offset(0,3),
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Currency',
+                                  style: TextStyle(
+                                    fontFamily:'Lexend-VariableFont',
+                                    fontSize:17,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              //this container display the current user's name as text
+                              width:180,
+                              height:45,
+                              margin:EdgeInsets.only(left:20),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFF85B6FF),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(1.0),
+                                      spreadRadius: 2,
+                                      blurRadius:8,
+                                      offset: Offset(0,3),
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.only(topRight:Radius.circular(20),bottomRight:Radius.circular(20))
+                              ),
+                              child: FutureBuilder<String>(
+                                  future: getCurrency(),
+                                  builder: (context, snapshot) {
+                                    return Center(
+                                      child: Text(
+                                        "${snapshot.data}",
+                                        style: TextStyle(
+                                          fontFamily:'Lexend-VariableFont',
+                                          color: Colors.black,
+                                          fontSize: 17,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            ),
+
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height:10),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width:100,
-                            height:40,
-                            margin: EdgeInsets.only(left:50,),
-                            decoration: BoxDecoration(
-                                color:Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius:8,
-                                    offset: Offset(0,3),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Name',
-                                style: TextStyle(
-                                  fontFamily:'Lexend-VariableFont',
-                                  fontSize:17,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            //this container display the current user's name as text
-                            width:180,
-                            height:45,
-                            margin:EdgeInsets.only(left:20),
-                            decoration: BoxDecoration(
-                              color:Color(0xFF85B6FF),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius:8,
-                                  offset: Offset(0,3),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: FutureBuilder<String>(
-                                future: getUserName(),
-                                builder: (context, snapshot) {
-                                  return Center(
-                                    child: Text(
-                                      "${snapshot.data}",
-                                      style: TextStyle(
-                                        fontFamily:'Lexend-VariableFont',
-                                        color: Colors.black,
-                                        fontSize:17,
-                                      ),
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height:5,),
-                      Row(
-                        children: [
-                          Container(
-                            width:100,
-                            height:45,
-                            margin: EdgeInsets.only(top:5,left:50,),
-                            decoration: BoxDecoration(
-                                color:Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius:8,
-                                    offset: Offset(0,3),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20))
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Currency',
-                                style: TextStyle(
-                                  fontFamily:'Lexend-VariableFont',
-                                  fontSize:17,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            //this container display the current user's name as text
-                            width:180,
-                            height:40,
-                            margin:EdgeInsets.only(left:20),
-                            decoration: BoxDecoration(
-                              color: Color(0xFF85B6FF),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius:8,
-                                  offset: Offset(0,3),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: FutureBuilder<String>(
-                                future: getCurrency(),
-                                builder: (context, snapshot) {
-                                  return Center(
-                                    child: Text(
-                                      "${snapshot.data}",
-                                      style: TextStyle(
-                                        fontFamily:'Lexend-VariableFont',
-                                        color: Colors.black,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                  );
-                                }),
-                          ),
 
-                        ],
-                      ),
+                      SizedBox(height:10),
                       Container(
                         margin:EdgeInsets.only(top:10),
                         height:40,
                         width:double.infinity,
-                        color: Color(0xFF85B6FF),
+                        color: Color(0xFFEEEEEE),
                         child:Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
@@ -765,7 +790,7 @@ class _Profile extends State<Profile> {
                             },
 
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
+                              primary:  Color(0xFFFFFFFF),
                               onPrimary:  Color(0xFF090950),
                               elevation: 5,
                               shape: RoundedRectangleBorder(
@@ -800,7 +825,7 @@ class _Profile extends State<Profile> {
                             },
 
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
+                              primary:  Color(0xFFFFFFFF),
                               onPrimary:  Color(0xFF090950),
                               elevation: 5,
                               shape: RoundedRectangleBorder(
@@ -827,7 +852,7 @@ class _Profile extends State<Profile> {
                         margin:EdgeInsets.only(top:5),
                         height:40,
                         width:double.infinity,
-                        color: Color(0xFF85B6FF),
+                        color: Color(0xFFEEEEEE),
                         child:Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
@@ -847,7 +872,7 @@ class _Profile extends State<Profile> {
                         margin:EdgeInsets.only(top:5),
                         height:40,
                         width:double.infinity,
-                        color: Color(0xFF85B6FF),
+                        color: Color(0xFFEEEEEE),
                         child:Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
