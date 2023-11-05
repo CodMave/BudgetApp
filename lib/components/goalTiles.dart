@@ -1,3 +1,5 @@
+import 'package:budgettrack/pages/homePage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:percent_indicator/percent_indicator.dart'; // Import Firestore
@@ -27,6 +29,56 @@ class MyGoal extends StatefulWidget {
 class _MyGoalState extends State<MyGoal> {
   Map<String, double> categoryProgress = {}; // Store category progress values
 
+  //variable to store the user selected currency
+  String currencySymbol = '';
+
+  //get the user selected currency from firestore
+  Future<String> getCurrncySymbol() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    User? user = _auth.currentUser;
+    email = user!.email!;
+    if (user != null) {
+      QuerySnapshot qs = await FirebaseFirestore.instance.collection(
+          //the query check wither the authentication email match with the email which is taken at the user details
+          'userDetails').where('email', isEqualTo: email).limit(1).get();
+
+      if (qs.docs.isNotEmpty) {
+        // Loop through the documents to find the one with the matching email
+        for (QueryDocumentSnapshot doc in qs.docs) {
+          if (doc.get('email') == email) {
+            // Get the 'username' field from the matching document
+            currencySymbol = doc.get('currency');
+            print(currencySymbol);
+            if (currencySymbol == 'SLR') {
+              currencySymbol = 'Rs.';
+            } else if (currencySymbol == 'USD') {
+              currencySymbol = '\$';
+            } else if (currencySymbol == 'EUR') {
+              currencySymbol = '€';
+            } else if (currencySymbol == 'INR') {
+              currencySymbol = '₹';
+            } else if (currencySymbol == 'GBP') {
+              currencySymbol = '£';
+            } else if (currencySymbol == 'AUD') {
+              currencySymbol = 'A\$';
+            } else if (currencySymbol == 'CAD') {
+              currencySymbol = 'C\$';
+            }
+
+            return currencySymbol; //return the currency
+          }
+        }
+      }
+      // Handle the case when no matching documents are found for the current user
+      print('No matching document found for the current user.');
+      return ''; // Return an empty string or null based on your requirements
+    } else {
+      // Handle the case when the user is not authenticated
+      print('User not authenticated.');
+      return ''; // Return an empty string or null based on your requirements
+    }
+  }
+
   late int totalSpent = 0;
 
   //get toatl spent from firestore by categories
@@ -55,6 +107,7 @@ class _MyGoalState extends State<MyGoal> {
   void initState() {
     super.initState();
     getTotalSpent();
+    getCurrncySymbol();
   }
 
   @override
@@ -89,7 +142,6 @@ class _MyGoalState extends State<MyGoal> {
                       Text(
                         widget.category!,
                         style: const TextStyle(
-                          fontFamily: 'Lexend-VariableFont',
                           color: Color(0xFF090950),
                           fontSize: 24,
                         ),
@@ -97,9 +149,10 @@ class _MyGoalState extends State<MyGoal> {
                       const SizedBox(height: 5),
                       Text(
                         //remaining days
-                        "${widget.endDate!.difference(DateTime.now()).inDays} days left",
+                        widget.endDate!.isBefore(DateTime.now())
+                            ? '0 days left'
+                            : '${widget.endDate!.difference(DateTime.now()).inDays} days left',
                         style: const TextStyle(
-                          fontFamily: 'Lexend-VariableFont',
                           color: Color.fromARGB(255, 4, 34, 59),
                           fontSize: 18,
                         ),
@@ -113,9 +166,8 @@ class _MyGoalState extends State<MyGoal> {
                     children: [
                       Text(
                         //amount with symbol
-                        "${widget.currencySymbol} ${widget.amount}",
+                        "$currencySymbol${widget.amount}",
                         style: const TextStyle(
-                          fontFamily: 'Lexend-VariableFont',
                           color: Color(0xFF316F9B),
                           fontSize: 24,
                         ),
@@ -123,9 +175,8 @@ class _MyGoalState extends State<MyGoal> {
                       const SizedBox(height: 5),
                       Text(
                         //amount left
-                        "${widget.currencySymbol} ${widget.amount - totalSpent} left",
+                        "$currencySymbol${widget.amount - totalSpent}",
                         style: const TextStyle(
-                          fontFamily: 'Lexend-VariableFont',
                           color: Color(0xFF3AC6D5),
                           fontSize: 18,
                         ),
@@ -145,11 +196,11 @@ class _MyGoalState extends State<MyGoal> {
                               .doc(widget.userId)
                               .collection('expenceID')
                               .where('transactionName',
-                              isEqualTo: widget.category)
+                                  isEqualTo: widget.category)
                               .where('timestamp',
-                              isGreaterThanOrEqualTo: widget.startDate)
+                                  isGreaterThanOrEqualTo: widget.startDate)
                               .where('timestamp',
-                              isLessThanOrEqualTo: widget.endDate)
+                                  isLessThanOrEqualTo: widget.endDate)
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
@@ -164,7 +215,7 @@ class _MyGoalState extends State<MyGoal> {
                             double totalAmount = 0;
                             snapshot.data!.docs.forEach((expenseDoc) {
                               int transactionAmount =
-                              expenseDoc['transactionAmount'];
+                                  expenseDoc['transactionAmount'];
                               totalAmount += transactionAmount.toDouble();
                             });
 
@@ -203,7 +254,6 @@ class _MyGoalState extends State<MyGoal> {
                               center: Text(
                                 "${(progress * 100).toInt()}%",
                                 style: const TextStyle(
-                                  fontFamily: 'Lexend-VariableFont',
                                   color: Colors.black,
                                   fontSize: 18,
                                 ),
