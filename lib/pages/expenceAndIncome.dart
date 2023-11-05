@@ -12,10 +12,7 @@ import 'goals.dart';
 import 'homePage.dart';
 
 class Expence extends StatefulWidget {
-
   final int nume;
-
-
 
   Expence({
     Key? key,
@@ -24,17 +21,15 @@ class Expence extends StatefulWidget {
 
   @override
   _ExpenceState createState() => _ExpenceState(
-    nume: nume,
-  );
+        nume: nume,
+      );
 // You need to replace this with the correct way to get the instance of the _ExpenceState class
 }
 
 class _ExpenceState extends State<Expence> {
-
   final int nume;
   _ExpenceState({
     required this.nume,
-
   });
   double totalex = 0.0;
   double totalin = 0.0;
@@ -42,7 +37,7 @@ class _ExpenceState extends State<Expence> {
   List<MyTransaction> transactions = [];
 
   final TextEditingController transactionNameController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool is_income = false;
   final formKey = GlobalKey<FormState>();
@@ -102,7 +97,7 @@ class _ExpenceState extends State<Expence> {
     email = user!.email!;
     if (user != null) {
       QuerySnapshot qs = await FirebaseFirestore.instance.collection(
-        //the query check wither the authentication email match with the email which is taken at the user details
+          //the query check wither the authentication email match with the email which is taken at the user details
           'userDetails').where('email', isEqualTo: email).limit(1).get();
 
       if (qs.docs.isNotEmpty) {
@@ -112,26 +107,20 @@ class _ExpenceState extends State<Expence> {
             // Get the 'username' field from the matching document
             currencySymbol = doc.get('currency');
             print(currencySymbol);
-            if(currencySymbol=='SLR'){
-              currencySymbol='Rs.';
-            }
-            else if(currencySymbol=='USD'){
-              currencySymbol='\$';
-            }
-            else if(currencySymbol=='EUR'){
-              currencySymbol='€';
-            }
-            else if(currencySymbol=='INR'){
-              currencySymbol='₹';
-            }
-            else if(currencySymbol=='GBP'){
-              currencySymbol='£';
-            }
-            else if(currencySymbol== 'AUD'){
-              currencySymbol='A\$';
-            }
-            else if(currencySymbol=='CAD'){
-              currencySymbol='C\$';
+            if (currencySymbol == 'SLR') {
+              currencySymbol = 'Rs.';
+            } else if (currencySymbol == 'USD') {
+              currencySymbol = '\$';
+            } else if (currencySymbol == 'EUR') {
+              currencySymbol = '€';
+            } else if (currencySymbol == 'INR') {
+              currencySymbol = '₹';
+            } else if (currencySymbol == 'GBP') {
+              currencySymbol = '£';
+            } else if (currencySymbol == 'AUD') {
+              currencySymbol = 'A\$';
+            } else if (currencySymbol == 'CAD') {
+              currencySymbol = 'C\$';
             }
 
             return currencySymbol; //return the currency
@@ -148,7 +137,6 @@ class _ExpenceState extends State<Expence> {
     }
   }
 
-
   //method to get currently signed in user's uid
 
   Future<String> getCurrentUserId() async {
@@ -161,26 +149,25 @@ class _ExpenceState extends State<Expence> {
       return '';
     }
   }
+
   //method to add new expence to the expenceID collection
-  Future<void>addBalanceToFireStore(
-      String userId,
-      int balance,
-      int income,
-      int expence,
-      )async{
+  Future<void> addBalanceToFireStore(
+    String userId,
+    int balance,
+    int income,
+    int expence,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      final CollectionReference expenceCollection = firestore
-          .collection('userDetails')
-          .doc(userId)
-          .collection('Balance');
+      final CollectionReference expenceCollection =
+          firestore.collection('userDetails').doc(userId).collection('Balance');
 
       await expenceCollection.add({
         'Balance': balance,
         'timestamp': DateTime.now(),
-        'Income':income,
-        'Expences':expence,
+        'Income': income,
+        'Expences': expence,
       });
     } catch (ex) {
       print('Balance adding failed');
@@ -189,10 +176,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new expence to the expenceID collection
 
   Future<void> addExpenceToFireStore(
-      String userId,
-      String transactionName,
-      int transactionAmount,
-      ) async {
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -212,9 +199,8 @@ class _ExpenceState extends State<Expence> {
       print('expence adding failed');
     }
   }
+
   Future<String?> getBalance(String userId) async {
-
-
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -236,12 +222,13 @@ class _ExpenceState extends State<Expence> {
       return null;
     }
   }
+
   Future<void> updateBalance(
-      String userId,
-      int balance,
-      int income,
-      int expence,
-      ) async {
+    String userId,
+    int balance,
+    int income,
+    int expence,
+  ) async {
     // Define the 'username' variable
 
     // Update the balance for the current month
@@ -260,14 +247,14 @@ class _ExpenceState extends State<Expence> {
         // Use the update method to update the "Balance" field
         await documentReference.update({
           'Balance': balance,
-          'Income':income,
-          'Expences':expence,
+          'Income': income,
+          'Expences': expence,
         });
 
         print('Balance updated successfully!');
       } else {
         // No entry for the current month, add a new one
-        addBalanceToFireStore(userId, balance,income,expence);
+        addBalanceToFireStore(userId, balance, income, expence);
       }
     } catch (ex) {
       print('Error updating balance: $ex');
@@ -277,10 +264,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new income to the incomeID collection
 
   Future<void> addIncomeToFireStore(
-      String userId,
-      String transactionName,
-      int transactionAmount,
-      ) async {
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -361,7 +348,7 @@ class _ExpenceState extends State<Expence> {
     } catch (ex) {
       print('fetching latest transactions failed');
     }
-    print(   lastExpenseTransaction?.transactionName);
+    print(lastExpenseTransaction?.transactionName);
   }
 
   //method to calculate total income from firestore
@@ -419,20 +406,17 @@ class _ExpenceState extends State<Expence> {
     totalin = totalIncome;
 
     int difference = (totalIncome - totalExpence).toInt();
-    if(difference<0) {
+    if (difference < 0) {
       setState(() {
         totalBalance = 0;
       });
       return totalBalance;
-    }
-    else {
+    } else {
       setState(() {
-        totalBalance =difference;
+        totalBalance = difference;
       });
       return totalBalance;
     }
-
-
   }
 
   //method to get the updates in realtime
@@ -482,7 +466,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('expenceID')
           .where('timestamp',
-          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -491,7 +475,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('incomeID')
           .where('timestamp',
-          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -601,210 +585,223 @@ class _ExpenceState extends State<Expence> {
         updateBalance(
           username,
           totalBalance,
-          await  calculateTotalIncome(userId),
+          await calculateTotalIncome(userId),
           await getTotalExpence(userId),
-
         );
       });
     });
   }
 
+  bool is_income_used = true; // Initialize is_income to true
+  bool canToggle = true; // Allow initial toggling
+  Color expenceColor = Colors.red; // Color for "Expence"
+  Color incomeColor = Colors.green; // Color for "Income"
+
   void newTransaction() {
+    selectedCategory = 'Others';
     showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, setState) {
-              return AlertDialog(
-                title: const Text("N E W   T R A N S A C T I O N"),
-                content: SingleChildScrollView(
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Text(
-                              "Expence",
-                              style: TextStyle(
-                                fontFamily:'Lexend-VariableFont',
-                                color: Colors.blueGrey,
-                                fontSize: 18,
-                              ),
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, setState) {
+            return AlertDialog(
+              title: const Text("N E W   T R A N S A C T I O N"),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            "Expence",
+                            style: TextStyle(
+                              fontFamily: 'Lexend-VariableFont',
+                              color: canToggle
+                                  ? expenceColor
+                                  : Colors.blueGrey[500],
+                              fontSize: 18,
                             ),
+                          ),
 
-                            //toggle button
+                          // Toggle button, disabled if canToggle is false
+                          Switch(
+                            value: is_income_used,
+                            onChanged: canToggle
+                                ? (newValue) {
+                                    setState(() {
+                                      is_income_used = newValue;
+                                    });
+                                  }
+                                : null, // Disable toggle button
+                          ),
 
-                            Switch(
-                              value: is_income,
-                              onChanged: (newValue) {
+                          Text(
+                            "Income",
+                            style: TextStyle(
+                              fontFamily: 'Lexend-VariableFont',
+                              color: canToggle
+                                  ? incomeColor
+                                  : Colors.blueGrey[500],
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: "Enter the Amount",
+                              ),
+                              validator: (text) {
+                                if (text == null || text.isEmpty) {
+                                  return "Please enter the amount";
+                                }
+                                int? amount = int.tryParse(text);
+                                if (amount == null || amount < 0) {
+                                  return "Please enter a valid amount";
+                                }
+                                return null;
+                              },
+                              controller: amountController,
+                              keyboardType: TextInputType.number,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: "Select the Category",
+                              ),
+                              value:
+                                  selectedCategory, // Make sure this matches one of the items in the list
+                              onChanged: (String? newValue) {
                                 setState(() {
-                                  is_income = newValue;
+                                  selectedCategory = newValue!;
+                                  transactionNameController.text = newValue;
+                                  canToggle =
+                                      false; // Disable toggle after category is selected
                                 });
                               },
+                              items: is_income_used
+                                  ? incomeCategories
+                                      .map<DropdownMenuItem<String>>(
+                                        (String category) =>
+                                            DropdownMenuItem<String>(
+                                          value: category,
+                                          child: Text(category),
+                                        ),
+                                      )
+                                      .toList()
+                                  : expenceCategories
+                                      .map<DropdownMenuItem<String>>(
+                                        (String category) =>
+                                            DropdownMenuItem<String>(
+                                          value: category,
+                                          child: Text(category),
+                                        ),
+                                      )
+                                      .toList(),
                             ),
-
-                            const Text(
-                              "Income",
-                              style: TextStyle(
-                                fontFamily:'Lexend-VariableFont',
-                                color: Colors.blueGrey,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: "Enter the Amount",
-                                ),
-                                validator: (text) {
-                                  if (text == null || text.isEmpty) {
-                                    return "Please enter the amount";
-                                  }
-                                  return null;
-                                },
-                                controller: amountController,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: DropdownButtonFormField<String>(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: "Select the Category",
-                                ),
-                                value: selectedCategory,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    selectedCategory = newValue!;
-                                    transactionNameController.text = newValue;
-                                  });
-                                },
-                                items: is_income
-                                    ? incomeCategories
-                                    .map<DropdownMenuItem<String>>(
-                                      (String category) =>
-                                      DropdownMenuItem<String>(
-                                        value: category,
-                                        child: Text(category),
-                                      ),
-                                )
-                                    .toList()
-                                    : expenceCategories
-                                    .map<DropdownMenuItem<String>>(
-                                      (String category) =>
-                                      DropdownMenuItem<String>(
-                                        value: category,
-                                        child: Text(category),
-                                      ),
-                                )
-                                    .toList(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                actions: <Widget>[
-                  MaterialButton(
-                    color: Colors.grey[600],
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontFamily:'Lexend-VariableFont',
-                        color: Colors.white,
-                      ),
+              ),
+              actions: <Widget>[
+                MaterialButton(
+                  color: Colors.grey[600],
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontFamily: 'Lexend-VariableFont',
+                      color: Colors.white,
                     ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
                   ),
-                  MaterialButton(
-                    color: Colors.grey[600],
-                    child: const Text(
-                      'Enter',
-                      style: TextStyle(
-                        fontFamily:'Lexend-VariableFont',
-                        color: Colors.white,
-                      ),
+                  onPressed: () {
+                    transactionNameController.clear();
+                    amountController.clear();
+                    canToggle = true;
+                    Navigator.of(context).pop();
+                  },
+                ),
+                MaterialButton(
+                  color: Colors.grey[600],
+                  child: const Text(
+                    'Enter',
+                    style: TextStyle(
+                      fontFamily: 'Lexend-VariableFont',
+                      color: Colors.white,
                     ),
-                    onPressed: () async {
-                      if (formKey.currentState!.validate()) {
-                        String transactionType =
-                        is_income ? "Income" : "Expence";
-                        int transactionAmount =
-                        int.parse(amountController.text);
+                  ),
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      String transactionType =
+                          is_income_used ? "Income" : "Expence";
+                      int transactionAmount = int.parse(amountController.text);
 
-                        String transactionName = transactionNameController.text;
-                        print(transactionName);
+                      String transactionName = transactionNameController.text;
+                      print(transactionName);
 
-                        //get the user id
-                        String? userId = await getCurrentUserId();
+                      //get the user id
+                      String? userId = await getCurrentUserId();
 
-                        transactions
-                            .sort((a, b) => b.timestamp.compareTo(a.timestamp));
+                      transactions
+                          .sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
-                        //Navigator.of(context).pop();
-
-                        //add transaction to the list
-                        setState(() {
-                          transactions.add(
-                            MyTransaction(
-                              transactionName: transactionName,
-                              transactionAmount: transactionAmount,
-                              transactionType: transactionType,
-                              timestamp: DateTime.now(),
-                              currencySymbol: currencySymbol,
-                            ),
-                          );
-                        });
-
-                        transactionNameController.clear();
-                        amountController.clear();
-                        Navigator.of(context).pop();
-
-                        if (is_income) {
-                          addIncomeToFireStore(
-                            userId,
-                            transactionName,
-                            transactionAmount,
-                          );
-                        } else {
-                          addExpenceToFireStore(
-                            userId,
-                            transactionName,
-                            transactionAmount,
-                          );
-                        }
-                        updateBalance(
-                          userId,
-                          await getTotalBalance(userId),
-                          await calculateTotalIncome(userId),
-                          await getTotalExpence(userId),
+                      // Add transaction to the list
+                      setState(() {
+                        transactions.add(
+                          MyTransaction(
+                            transactionName: transactionName,
+                            transactionAmount: transactionAmount,
+                            transactionType: transactionType,
+                            timestamp: DateTime.now(),
+                            currencySymbol: currencySymbol,
+                          ),
                         );
+                      });
+
+                      transactionNameController.clear();
+                      amountController.clear();
+                      canToggle = true;
+                      Navigator.of(context).pop();
+
+                      if (is_income_used) {
+                        addIncomeToFireStore(
+                            userId, transactionName, transactionAmount);
+                      } else {
+                        addExpenceToFireStore(
+                            userId, transactionName, transactionAmount);
                       }
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        });
+                      updateBalance(
+                        userId,
+                        await getTotalBalance(userId),
+                        await calculateTotalIncome(userId),
+                        await getTotalExpence(userId),
+                      );
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -813,17 +810,16 @@ class _ExpenceState extends State<Expence> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor:
-        Colors.grey[100], // Set the background color of the App Bar
+            Colors.grey[100], // Set the background color of the App Bar
         title: const Text(
-
           'T R A N S A C T I O N S',
           style: TextStyle(
-            fontFamily:'Lexend-VariableFont',
-            color:  const Color(0xFF090950),
+            fontFamily: 'Lexend-VariableFont',
+            color: const Color(0xFF090950),
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () {
             Navigator.push(
@@ -834,91 +830,24 @@ class _ExpenceState extends State<Expence> {
             );
           },
         ),
-        actions: [
-          Icon(
-              Icons.compare_arrows,
-              size:40,
-              color: Color(0xFF3AC6D5)
-          ),
+        actions: const [
+          Icon(Icons.compare_arrows, size: 40, color: Color(0xFF3AC6D5)),
         ],
         centerTitle: true, // Center the title
         elevation: 0.0, // Removes the shadow
         automaticallyImplyLeading: false,
-
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20))),
+        child: const Padding(
+          padding: EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 3,
-          ),
-          child: GNav(
-            backgroundColor: Colors.transparent,
-            color: const Color(0xFF090950),
-            activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.white,
-            gap:6,
-            onTabChange: (Index) {
-              //if the user click on the bottom navigation bar then it will move to the following pages
-              if (Index == 0) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Controller(
-                        balance: newbalance,
-                      )),
-                );
-              } else if (Index == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>Pro()),
-                );
-              } else if (Index == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>PlansApp()),
-                );
-              } else if (Index == 3) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Goals()),
-                );
-              } else if (Index ==4) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
-                );
-              }
-            },
-            padding: const EdgeInsets.all(15),
-            tabs: const [
-              GButton(
-                icon: Icons.home,
-                //text: 'Home',
-              ),
-              GButton(
-                icon: Icons.align_vertical_bottom_outlined,
-                //text: 'Summary',
-              ),
-              GButton(
-                icon: Icons.account_balance_wallet_outlined,
-                //text: 'Savings',
-              ),
-              GButton(
-                icon: Icons.track_changes_rounded,
-                //text: 'Plans',
-              ),
-              GButton(
-                icon: Icons.document_scanner_outlined,
-                //text: 'Scan',
-              ),
-            ],
           ),
         ),
       ),
@@ -972,9 +901,9 @@ class _ExpenceState extends State<Expence> {
                           Text(
                             "BALANCE",
                             style: TextStyle(
-                              fontFamily:'Lexend-VariableFont',
+                              fontFamily: 'Lexend-VariableFont',
                               color: Colors.grey[100],
-                              fontSize:45,
+                              fontSize: 45,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -1005,9 +934,9 @@ class _ExpenceState extends State<Expence> {
                       child: Text(
                         "$currencySymbol${totalBalance.toStringAsFixed(2)}",
                         style: const TextStyle(
-                          fontFamily:'Lexend-VariableFont',
+                          fontFamily: 'Lexend-VariableFont',
                           color: Colors.black,
-                          fontSize:40,
+                          fontSize: 40,
                         ),
                       ),
                     ),
@@ -1043,13 +972,13 @@ class _ExpenceState extends State<Expence> {
                                   Icon(
                                     Icons.add_card_rounded,
                                     size: 22,
-                                    color:Color(0xFF3AC6D5),
+                                    color: Color(0xFF3AC6D5),
                                   ),
                                   SizedBox(width: 5),
                                   Text(
                                     'Income',
                                     style: TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
+                                      fontFamily: 'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 22,
                                     ),
@@ -1062,7 +991,7 @@ class _ExpenceState extends State<Expence> {
                                   Text(
                                     currencySymbol,
                                     style: const TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
+                                      fontFamily: 'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 25,
                                     ),
@@ -1070,7 +999,7 @@ class _ExpenceState extends State<Expence> {
                                   Text(
                                     "${lastIncomeTransaction?.transactionAmount.toStringAsFixed(2) ?? '0'}",
                                     style: const TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
+                                      fontFamily: 'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 25,
                                     ),
@@ -1095,13 +1024,13 @@ class _ExpenceState extends State<Expence> {
                                   Icon(
                                     Icons.add_card_rounded,
                                     size: 22,
-                                    color:  const Color(0xFF090950),
+                                    color: const Color(0xFF090950),
                                   ),
                                   SizedBox(width: 5),
                                   Text(
                                     'Expence',
                                     style: TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
+                                      fontFamily: 'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 22,
                                     ),
@@ -1114,7 +1043,7 @@ class _ExpenceState extends State<Expence> {
                                   Text(
                                     currencySymbol,
                                     style: const TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
+                                      fontFamily: 'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 25,
                                     ),
@@ -1122,7 +1051,7 @@ class _ExpenceState extends State<Expence> {
                                   Text(
                                     "${lastExpenseTransaction?.transactionAmount.toStringAsFixed(2) ?? '0'}",
                                     style: const TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
+                                      fontFamily: 'Lexend-VariableFont',
                                       color: Colors.black,
                                       fontSize: 25,
                                     ),
@@ -1175,22 +1104,24 @@ class _ExpenceState extends State<Expence> {
                 padding: EdgeInsets.only(left: 50, right: 50),
                 child: Text(
                   'All',
-                  style: TextStyle(fontFamily:'Lexend-VariableFont',fontSize: 18),
+                  style: TextStyle(
+                      fontFamily: 'Lexend-VariableFont', fontSize: 18),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 25, right: 25),
                 child: Text(
-
                   'Income',
-                  style: TextStyle(fontFamily:'Lexend-VariableFont',fontSize: 18),
+                  style: TextStyle(
+                      fontFamily: 'Lexend-VariableFont', fontSize: 18),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: Text(
                   'Expence',
-                  style: TextStyle(fontFamily:'Lexend-VariableFont',fontSize: 18),
+                  style: TextStyle(
+                      fontFamily: 'Lexend-VariableFont', fontSize: 18),
                 ),
               ),
             ],
@@ -1207,7 +1138,7 @@ class _ExpenceState extends State<Expence> {
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
                     if (selectedFilterIndex ==
-                        0 || // Show all when 'All' is selected
+                            0 || // Show all when 'All' is selected
                         (selectedFilterIndex == 1 &&
                             transactions[index].transactionType ==
                                 'Income') || // Show income when 'Income' is selected
@@ -1217,7 +1148,7 @@ class _ExpenceState extends State<Expence> {
                       return MyTransaction(
                         transactionName: transactions[index].transactionName,
                         transactionAmount:
-                        transactions[index].transactionAmount,
+                            transactions[index].transactionAmount,
                         transactionType: transactions[index].transactionType,
                         timestamp: transactions[index].timestamp,
                         currencySymbol: currencySymbol,
@@ -1231,7 +1162,6 @@ class _ExpenceState extends State<Expence> {
                 Positioned(
                   bottom: 20.0,
                   right: 20.0,
-
                   child: PlusButton(
                     function: newTransaction,
                   ),
@@ -1243,8 +1173,4 @@ class _ExpenceState extends State<Expence> {
       ),
     );
   }
-
-
-
-
 }
