@@ -869,7 +869,7 @@ class _ExpenceState extends State<Expence> {
                   BoxShadow(
                     color: Colors.grey.withOpacity(1),
                     offset: const Offset(4.0, 4.0),
-                    blurRadius: 10.0,
+                    blurRadius: 10.1,
                     spreadRadius: 1,
                   ),
                   const BoxShadow(
