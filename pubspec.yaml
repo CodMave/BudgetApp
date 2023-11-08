@@ -43,9 +43,9 @@ dependencies:
   camera: ^0.10.5+2
   fl_chart: ^0.63.0
   google_nav_bar: ^5.0.6
-
+  internet_connection_checker: ^1.0.0+1
   percent_indicator: ^4.2.3
-
+  connectivity_plus: ^5.0.1
   table_calendar: ^3.0.9
 
   flutter:

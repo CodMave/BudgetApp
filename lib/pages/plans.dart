@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -14,6 +15,7 @@ class PlansApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: PlansPage(),
     );
   }
@@ -38,36 +40,39 @@ class _PlansPageState extends State<PlansPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Colors.black,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>HomePage()),
-            ); // Navigate back when the arrow button is pressed
-          },
-        ),
-        title: const Text(
-          'P L A N S',
-          style: TextStyle(
-            color: const Color(0xFF090950),
-            fontSize: 20,
-            fontFamily: 'Lexend',
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.note_add_outlined),
+        leading:   Padding(
+          padding: const EdgeInsets.only(left:15.0),
+          child: IconButton(
+            icon: Icon(Icons.arrow_back),
             color: Colors.black,
             onPressed: () {
-              // Add your logic here for the notepad button
+              Navigator.of(context).pop();
             },
           ),
-        ],
-        centerTitle: true,
+        ),
+        title: Row(
+          children: [
+            SizedBox(
+              width:70,
+            ),
+            SizedBox(
+              width:200,
+              child: const Text('P L A N S',
+                  style: TextStyle(
+                    color: const Color(0xFF090950),
+                    fontSize: 20,
+                    fontFamily: 'Lexend-VariableFont',
+                  )),
+            ),
+            Icon(
+              FontAwesomeIcons.clipboardList,
+              size:25,
+              color: const Color(0xFF090950),
+            ),
+          ],
+        ),
         elevation: 0,
+        centerTitle: true,
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -81,9 +86,9 @@ class _PlansPageState extends State<PlansPage> {
           ),
           child: GNav(
             backgroundColor: Colors.transparent,
-            color: const Color(0xFF85B6FF),
+            color: const Color(0xFF090950),
             activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.grey.shade400,
+            tabBackgroundColor: Colors.white,
             gap:6,
             onTabChange: (Index) {
               //if the user click on the bottom navigation bar then it will move to the following pages
@@ -91,9 +96,7 @@ class _PlansPageState extends State<PlansPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Controller(
-                        balance: newbalance,
-                      )),
+                      builder: (context) =>HomePage()),
                 );
               } else if (Index == 1) {
                 Navigator.push(
@@ -130,7 +133,7 @@ class _PlansPageState extends State<PlansPage> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.account_balance_wallet_outlined,
+                icon: FontAwesomeIcons.clipboardList,
                 //text: 'Savings',
               ),
               GButton(

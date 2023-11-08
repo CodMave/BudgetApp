@@ -14,7 +14,7 @@ class PlusButton extends StatelessWidget {
         height: 60,
         width: 60,
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 71, 148, 221),
+          color: Color(0xFF85B6FF),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
@@ -29,6 +29,7 @@ class PlusButton extends StatelessWidget {
           child: Text(
             "+",
             style: TextStyle(
+              color: Colors.white,
               fontSize: 40,
             ),
           ),

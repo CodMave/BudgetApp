@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -147,30 +148,39 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
                     }),
               Scaffold(
                 appBar: AppBar(
-
-                  backgroundColor: Colors.white,
-                  title: Text('S C A N',  style: TextStyle(
-
-                    fontFamily:'Lexend-VariableFont',
-                    color:    const Color(0xFF090950),
-                    fontSize: 20.0,
-                    //fontWeight: FontWeight.bold,
-                  ),
-                  ),
-                  leading:  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    color: Colors.black,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  actions: [
-                    Icon(
-                      Icons.document_scanner_outlined,
-                      size: 30,
-                      color: Color(0xFF3AC6D5),
+                  backgroundColor: Colors.grey[100],
+                  leading:   Padding(
+                    padding: const EdgeInsets.only(left:15.0),
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      color: Colors.black,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                     ),
-                  ],
+                  ),
+                  title: Row(
+                    children: [
+                      SizedBox(
+                        width:90,
+                      ),
+                      SizedBox(
+                        width:170,
+                        child: const Text('S C A N',
+                            style: TextStyle(
+                              color: const Color(0xFF090950),
+                              fontSize: 20,
+                              fontFamily: 'Lexend-VariableFont',
+                            )),
+                      ),
+                      Icon(
+                        Icons.document_scanner_outlined,
+                        size: 30,
+                        color: const Color(0xFF090950),
+                      ),
+                    ],
+                  ),
+                  elevation: 0,
                   centerTitle: true,
                 ),
                 bottomNavigationBar: Container(
@@ -195,9 +205,7 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Controller(
-                                  balance: newbalance,
-                                )),
+                                builder: (context) =>HomePage()),
                           );
                         } else if (Index == 1) {
                           Navigator.push(
@@ -234,7 +242,7 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
                           //text: 'Summary',
                         ),
                         GButton(
-                          icon: Icons.account_balance_wallet_outlined,
+                          icon: FontAwesomeIcons.clipboardList,
                           //text: 'Savings',
                         ),
                         GButton(
@@ -657,37 +665,40 @@ class _ResultState extends State<Result> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title:Text('S C A N',  style: TextStyle(
-
-            fontFamily:'Lexend-VariableFont',
-            color:    const Color(0xFF090950),
-            fontSize: 20.0,
-            //fontWeight: FontWeight.bold,
-          ),
-          ),
-
-          actions: [
-            Icon(
-              Icons.document_scanner_outlined,
-              size: 30,
-              color: Color(0xFF3AC6D5),
+          backgroundColor: Colors.grey[100],
+          leading:   Padding(
+            padding: const EdgeInsets.only(left:15.0),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back),
+              color:const Color(0xFF090950),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
-          ],
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            icon:Icon(Icons.arrow_back,
-              color: Colors.black,
-              size: 40,),
-            onPressed:  () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>HomePage()
-                ),
-              );
-            },
           ),
+          title: Row(
+            children: [
+              SizedBox(
+                width:90,
+              ),
+              SizedBox(
+                width:170,
+                child: const Text('S C A N',
+                    style: TextStyle(
+                      color: const Color(0xFF090950),
+                      fontSize: 20,
+                      fontFamily: 'Lexend-VariableFont',
+                    )),
+              ),
+              Icon(
+                Icons.document_scanner_outlined,
+                size: 30,
+                color: const Color(0xFF090950),
+              ),
+            ],
+          ),
+          elevation: 0,
+          centerTitle: true,
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
@@ -711,9 +722,7 @@ class _ResultState extends State<Result> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Controller(
-                          balance: newbalance,
-                        )),
+                        builder: (context) =>HomePage()),
                   );
                 } else if (Index == 1) {
                   Navigator.push(
@@ -750,7 +759,7 @@ class _ResultState extends State<Result> {
                   //text: 'Summary',
                 ),
                 GButton(
-                  icon: Icons.account_balance_wallet_outlined,
+                  icon: FontAwesomeIcons.clipboardList,
                   //text: 'Savings',
                 ),
                 GButton(
@@ -779,7 +788,8 @@ class _ResultState extends State<Result> {
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
-                          offset: Offset(0, 2),
+                          color: Colors.grey.withOpacity(0.8),
+                          offset: Offset(0, 3),
                         ),
                       ],
                     ),

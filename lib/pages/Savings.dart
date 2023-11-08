@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:budgettrack/pages/plans.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -667,30 +668,39 @@ Future<int>Balancet()async{
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.grey[100],
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          actions: [
-            Icon(
-              CupertinoIcons.money_dollar_circle,
-              size: 30,
-              color: Color(0xFF3AC6D5),
-
+          leading:   Padding(
+            padding: const EdgeInsets.only(left:20.0),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back),
+              color: Colors.black,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
-          ],
-          title: const Text('S A V I N G S',
-              style: TextStyle(
+          ),
+          title: Row(
+            children: [
+              SizedBox(
+                width:60,
+              ),
+              SizedBox(
+                width:200,
+                child: const Text('S A V I N G S',
+                    style: TextStyle(
+                      color: const Color(0xFF090950),
+                      fontSize: 20,
+                      fontFamily: 'Lexend-VariableFont',
+                    )),
+              ),
+              Icon(
+                Icons.wallet,
+                size: 30,
                 color: const Color(0xFF090950),
-                fontSize: 20,
-                fontFamily:'Lexend-VariableFont',
-              )),
-          centerTitle: true,
-
+              ),
+            ],
+          ),
           elevation: 0,
+          centerTitle: true,
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
@@ -714,9 +724,7 @@ Future<int>Balancet()async{
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Controller(
-                          balance: newbalance,
-                        )),
+                        builder: (context) =>HomePage()),
                   );
                 } else if (Index == 1) {
                   Navigator.push(
@@ -753,7 +761,7 @@ Future<int>Balancet()async{
                   //text: 'Summary',
                 ),
                 GButton(
-                  icon: Icons.account_balance_wallet_outlined,
+                  icon: FontAwesomeIcons.clipboardList,
                   //text: 'Savings',
                 ),
                 GButton(
@@ -1327,7 +1335,7 @@ Future<int>Balancet()async{
                                                 style: TextStyle(
                                                   fontSize: 15,
                                                   fontFamily: 'Lexend-VariableFont',
-                                                  color: const Color(0xFF3AC6D5),
+                                                  color: const Color(0xFF316F9B),
                                                 ),
                                               ),
                                             ),
@@ -1350,7 +1358,7 @@ Future<int>Balancet()async{
                                                 'View',
                                                 style: TextStyle(
                                                   fontFamily: 'Lexend-VariableFont',
-                                                  color: const Color(0xFFAAB2BE),
+                                                  color: const Color(0xFF5C6C84),
                                                 ),
                                               ),
                                             ),

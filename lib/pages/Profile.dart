@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'Summery.dart';
@@ -485,9 +486,9 @@ class _Profile extends State<Profile> {
           ),
           child: GNav(
             backgroundColor: Colors.transparent,
-            color: const Color(0xFF85B6FF),
+            color: const Color(0xFF090950),
             activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.grey.shade400,
+            tabBackgroundColor: Colors.white,
             gap:6,
             onTabChange: (Index) {
               //if the user click on the bottom navigation bar then it will move to the following pages
@@ -495,9 +496,7 @@ class _Profile extends State<Profile> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Controller(
-                        balance: newbalance,
-                      )),
+                      builder: (context) =>HomePage()),
                 );
               } else if (Index == 1) {
                 Navigator.push(
@@ -534,7 +533,7 @@ class _Profile extends State<Profile> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.account_balance_wallet_outlined,
+                icon: FontAwesomeIcons.clipboardList,
                 //text: 'Savings',
               ),
               GButton(
@@ -565,7 +564,7 @@ class _Profile extends State<Profile> {
                     height:320,
 
                     decoration:BoxDecoration(
-                        color: Color(0xFF85B6FF),
+                        color: Color(0xFF85B6FF).withOpacity(0.6),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.5),
@@ -577,7 +576,10 @@ class _Profile extends State<Profile> {
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+
                         Container(
                           width: double.infinity,
                           height:200,

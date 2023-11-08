@@ -80,7 +80,7 @@ class MyTransaction extends StatelessWidget {
                             transactionName,
                             style: const TextStyle(
                               fontFamily:'Lexend-VariableFont',
-                              color: Colors.black,
+                              color: const Color(0xFF090950),
                               fontSize: 20,
                             ),
                           ),
@@ -89,7 +89,7 @@ class MyTransaction extends StatelessWidget {
                             formattedTime,
                             style: const TextStyle(
                               fontFamily:'Lexend-VariableFont',
-                              color: Colors.black,
+                              color:const Color(0xFF5C6C84),
                               fontSize: 15,
                             ),
                           ),
