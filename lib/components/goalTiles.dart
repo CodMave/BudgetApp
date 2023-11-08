@@ -39,7 +39,7 @@ class _MyGoalState extends State<MyGoal> {
     email = user!.email!;
     if (user != null) {
       QuerySnapshot qs = await FirebaseFirestore.instance.collection(
-        //the query check wither the authentication email match with the email which is taken at the user details
+          //the query check wither the authentication email match with the email which is taken at the user details
           'userDetails').where('email', isEqualTo: email).limit(1).get();
 
       if (qs.docs.isNotEmpty) {
@@ -196,11 +196,11 @@ class _MyGoalState extends State<MyGoal> {
                               .doc(widget.userId)
                               .collection('expenceID')
                               .where('transactionName',
-                              isEqualTo: widget.category)
+                                  isEqualTo: widget.category)
                               .where('timestamp',
-                              isGreaterThanOrEqualTo: widget.startDate)
+                                  isGreaterThanOrEqualTo: widget.startDate)
                               .where('timestamp',
-                              isLessThanOrEqualTo: widget.endDate)
+                                  isLessThanOrEqualTo: widget.endDate)
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
@@ -215,7 +215,7 @@ class _MyGoalState extends State<MyGoal> {
                             double totalAmount = 0;
                             snapshot.data!.docs.forEach((expenseDoc) {
                               int transactionAmount =
-                              expenseDoc['transactionAmount'];
+                                  expenseDoc['transactionAmount'];
                               totalAmount += transactionAmount.toDouble();
                             });
 

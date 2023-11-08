@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'TextScanner.dart';
@@ -738,41 +737,29 @@ class _ProState extends State<Pro> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
-        leading:   Padding(
-          padding: const EdgeInsets.only(left:15.0),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        actions: [
+          Icon(
+            Icons.align_vertical_bottom_outlined,
+            size: 30,
+            color: Color(0xFF3AC6D5),
           ),
-        ),
-        title: Row(
-          children: [
-            SizedBox(
-              width:50,
-            ),
-            SizedBox(
-              width:210,
-              child: const Text('S U M M E R Y',
-                  style: TextStyle(
-                    color: const Color(0xFF090950),
-                    fontSize: 20,
-                    fontFamily: 'Lexend-VariableFont',
-                  )),
-            ),
-            Icon(
-              Icons.align_vertical_bottom_outlined,
-              size: 30,
+        ],
+        title: const Text('S U M M E R Y',
+            style: TextStyle(
               color: const Color(0xFF090950),
-            ),
-          ],
-        ),
-        elevation: 0,
+              fontSize: 20,
+              fontFamily: 'Lexend-VariableFont',
+            )),
         centerTitle: true,
+        elevation: 0,
       ),
-
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
             color: Colors.white,
@@ -795,7 +782,9 @@ class _ProState extends State<Pro> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>HomePage()),
+                      builder: (context) => Controller(
+                        balance: newbalance,
+                      )),
                 );
               } else if (Index == 1) {
                 Navigator.push(
@@ -832,7 +821,7 @@ class _ProState extends State<Pro> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: FontAwesomeIcons.clipboardList,
+                icon: Icons.account_balance_wallet_outlined,
                 //text: 'Savings',
               ),
               GButton(
@@ -868,7 +857,7 @@ class _ProState extends State<Pro> {
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.white,
-                        onPrimary: Color(0xFF090950),
+                        onPrimary: Colors.grey,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),bottomLeft: Radius.circular(20)),
                           side: BorderSide(
@@ -893,7 +882,7 @@ class _ProState extends State<Pro> {
                       style: ElevatedButton.styleFrom(
 
                         primary: Colors.white,
-                        onPrimary:Color(0xFF090950),
+                        onPrimary: Colors.grey,
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             color:Colors.grey, // Set the border color
@@ -916,7 +905,7 @@ class _ProState extends State<Pro> {
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.white,
-                        onPrimary:Color(0xFF090950),
+                        onPrimary: Colors.grey,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(topRight: Radius.circular(20),bottomRight: Radius.circular(20)),
                           side: BorderSide(
@@ -981,8 +970,7 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.8),
-                            offset: Offset(0, 3),
+                            offset: Offset(0, 2),
                           )
                         ],
                       ),
@@ -1044,8 +1032,7 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.8),
-                            offset: Offset(0, 3),
+                            offset: Offset(0, 2),
                           )
                         ],
                       ),
@@ -1132,8 +1119,7 @@ class _ProState extends State<Pro> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.8),
-                                offset: Offset(0, 3),
+                                offset: Offset(0, 2),
                               ),
                             ],
                           ),
@@ -1304,7 +1290,8 @@ class _ProState extends State<Pro> {
                                                   FontWeight.bold,
                                                   fontFamily:
                                                   'Lexend-VariableFont',
-                                                  color:Color(0xFF316F9B),
+                                                  color: Color.fromARGB(
+                                                      236, 97, 183, 226),
                                                 ),
                                               ),
                                             ),
@@ -1315,8 +1302,10 @@ class _ProState extends State<Pro> {
                                               height: 20,
                                               width: 40,
                                               decoration: BoxDecoration(
-                                                color: Color(0xFFC2DAFF),
-                                                borderRadius: BorderRadius
+                                                color: Color.fromARGB(
+                                                    255, 183, 203, 250),
+                                                borderRadius:
+                                                BorderRadius
                                                     .circular(10),
                                               ),
                                               child: Center(
@@ -1328,7 +1317,8 @@ class _ProState extends State<Pro> {
                                                     FontWeight.bold,
                                                     fontFamily:
                                                     'Lexend-VariableFont',
-                                                    color:Color(0xFF5C6C84),
+                                                    color: Color(
+                                                        0xFC0095F2),
                                                   ),
                                                 ),
                                               ),
@@ -1396,8 +1386,7 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.8),
-                            offset: Offset(0, 3),
+                            offset: Offset(0, 2),
                           )
                         ],
                       ),
@@ -1436,7 +1425,7 @@ class _ProState extends State<Pro> {
                                 ),
                               ),
                               Text(
-                                '$currencySymbol ${this.totalincomeformonth.toStringAsFixed(2)}', // Display the income here
+                                '$currencySymbol ${this.totalincomeformonth.toDouble()}', // Display the income here
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -1458,8 +1447,7 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.8),
-                            offset: Offset(0, 3),
+                            offset: Offset(0, 2),
                           )
                         ],
                       ),
@@ -1498,7 +1486,7 @@ class _ProState extends State<Pro> {
                                 ),
                               ),
                               Text(
-                                '$currencySymbol ${this.totalexpenseformonth.toStringAsFixed(2)}',
+                                '$currencySymbol ${this.totalexpenseformonth.toDouble()}',
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -1544,8 +1532,7 @@ class _ProState extends State<Pro> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.8),
-                                offset: Offset(0, 3),
+                                offset: Offset(0, 2),
                               ),
                             ],
                           ),
@@ -1711,7 +1698,8 @@ class _ProState extends State<Pro> {
                                                     style: TextStyle(
                                                       fontFamily:
                                                           'Lexend-VariableFont',
-                                                      color: const Color(0xFF090950),
+                                                      color: const Color(
+                                                          0xFF090950),
                                                       fontSize: 15,
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -1724,14 +1712,15 @@ class _ProState extends State<Pro> {
                                             SizedBox(
                                               width:100,
                                               child: Text(
-                                                '$currencySymbol ${uniqueexpensesformonth![index].toStringAsFixed(2)}',
+                                                '$currencySymbol ${uniqueexpensesformonth![index]}',
                                                 style: TextStyle(
                                                   fontSize: 15,
                                                   fontWeight:
                                                       FontWeight.bold,
                                                   fontFamily:
                                                       'Lexend-VariableFont',
-                                                  color: Color(0xFF316F9B),
+                                                  color: Color.fromARGB(
+                                                      236, 97, 183, 226),
                                                 ),
                                               ),
                                             ),
@@ -1740,7 +1729,8 @@ class _ProState extends State<Pro> {
                                               height: 20,
                                               width: 40,
                                               decoration: BoxDecoration(
-                                                color: Color(0xFFC2DAFF),
+                                                color: Color.fromARGB(
+                                                    255, 183, 203, 250),
                                                 borderRadius:
                                                     BorderRadius
                                                         .circular(10),
@@ -1754,7 +1744,8 @@ class _ProState extends State<Pro> {
                                                         FontWeight.bold,
                                                     fontFamily:
                                                         'Lexend-VariableFont',
-                                                    color: Color(0xFF5C6C84),
+                                                    color: Color(
+                                                        0xFC0095F2),
                                                   ),
                                                 ),
                                               ),
@@ -1822,8 +1813,7 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.8),
-                            offset: Offset(0, 3),
+                            offset: Offset(0, 2),
                           )
                         ],
                       ),
@@ -1863,7 +1853,7 @@ class _ProState extends State<Pro> {
                                 ),
                               ),
                               Text(
-                                '$currencySymbol ${this.yearly_income![2023 % 100 - (currentDate.year.toInt() % 100)].toStringAsFixed(2)}',
+                                '$currencySymbol ${this.yearly_income![2023 % 100 - (currentDate.year.toInt() % 100)].toDouble()}',
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -1885,8 +1875,7 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.8),
-                            offset: Offset(0, 3),
+                            offset: Offset(0, 2),
                           )
                         ],
                       ),
@@ -1925,7 +1914,7 @@ class _ProState extends State<Pro> {
                                 ),
                               ),
                               Text(
-                                '$currencySymbol ${this.yearly_expense![2023 % 100 - (currentDate.year.toInt() % 100)].toStringAsFixed(2)}',
+                                '$currencySymbol ${this.yearly_expense![2023 % 100 - (currentDate.year.toInt() % 100)].toDouble()}',
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -1971,8 +1960,7 @@ class _ProState extends State<Pro> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.8),
-                                offset: Offset(0, 3),
+                                offset: Offset(0, 2),
                               ),
                             ],
                           ),
@@ -2140,24 +2128,25 @@ class _ProState extends State<Pro> {
                                             SizedBox(
                                               width:100,
                                               child: Text(
-                                                '$currencySymbol ${uniqueexpensesforyear![index].toStringAsFixed(2)}',
+                                                '$currencySymbol ${uniqueexpensesforyear![index]}',
                                                 style: TextStyle(
                                                   fontSize: 15,
                                                   fontWeight:
                                                       FontWeight.bold,
                                                   fontFamily:
                                                       'Lexend-VariableFont',
-                                                  color:Color(0xFF316F9B),
-
+                                                  color: Color.fromARGB(
+                                                      236, 97, 183, 226),
                                                 ),
-                                            ),
+                                              ),
                                             ),
                                             SizedBox(width:20),
                                             Container(
                                               height: 20,
                                               width: 40,
                                               decoration: BoxDecoration(
-                                                color: Color(0xFFC2DAFF),
+                                                color: Color.fromARGB(
+                                                    255, 183, 203, 250),
                                                 borderRadius:
                                                     BorderRadius
                                                         .circular(10),
@@ -2171,7 +2160,8 @@ class _ProState extends State<Pro> {
                                                         FontWeight.bold,
                                                     fontFamily:
                                                         'Lexend-VariableFont',
-                                                    color: Color(0xFF5C6C84),
+                                                    color: Color(
+                                                        0xFC0095F2),
                                                   ),
                                                 ),
                                               ),

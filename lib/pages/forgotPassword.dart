@@ -63,10 +63,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               color: const Color(0xFF090950),
               fontSize: 20,
               fontFamily:'Lexend-VariableFont',
-            ),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
+            )),
         centerTitle: true,
 
         elevation: 0,

@@ -40,11 +40,11 @@ class _RegisterPage extends State<RegisterPage> {
 
   //user signup method
   void userSignUp() async {
-    if (usernameControll.text.isEmpty || passwordControll.text.isEmpty || emailControll.text.isEmpty || confirmPasswordControll.text.isEmpty) {
-      wrongInputlAlert("Fields can't be empty");
+    if (usernameControll.text.isEmpty || passwordControll.text.isEmpty||emailControll.text.isEmpty||confirmPasswordControll.text.isEmpty) {
+      wrongInputlAlert('Fields can\'t be empty');
       return;
     }
-
+    //loading circle
     showDialog(
       context: context,
       builder: (context) {
@@ -55,14 +55,13 @@ class _RegisterPage extends State<RegisterPage> {
     );
 
     try {
-      // Check if the email already exists
-      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailControll.text,
-        password: passwordControll.text,
-      );
+      if (passwordControll.text == confirmPasswordControll.text) {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailControll.text,
+          password: passwordControll.text,
+        );
 
-      // If the registration was successful
-      if (userCredential.user != null) {
+        //save user details in firestore
         saveUserDetails(
           usernameControll.text.trim(),
           emailControll.text.trim(),
@@ -70,31 +69,31 @@ class _RegisterPage extends State<RegisterPage> {
           selectedCurrency!,
         );
 
+        //loading circle end
         Navigator.pop(context);
+
+        //navigate to email verification page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => EmailVerification(),
           ),
         );
+      } else {
+        //loading circle end
+        Navigator.pop(context);
+
+        // error
+        wrongInputlAlert("Passwords don't match");
       }
     } on FirebaseAuthException catch (ex) {
-      // Check for specific error codes
-      if (ex.code == 'email-already-in-use') {
+      //loading circle end
+      Navigator.pop(context);
 
-        wrongInputlAlert('The email address is already in use.');
-      } else if (ex.code == 'weak-password') {
-
-        wrongInputlAlert('The password provided is too weak.');
-      } else {
-
-        wrongInputlAlert('Error: ${ex.message}');
-      }
-    } catch (e) {
-      wrongInputlAlert('Error: $e');
+      // wrong mail
+      wrongInputlAlert(ex.code);
     }
   }
-
 
 
   //Wrong mail or password

@@ -1,16 +1,13 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:budgettrack/pages/plans.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -68,9 +65,6 @@ class Controller extends StatefulWidget {
 }
 
 class _ControllerState extends State<Controller> {
-  late StreamSubscription subscription;
-  var isdeviceconnected=false;
-  bool isaltertset=false;
   Uint8List? minpic;
   bool isContainerVisible = false;
   int newbalance = 0;
@@ -81,42 +75,8 @@ class _ControllerState extends State<Controller> {
       {required this.newbalance});
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  getConnectivity() =>
-      subscription = Connectivity().onConnectivityChanged.listen(
-            (ConnectivityResult result) async {
-          this.isdeviceconnected= await InternetConnectionChecker().hasConnection;
-          if (!isdeviceconnected && isaltertset == false) {
-            showDialogBox();
-            setState(() => isaltertset = true);
-          }
-        },
-      );
-  void dispose() {
-    subscription.cancel();
-    super.dispose();
-  }
-  showDialogBox() => showCupertinoDialog<String>(
-    context: context,
-    builder: (BuildContext context) => CupertinoAlertDialog(
-      title: const Text('No Connection'),
-      content: const Text('Please check your internet connectivity'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () async {
-            Navigator.pop(context, 'Cancel');
-            setState(() => isaltertset = false);
-            isdeviceconnected =
-            await InternetConnectionChecker().hasConnection;
-            if (!isdeviceconnected &&  isaltertset == false) {
-              showDialogBox();
-              setState(() =>  isaltertset  = true);
-            }
-          },
-          child: const Text('OK'),
-        ),
-      ],
-    ),
-  );
+
+  SharedPreferences? _prefs; //initialized the sharedpreferances
   static Future<String> getUserName() async {
     //get the username from Profile file
     User? user = _auth.currentUser; //created an instance to the User of Firebase authorized
@@ -355,9 +315,7 @@ class _ControllerState extends State<Controller> {
     }
   }
   void initState() {
-
     super.initState();
-    getConnectivity();
     getCurrency();
     loadStoredImage();
     fetchLatestTransactions();
@@ -539,29 +497,25 @@ class _ControllerState extends State<Controller> {
 
       appBar: AppBar(
         backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(
+          color: Colors.black,
+          size: 30,
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      Check()), //if the user click on the menu icon then move
+            );
+          },
+          icon: const Icon(Icons.menu),
+        ),
         titleSpacing:20.0,
         centerTitle: true,
         title:   Row(
           children: [
-            SizedBox(
-              width:32,
-              child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            Check()), //if the user click on the menu icon then move
-                  );
-                },
-                icon: const Icon(
-                  color: const Color(0xFF090950),
-                    Icons.menu_sharp,
-                  size:25,
-                ),
-              ),
-            ),
-
             Container(
               width:40,
               height:40,
@@ -572,7 +526,7 @@ class _ControllerState extends State<Controller> {
                   width: 3.0,
                 ),
               ),
-              margin: EdgeInsets.only(left:20,top:5,right:2),
+              margin: EdgeInsets.only(left:0,top:5,right:5),
               child:minpic != null
                   ? CircleAvatar(
                   radius:40,
@@ -583,120 +537,112 @@ class _ControllerState extends State<Controller> {
             ),
             Padding(
               padding: const EdgeInsets.only(left:10),
-                child: Column(
-                  children: [
-                Text(
-                "Welcome!",
-                  textAlign: TextAlign.center,
-                  //print the user name who are currently using with
-                  style: TextStyle(
-                    letterSpacing: 5.0,
-                    fontFamily:'Lexend-VariableFont',
-                    color:  Color(0xFF090950),
-                    fontSize:15,
-                  ),
+              child: Column(
+                children: [
+              Text(
+              "Welcome!",
+                textAlign: TextAlign.center,
+                //print the user name who are currently using with
+                style: TextStyle(
+                  letterSpacing: 5.0,
+                  fontFamily:'Lexend-VariableFont',
+                  color: Colors.black,
+                  fontSize:25,
                 ),
-                    SizedBox(
-                      width:160,
-                      child: FutureBuilder<String>(
-                          future: getUserName(),
-                          builder: (context, snapshot) {
-                            return Text(
-                              "${snapshot.data}",
-                              textAlign: TextAlign.center,
-                              //print the user name who are currently using with
-                              style: TextStyle(
-                                letterSpacing: 5.0,
-                                fontFamily:'Lexend-VariableFont',
-                                color:  Color(0xFF090950),
-                                fontSize:25,
-                                fontWeight: FontWeight.bold,
+              ),
+                  FutureBuilder<String>(
+                      future: getUserName(),
+                      builder: (context, snapshot) {
+                        return Text(
+                          "${snapshot.data}",
+                          textAlign: TextAlign.center,
+                          //print the user name who are currently using with
+                          style: TextStyle(
+                            letterSpacing: 5.0,
+                            fontFamily:'Lexend-VariableFont',
+                            color: Colors.black,
+                            fontSize:25,
+                            fontWeight: FontWeight.bold,
 
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            );
-                          }),
-                    ),
-
-                  ],
-                ),
-            ),
-
-            Icon(
-              Icons.waving_hand,
-              size:22,
-              color:  Color(0xFF090950),
-            ),
-            SizedBox(width:20),
-            Expanded(
-              child: FutureBuilder<int>(
-                future: getcountfromdb(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    // While the future is still loading, you can show a loading indicator or placeholder
-                    return CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.transparent),
-                    );
-                  } else if (snapshot.hasError) {
-                    // If there's an error, you can handle it here
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    // If the future has completed successfully, display the data
-                    return snapshot.data==0 ? IconButton(
-                      //if the count value is 0 then badge won't show otherwise it dissplays the unseen notification count
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-
-                          MaterialPageRoute(
-                              builder: (context) => Holder(
-                                totalBalance: newbalance,
-                              )), //create a constructor to the Holder class to display the notification list
+                          ),
                         );
-                      },
-                      icon: Icon(
-                        color: Color(0xFF090950),
-                        Icons.notifications_none,
-                        size: 32,
-                      ),
-
-                    )
-                        : badges.Badge(
-                      badgeContent: Text('${snapshot.data}'),
-                      position: badges.BadgePosition.topEnd(top: 2, end: 0),
-                      badgeAnimation: badges.BadgeAnimation.slide(),
-                      badgeStyle: badges.BadgeStyle(
-                        shape: badges.BadgeShape.circle,
-                        padding: EdgeInsets.all(8.0),
-                        badgeColor: Colors.red,
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Holder(
-                                  totalBalance: newbalance,
-                                )),
-                          );
-                        },
-                        icon: Icon(
-
-                          Icons.notifications,
-                          color:Color(0xFF090950),
-                          size: 32,
-                        ),
-                      ),
-                    );
-                  }
-                },
+                      }),
+                ],
               ),
             ),
+
           ],
         ),
+        actions: [
+
+          Icon(
+              Icons.waving_hand,
+              size:20,
+              color: Color(0xFF3AC6D5)
+          ),
+          FutureBuilder<int>(
+            future: getcountfromdb(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                // While the future is still loading, you can show a loading indicator or placeholder
+                return CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.transparent),
+                );
+              } else if (snapshot.hasError) {
+                // If there's an error, you can handle it here
+                return Text('Error: ${snapshot.error}');
+              } else {
+                // If the future has completed successfully, display the data
+                return snapshot.data==0 ? IconButton(
+                  //if the count value is 0 then badge won't show otherwise it dissplays the unseen notification count
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+
+                      MaterialPageRoute(
+                          builder: (context) => Holder(
+                            totalBalance: newbalance,
+                          )), //create a constructor to the Holder class to display the notification list
+                    );
+                  },
+                  icon: Icon(
+                    Icons.notifications_active_outlined,
+                    size: 40,
+                  ),
+
+                )
+                    : badges.Badge(
+                  badgeContent: Text('${snapshot.data}'),
+                  position: badges.BadgePosition.topEnd(top: 2, end: 0),
+                  badgeAnimation: badges.BadgeAnimation.slide(),
+                  badgeStyle: badges.BadgeStyle(
+                    shape: badges.BadgeShape.circle,
+                    padding: EdgeInsets.all(8.0),
+                    badgeColor: Colors.red,
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Holder(
+                              totalBalance: newbalance,
+                            )),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.notifications_active_outlined,
+                      size: 40,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
 
+      //bottom navigation bar
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
             color: Colors.white,
@@ -719,7 +665,9 @@ class _ControllerState extends State<Controller> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>HomePage()),
+                      builder: (context) => Controller(
+                        balance: newbalance,
+                      )),
                 );
               } else if (Index == 1) {
                 Navigator.push(
@@ -756,7 +704,7 @@ class _ControllerState extends State<Controller> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: FontAwesomeIcons.clipboardList,
+                icon: Icons.account_balance_wallet_outlined,
                 //text: 'Savings',
               ),
               GButton(
@@ -779,116 +727,98 @@ class _ControllerState extends State<Controller> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.only(left: 10, right: 10, top: 20),
-                height:290,
-                width: 460,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.8),
-                      spreadRadius: 5,
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-
+                width:double.infinity,
+                height:300,
+                color:Colors.white,
                 child: Container(
-                    margin:EdgeInsets.all(10),
+                  //container which carries the percentage indicator
+                  height: 270,
+                  width: 450,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color:  Color(0xFF5C6C84),  // Adjust color and opacity for the border
-                      width:8, // Adjust the width of the circular border
-                    ),
+                    color:Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.8),
+                        spreadRadius: 5,
+                        blurRadius: 10,
+                        offset: Offset(0,3),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  // margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: CircularPercentIndicator(
-                    radius: 125,
-                    lineWidth: 30,
-                    percent: percentage1,
+                    radius: 130,
+                    lineWidth:30,
+                    percent:percentage1,
                     animation: true,
                     animationDuration: 1000,
                     circularStrokeCap: CircularStrokeCap.round,
-                    progressColor: const Color(0xFFEEEEEE), // Progress color
-                    backgroundColor: const Color(0xFFC2DAFF),
-                    center: Container(
-                        width:190,
-                        height:190,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color:const Color(0xFF5C6C84), // Set the border color
-                            width:2.0, // Set the border width
+                    progressColor: const Color(0xFFEEEEEE),// Progress color
+                    backgroundColor: Color(0xFFC2DAFF),
+                    center: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          DateFormat('MMM dd').format(DateTime.now()),
+                          //time and date format
+                          style: const TextStyle(
+                            fontFamily:'Lexend-VariableFont',
+                            fontSize:30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
+                        TextButton(
+                          onPressed: () {
+                            ContainerVisibility();
+                          },
+                          child:FutureBuilder<double>(
+                            future: countPercenntage(),
+                            builder: (context, snapshot) {  if (snapshot.connectionState == ConnectionState.waiting) {
+                              // Handle the case where the Future is still running
+                              return CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              // Handle any errors that occurred during the Future execution
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              // Perform a null check before using snapshot.data
+                              if (snapshot.data != null) {
 
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                                final percentage = (snapshot.data!*100).toStringAsFixed(0);
 
-                          Text(
-                            DateFormat('MMM dd').format(DateTime.now()),
-                            //time and date format
-                            style: const TextStyle(
-                              fontFamily:'Lexend-VariableFont',
-                              fontSize:30,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF090950),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              ContainerVisibility();
-                            },
-                            child:FutureBuilder<double>(
-                              future: countPercenntage(),
-                              builder: (context, snapshot) {  if (snapshot.connectionState == ConnectionState.waiting) {
-                                // Handle the case where the Future is still running
-                                return CircularProgressIndicator();
-                              } else if (snapshot.hasError) {
-                                // Handle any errors that occurred during the Future execution
-                                return Text('Error: ${snapshot.error}');
+                                return Text(
+                                  '${percentage}%',
+                                  style: TextStyle(
+                                    fontFamily:'Lexend-VariableFont',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 50,
+                                    color: Colors.black,
+                                  ),
+                                );
                               } else {
-                                // Perform a null check before using snapshot.data
-                                if (snapshot.data != null) {
-
-                                  final percentage = (snapshot.data!*100).toStringAsFixed(0);
-
-                                  return Text(
-                                    '${percentage}%',
-                                    style: TextStyle(
-                                      fontFamily:'Lexend-VariableFont',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 50,
-                                      color:const Color(0xFF090950),
-                                    ),
-                                  );
-                                } else {
-                                  // Handle the case where snapshot.data is null
-                                  return Text('Data is null');
-                                }
+                                // Handle the case where snapshot.data is null
+                                return Text('Data is null');
                               }
-                              },
-                            ),
+                            }
+                            },
                           ),
-                          Text(
-                            'Remaining',
-                            style: TextStyle(
-                              fontFamily:'Lexend-VariableFont',
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF090950),
-                            ),
+                        ),
+                        Text(
+                          'Remaining',
+                          style: TextStyle(
+                            fontFamily:'Lexend-VariableFont',
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+
                   ),
                 ),
               ),
-
               SizedBox(height:10),
               Container(
                   width:375,
@@ -927,7 +857,7 @@ class _ControllerState extends State<Controller> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '${currency}${newbalance.toStringAsFixed(2)}',
+                                '${currency}${newbalance}',
                                 style: TextStyle(
                                   fontFamily:'Lexend-VariableFont',
                                   fontSize: 40,
@@ -939,7 +869,7 @@ class _ControllerState extends State<Controller> {
                                 style:TextStyle(
                                   fontFamily:'Lexend-VariableFont',
                                   fontSize:20,
-                                  color:const Color(0xFF090950),
+                                  color:Colors.black,
                                 ),
                               ),
                             ],
@@ -962,7 +892,7 @@ class _ControllerState extends State<Controller> {
                     style: TextStyle(
                       fontFamily:'Lexend-VariableFont',
                       fontSize: 20,
-                      color:const Color(0xFF090950),
+                      color:Colors.black,
                     ),
                   ),
                 ),
@@ -1001,20 +931,20 @@ class _ControllerState extends State<Controller> {
                                 fontFamily:'Lexend-VariableFont',
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color:Color(0xFF090950),
+                                color:Colors.black,
                               ),
                             ),
                           ),
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Container(
                               //this container is for the recent transactions
-                              width: 50.0,
-                              height: 50.0,
+                              width: 60.0,
+                              height: 60.0,
                               margin:
-                              const EdgeInsets.only(top:45, left: 10),
+                              const EdgeInsets.only(top: 35, left: 10),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
@@ -1029,57 +959,57 @@ class _ControllerState extends State<Controller> {
                                 ),
                                 child: this.latestexpense?.transactionName=='Transport'? Icon(
                                     CupertinoIcons.car_detailed,
-                                    size: 25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Food'?Icon(
                                     FontAwesomeIcons.burger,
-                                    size:25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Health'?Icon(
                                   Icons.monitor_heart_rounded,
-                                    size:25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Education'?Icon(
                                     Icons.cast_for_education,
-                                    size: 25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Fuel'?Icon(
                                     FontAwesomeIcons.oilCan,
-                                    size: 25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Donations'?Icon(
                                     FontAwesomeIcons.donate,
-                                    size:25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Bills'?Icon(
-                                    FontAwesomeIcons.clipboardList,
-                                    size:25,
+                                    FontAwesomeIcons.prescription,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Entertainment'?Icon(
                                     FontAwesomeIcons.microphone,
-                                    size:25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Others'?Icon(
                                     FontAwesomeIcons.handsAslInterpreting,
-                                    size: 25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Shopping'?Icon(
                                     FontAwesomeIcons.shoppingCart,
-                                    size: 25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :this.latestexpense?.transactionName=='Rental'?Icon(
                                     FontAwesomeIcons.house,
-                                    size: 25,
+                                    size: 40,
                                     color:const Color(0xFF090950)
                                 )
                                     :Container(
@@ -1087,10 +1017,10 @@ class _ControllerState extends State<Controller> {
                               ),
                             ),
                             Container(
-                              width: 50.0,
-                              height:50.0,
+                              width: 60.0,
+                              height: 60.0,
                               margin:
-                              const EdgeInsets.only(top:45, left: 10),
+                              const EdgeInsets.only(top: 35, left: 10),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
@@ -1105,27 +1035,27 @@ class _ControllerState extends State<Controller> {
                                 ),
                                 child: this.latestincome?.transactionName=='Salary'? Icon(
                                   FontAwesomeIcons.wallet,
-                                  size:25,
+                                  size: 40,
                                   color:Color(0xFF3AC6D5),
                                 )
                                     :this.latestincome?.transactionName=='Bonus'?Icon(
                                   FontAwesomeIcons.clockRotateLeft,
-                                  size:25,
+                                  size: 40,
                                   color:Color(0xFF3AC6D5),
                                 )
                                     :this.latestincome?.transactionName=='Gifts'?Icon(
                                   FontAwesomeIcons.gift,
-                                  size:25,
+                                  size: 40,
                                   color:Color(0xFF3AC6D5),
                                 )
                                     :this.latestincome?.transactionName=='Rental'?Icon(
                                   Icons.add_card_rounded,
-                                  size:25,
+                                  size: 40,
                                   color:Color(0xFF3AC6D5),
                                 )
                                     :this.latestincome?.transactionName=='Others'?Icon(
                                   FontAwesomeIcons.handsClapping,
-                                  size:25,
+                                  size: 40,
                                   color:Color(0xFF3AC6D5),
                                 )
                                     :Container(),
@@ -1135,19 +1065,19 @@ class _ControllerState extends State<Controller> {
                               width: 50.0,
                               height: 50.0,
                               margin:
-                              const EdgeInsets.only(top: 45, left: 10),
+                              const EdgeInsets.only(top: 35, left: 20),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color:const Color(0xFF85B6FF),
+                                  color:const Color(0xFFC2DAFF),
                                   width: 3.0,
                                 ),
                               ),
                               child: IconButton(
                                 icon: const Icon(
                                   FontAwesomeIcons.plus,
-                                  size: 25,
-                                  color:const Color(0xFF85B6FF),
+                                  size: 30,
+                                  color:Colors.blue,
                                 ),
                                 onPressed: () {
                                   Navigator.push(
@@ -1195,25 +1125,34 @@ class _ControllerState extends State<Controller> {
                           children: [
                             Align(
                               alignment: Alignment.topCenter,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 5, left: 5),
-                                child: Text(
-                                  'SAVINGS',
-                                  style: TextStyle(
-                                    fontFamily:'Lexend-VariableFont',
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color:Color(0xFF090950),
-                                  ),
+                              child: Text(
+                                'SAVINGS',
+                                style: TextStyle(
+                                  fontFamily:'Lexend-VariableFont',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color:Colors.black,
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(left:50,top:45,right:45),
-                              child: Icon(
-                                Icons.wallet,
-                                size:45,
-                                color:const Color(0xFF85B6FF),
+                            Align(
+                              alignment: Alignment.center,
+                              child:Stack(
+                                children: [
+                                  Icon(
+                                    Icons.wallet,
+                                    size: 55,
+                                    color: Colors.blue,
+                                  ),
+                                  Positioned(
+                                    top:25,
+                                    child: Icon(
+                                      Icons.currency_bitcoin,
+                                      size:35,
+                                      color:const Color(0xFFC2DAFF),
+                                    ),
+                                  ),
+                                ],
                               ),
                             )
 

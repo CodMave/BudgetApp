@@ -91,8 +91,9 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
   void userSignIn() async {
+
     if (usernameControll.text.isEmpty || passwordControll.text.isEmpty) {
-      wrongInputlAlert("User name or Password shouldn't be emptyed");
+      wrongInputlAlert();
       return;
     }
     showDialog(
@@ -104,33 +105,42 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
 
+    //sign in
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: usernameControll.text,
         password: passwordControll.text,
       );
-      // If successful, proceed with the next steps
-      if (mounted) {
-        setvalidity();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SplashScreen(),
-          ),
-        );
-      }
     } on FirebaseAuthException catch (ex) {
+
+
+      // wrong mail
       if (ex.code == 'user-not-found') {
-        wrongInputlAlert('User not found'); // Specify user not found error
-      } else if (ex.code == 'wrong-password') {
-        wrongInputlAlert('Incorrect password'); // Specify wrong password error
-      } else {
-        wrongInputlAlert('Error: ${ex.message}'); // For other unknown errors
+        wrongInputlAlert();
+        return;
+      }
+      //wrong password
+      else if (ex.code == 'wrong-password') {
+        wrongInputlAlert();
+        return ;
       }
     }
+
+    //loading circle end
+    if (mounted) {
+      setvalidity();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SplashScreen(),
+        ),
+      );
+    }
   }
+
   //Wrong mail or password
-  void wrongInputlAlert(String errorMessage) {
+
+  void wrongInputlAlert() {
     showDialog(
       context: context,
       builder: (context) {
@@ -141,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           backgroundColor: Colors.grey[700],
           title: Text(
-            errorMessage,
+            "Incorrect Creditentials",
             style: TextStyle(
               color: Colors.grey[300],
             ),
@@ -180,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                     height:180,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('lib/images/Logo.png'),
+                        image: AssetImage('lib/images/monkey.png'),
                         fit: BoxFit.cover,
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -371,6 +381,14 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
 
+
+                const SizedBox(width: 25),
+                //apple
+
+                MyTitle(
+                  imagePath: 'lib/images/apple.png',
+                  onTap: () => {},
+                ),
               ],
             ),
 

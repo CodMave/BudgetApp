@@ -1,7 +1,4 @@
-import 'package:budgettrack/pages/plans.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import '../components/bottomNav.dart';
 import '../components/datePicker.dart';
 import 'package:intl/intl.dart';
@@ -10,9 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../components/goalTiles.dart';
-import 'Summery.dart';
-import 'TextScanner.dart';
-import 'homePage.dart';
 
 class Goals extends StatefulWidget {
   final Function()? onTap;
@@ -546,132 +540,29 @@ class _GoalsState extends State<Goals> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar:  AppBar(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         backgroundColor: Colors.grey[100],
-        leading:   Padding(
-          padding: const EdgeInsets.only(left:15.0),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+        title: const Text(
+          'G O A L S',
+          style: TextStyle(
+            color: Colors.blue,
+            fontSize: 20,
           ),
         ),
-        title: Row(
-          children: [
-            SizedBox(
-              width:70,
-            ),
-            SizedBox(
-              width:200,
-              child: const Text('G O A L S',
-                  style: TextStyle(
-                    color: const Color(0xFF090950),
-                    fontSize: 20,
-                    fontFamily: 'Lexend-VariableFont',
-                  )),
-            ),
-            Icon(
-           Icons.track_changes_rounded,
-              size:25,
-              color: const Color(0xFF090950),
-            ),
-          ],
-        ),
-        elevation: 0,
         centerTitle: true,
+        elevation: 0.0,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 3,
-          ),
-          child: GNav(
-            backgroundColor: Colors.transparent,
-            color: const Color(0xFF090950),
-            activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.white,
-            gap:6,
-            onTabChange: (Index) {
-              //if the user click on the bottom navigation bar then it will move to the following pages
-              if (Index == 0) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>HomePage()),
-                );
-              } else if (Index == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>Pro()),
-                );
-              } else if (Index == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>PlansApp()),
-                );
-              } else if (Index == 3) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Goals()),
-                );
-              } else if (Index ==4) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
-                );
-              }
-            },
-            padding: const EdgeInsets.all(15),
-            tabs: const [
-              GButton(
-                icon: Icons.home,
-                //text: 'Home',
-              ),
-              GButton(
-                icon: Icons.align_vertical_bottom_outlined,
-                //text: 'Summary',
-              ),
-              GButton(
-                icon: FontAwesomeIcons.clipboardList,
-                //text: 'Savings',
-              ),
-              GButton(
-                icon: Icons.track_changes_rounded,
-                //text: 'Plans',
-              ),
-              GButton(
-                icon: Icons.document_scanner_outlined,
-                //text: 'Scan',
-              ),
-            ],
-          ),
-        ),
-      ),
+      //bottomNavigationBar: BottomNavigation(),
       body: Column(
         children: [
           const SizedBox(height: 5),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left:20.0,bottom:10),
-              child: Text('Running'
-                  ,style: const TextStyle(
-                    fontFamily:'Lexend-VariableFont',
-                    fontSize: 25,
-                    color: Color(0xFF090950),
-                  ),
-              ),
-            ),
-          ),
           //showing today date
 
           // Padding(
@@ -811,10 +702,8 @@ class _GoalsState extends State<Goals> {
                           child: Text(
                             dateKey,
                             style: const TextStyle(
-                              fontFamily:'Lexend-VariableFont',
-                              fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: Color(0xFF5C6C84),
+                              color: Colors.black,
                             ),
                           ),
                         ),

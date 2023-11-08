@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import '../components/plusButton.dart';
 import '../components/tranaction.dart';
@@ -22,8 +21,8 @@ class Expence extends StatefulWidget {
 
   @override
   _ExpenceState createState() => _ExpenceState(
-    nume: nume,
-  );
+        nume: nume,
+      );
 // You need to replace this with the correct way to get the instance of the _ExpenceState class
 }
 
@@ -38,7 +37,7 @@ class _ExpenceState extends State<Expence> {
   List<MyTransaction> transactions = [];
 
   final TextEditingController transactionNameController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool is_income = false;
   final formKey = GlobalKey<FormState>();
@@ -98,7 +97,7 @@ class _ExpenceState extends State<Expence> {
     email = user!.email!;
     if (user != null) {
       QuerySnapshot qs = await FirebaseFirestore.instance.collection(
-        //the query check wither the authentication email match with the email which is taken at the user details
+          //the query check wither the authentication email match with the email which is taken at the user details
           'userDetails').where('email', isEqualTo: email).limit(1).get();
 
       if (qs.docs.isNotEmpty) {
@@ -153,16 +152,16 @@ class _ExpenceState extends State<Expence> {
 
   //method to add new expence to the expenceID collection
   Future<void> addBalanceToFireStore(
-      String userId,
-      int balance,
-      int income,
-      int expence,
-      ) async {
+    String userId,
+    int balance,
+    int income,
+    int expence,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
       final CollectionReference expenceCollection =
-      firestore.collection('userDetails').doc(userId).collection('Balance');
+          firestore.collection('userDetails').doc(userId).collection('Balance');
 
       await expenceCollection.add({
         'Balance': balance,
@@ -177,10 +176,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new expence to the expenceID collection
 
   Future<void> addExpenceToFireStore(
-      String userId,
-      String transactionName,
-      int transactionAmount,
-      ) async {
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -225,11 +224,11 @@ class _ExpenceState extends State<Expence> {
   }
 
   Future<void> updateBalance(
-      String userId,
-      int balance,
-      int income,
-      int expence,
-      ) async {
+    String userId,
+    int balance,
+    int income,
+    int expence,
+  ) async {
     // Define the 'username' variable
 
     // Update the balance for the current month
@@ -265,10 +264,10 @@ class _ExpenceState extends State<Expence> {
   //method to add new income to the incomeID collection
 
   Future<void> addIncomeToFireStore(
-      String userId,
-      String transactionName,
-      int transactionAmount,
-      ) async {
+    String userId,
+    String transactionName,
+    int transactionAmount,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -467,7 +466,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('expenceID')
           .where('timestamp',
-          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -476,7 +475,7 @@ class _ExpenceState extends State<Expence> {
           .doc(userId)
           .collection('incomeID')
           .where('timestamp',
-          isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
+              isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -595,8 +594,8 @@ class _ExpenceState extends State<Expence> {
 
   bool is_income_used = true; // Initialize is_income to true
   bool canToggle = true; // Allow initial toggling
-  Color expenceColor = Color(0xFF090950); // Color for "Expence"
-  Color incomeColor =Color(0xFF3AC6D5); // Color for "Income"
+  Color expenceColor = Colors.red; // Color for "Expence"
+  Color incomeColor = Colors.green; // Color for "Income"
 
   void newTransaction() {
     selectedCategory = 'Others';
@@ -632,10 +631,10 @@ class _ExpenceState extends State<Expence> {
                             value: is_income_used,
                             onChanged: canToggle
                                 ? (newValue) {
-                              setState(() {
-                                is_income_used = newValue;
-                              });
-                            }
+                                    setState(() {
+                                      is_income_used = newValue;
+                                    });
+                                  }
                                 : null, // Disable toggle button
                           ),
 
@@ -686,34 +685,34 @@ class _ExpenceState extends State<Expence> {
                                 hintText: "Select the Category",
                               ),
                               value:
-                              selectedCategory, // Make sure this matches one of the items in the list
+                                  selectedCategory, // Make sure this matches one of the items in the list
                               onChanged: (String? newValue) {
                                 setState(() {
                                   selectedCategory = newValue!;
                                   transactionNameController.text = newValue;
                                   canToggle =
-                                  false; // Disable toggle after category is selected
+                                      false; // Disable toggle after category is selected
                                 });
                               },
                               items: is_income_used
                                   ? incomeCategories
-                                  .map<DropdownMenuItem<String>>(
-                                    (String category) =>
-                                    DropdownMenuItem<String>(
-                                      value: category,
-                                      child: Text(category),
-                                    ),
-                              )
-                                  .toList()
+                                      .map<DropdownMenuItem<String>>(
+                                        (String category) =>
+                                            DropdownMenuItem<String>(
+                                          value: category,
+                                          child: Text(category),
+                                        ),
+                                      )
+                                      .toList()
                                   : expenceCategories
-                                  .map<DropdownMenuItem<String>>(
-                                    (String category) =>
-                                    DropdownMenuItem<String>(
-                                      value: category,
-                                      child: Text(category),
-                                    ),
-                              )
-                                  .toList(),
+                                      .map<DropdownMenuItem<String>>(
+                                        (String category) =>
+                                            DropdownMenuItem<String>(
+                                          value: category,
+                                          child: Text(category),
+                                        ),
+                                      )
+                                      .toList(),
                             ),
                           ),
                         ],
@@ -751,7 +750,7 @@ class _ExpenceState extends State<Expence> {
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
                       String transactionType =
-                      is_income_used ? "Income" : "Expence";
+                          is_income_used ? "Income" : "Expence";
                       int transactionAmount = int.parse(amountController.text);
 
                       String transactionName = transactionNameController.text;
@@ -809,119 +808,46 @@ class _ExpenceState extends State<Expence> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar:  AppBar(
-        backgroundColor: Colors.grey[100],
-        leading:   Padding(
-          padding: const EdgeInsets.only(left:15.0),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color:  const Color(0xFF090950),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+      appBar: AppBar(
+        backgroundColor:
+            Colors.grey[100], // Set the background color of the App Bar
+        title: const Text(
+          'T R A N S A C T I O N S',
+          style: TextStyle(
+            fontFamily: 'Lexend-VariableFont',
+            color: const Color(0xFF090950),
           ),
         ),
-        title: Row(
-          children: [
-            SizedBox(
-              width:15,
-            ),
-            SizedBox(
-              width:250,
-              child: Text(
-
-                'T R A N S A C T I O N S',
-                style: TextStyle(
-                  fontFamily:'Lexend-VariableFont',
-                  color:  const Color(0xFF090950),
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomePage(),
               ),
-            ),
-            Icon(
-              Icons.compare_arrows,
-              size: 30,
-              color: const Color(0xFF090950),
-            ),
-          ],
+            );
+          },
         ),
-        elevation: 0,
-        centerTitle: true,
+        actions: const [
+          Icon(Icons.compare_arrows, size: 40, color: Color(0xFF3AC6D5)),
+        ],
+        centerTitle: true, // Center the title
+        elevation: 0.0, // Removes the shadow
+        automaticallyImplyLeading: false,
       ),
-
-
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20))),
+        child: const Padding(
+          padding: EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 3,
-          ),
-          child: GNav(
-            backgroundColor: Colors.transparent,
-            color: const Color(0xFF090950),
-            activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.white,
-            gap:6,
-            onTabChange: (Index) {
-              //if the user click on the bottom navigation bar then it will move to the following pages
-              if (Index == 0) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>HomePage()),
-                );
-              } else if (Index == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>Pro()),
-                );
-              } else if (Index == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>PlansApp()),
-                );
-              } else if (Index == 3) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Goals()),
-                );
-              } else if (Index ==4) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
-                );
-              }
-            },
-            padding: const EdgeInsets.all(15),
-            tabs: const [
-              GButton(
-                icon: Icons.home,
-                //text: 'Home',
-              ),
-              GButton(
-                icon: Icons.align_vertical_bottom_outlined,
-                //text: 'Summary',
-              ),
-              GButton(
-                icon: FontAwesomeIcons.clipboardList,
-                //text: 'Savings',
-              ),
-              GButton(
-                icon: Icons.track_changes_rounded,
-                //text: 'Plans',
-              ),
-              GButton(
-                icon: Icons.document_scanner_outlined,
-                //text: 'Scan',
-              ),
-            ],
           ),
         ),
       ),
@@ -985,7 +911,7 @@ class _ExpenceState extends State<Expence> {
                           Icon(
                             Icons.account_balance_wallet_outlined,
                             size: 35,
-                            color: const Color(0xFF090950),
+                            color: Colors.grey[100],
                           ),
                         ],
                       ),
@@ -1009,7 +935,7 @@ class _ExpenceState extends State<Expence> {
                         "$currencySymbol${totalBalance.toStringAsFixed(2)}",
                         style: const TextStyle(
                           fontFamily: 'Lexend-VariableFont',
-                          color: const Color(0xFF090950),
+                          color: Colors.black,
                           fontSize: 40,
                         ),
                       ),
@@ -1053,7 +979,7 @@ class _ExpenceState extends State<Expence> {
                                     'Income',
                                     style: TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: Color(0xFF5C6C84),
+                                      color: Colors.black,
                                       fontSize: 22,
                                     ),
                                   ),
@@ -1066,7 +992,7 @@ class _ExpenceState extends State<Expence> {
                                     currencySymbol,
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color:const Color(0xFF090950),
+                                      color: Colors.black,
                                       fontSize: 25,
                                     ),
                                   ),
@@ -1074,7 +1000,7 @@ class _ExpenceState extends State<Expence> {
                                     "${lastIncomeTransaction?.transactionAmount.toStringAsFixed(2) ?? '0'}",
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color:const Color(0xFF090950),
+                                      color: Colors.black,
                                       fontSize: 25,
                                     ),
                                   ),
@@ -1105,7 +1031,7 @@ class _ExpenceState extends State<Expence> {
                                     'Expence',
                                     style: TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: Color(0xFF5C6C84),
+                                      color: Colors.black,
                                       fontSize: 22,
                                     ),
                                   ),
@@ -1118,7 +1044,7 @@ class _ExpenceState extends State<Expence> {
                                     currencySymbol,
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: const Color(0xFF090950),
+                                      color: Colors.black,
                                       fontSize: 25,
                                     ),
                                   ),
@@ -1126,7 +1052,7 @@ class _ExpenceState extends State<Expence> {
                                     "${lastExpenseTransaction?.transactionAmount.toStringAsFixed(2) ?? '0'}",
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: const Color(0xFF090950),
+                                      color: Colors.black,
                                       fontSize: 25,
                                     ),
                                   ),
@@ -1212,7 +1138,7 @@ class _ExpenceState extends State<Expence> {
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
                     if (selectedFilterIndex ==
-                        0 || // Show all when 'All' is selected
+                            0 || // Show all when 'All' is selected
                         (selectedFilterIndex == 1 &&
                             transactions[index].transactionType ==
                                 'Income') || // Show income when 'Income' is selected
@@ -1222,7 +1148,7 @@ class _ExpenceState extends State<Expence> {
                       return MyTransaction(
                         transactionName: transactions[index].transactionName,
                         transactionAmount:
-                        transactions[index].transactionAmount,
+                            transactions[index].transactionAmount,
                         transactionType: transactions[index].transactionType,
                         timestamp: transactions[index].timestamp,
                         currencySymbol: currencySymbol,

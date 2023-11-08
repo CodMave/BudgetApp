@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -637,9 +636,9 @@ class _HolderState extends State<Holder> {
           ),
           child: GNav(
             backgroundColor: Colors.transparent,
-            color: const Color(0xFF090950),
+            color: const Color(0xFF85B6FF),
             activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.white,
+            tabBackgroundColor: Colors.grey.shade400,
             gap:6,
             onTabChange: (Index) {
               //if the user click on the bottom navigation bar then it will move to the following pages
@@ -647,7 +646,9 @@ class _HolderState extends State<Holder> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>HomePage()),
+                      builder: (context) => Controller(
+                        balance: newbalance,
+                      )),
                 );
               } else if (Index == 1) {
                 Navigator.push(
@@ -684,7 +685,7 @@ class _HolderState extends State<Holder> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: FontAwesomeIcons.clipboardList,
+                icon: Icons.account_balance_wallet_outlined,
                 //text: 'Savings',
               ),
               GButton(
