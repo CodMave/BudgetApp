@@ -735,32 +735,44 @@ class _ProState extends State<Pro> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar:AppBar(
         backgroundColor: Colors.grey[100],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Colors.black,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: [
-          Icon(
-            Icons.align_vertical_bottom_outlined,
-            size: 30,
-            color: Color(0xFF3AC6D5),
+        leading: Padding(
+          padding: const EdgeInsets.only(left:18),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            color:const Color(0xFF090950),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomePage(),
+                ),
+              );
+            },
           ),
-        ],
-        title: const Text('S U M M E R Y',
-            style: TextStyle(
-              color: const Color(0xFF090950),
-              fontSize: 20,
-              fontFamily: 'Lexend-VariableFont',
-            )),
+        ),
+        title:Padding(
+          padding: const EdgeInsets.only(left:65.0),
+          child: Row(
+            children: [
+
+              const Text(
+                'S U M M E R Y',
+                style: TextStyle(
+                  fontFamily: 'Lexend-VariableFont',
+                  color: const Color(0xFF090950),
+                ),
+              ),
+              SizedBox(width:70),
+              Icon(Icons.align_vertical_bottom_outlined,size: 30, color: const Color(0xFF090950),),
+            ],
+          ),
+        ),
         centerTitle: true,
         elevation: 0,
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar:Container(
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: const BorderRadius.only(
@@ -782,9 +794,7 @@ class _ProState extends State<Pro> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Controller(
-                        balance: newbalance,
-                      )),
+                      builder: (context) => HomePage()),
                 );
               } else if (Index == 1) {
                 Navigator.push(
@@ -821,7 +831,7 @@ class _ProState extends State<Pro> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.account_balance_wallet_outlined,
+                icon: Icons.format_list_bulleted,
                 //text: 'Savings',
               ),
               GButton(
@@ -870,6 +880,7 @@ class _ProState extends State<Pro> {
                       child: Text(
                         'Weekly',
                         style: TextStyle(
+                          color: const Color(0xFF090950),
                           fontFamily: 'Lexend-VariableFont',
                           fontSize: 15,
                         ),
@@ -894,6 +905,7 @@ class _ProState extends State<Pro> {
                       child: Text(
                         'Monthly',
                         style: TextStyle(
+                          color: const Color(0xFF090950),
                           fontFamily: 'Lexend-VariableFont',
                           fontSize: 15,
                         ),
@@ -918,6 +930,7 @@ class _ProState extends State<Pro> {
                       child: Text(
                         'Yearly',
                         style: TextStyle(
+                          color: const Color(0xFF090950),
                           fontFamily: 'Lexend-VariableFont',
                           fontSize: 15,
                         ),
@@ -970,6 +983,8 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            blurRadius:2,
                             offset: Offset(0, 2),
                           )
                         ],
@@ -1032,6 +1047,8 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            blurRadius:2,
                             offset: Offset(0, 2),
                           )
                         ],
@@ -1119,8 +1136,10 @@ class _ProState extends State<Pro> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
+                                color: Colors.grey.withOpacity(0.8),
+                                blurRadius:2,
                                 offset: Offset(0, 2),
-                              ),
+                              )
                             ],
                           ),
                           child: BarChart(
@@ -1199,11 +1218,11 @@ class _ProState extends State<Pro> {
                                   padding: const EdgeInsets.only(
                                       left: 5), // Adjust top padding here
                                   child: Text(
-                                    'Savings',
+                                    'Income',
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
                                       fontSize: 10,
-                                      color: Colors.black,
+                                      color: Color(0xFF5C6C84),
                                     ),
                                   ),
                                 ),
@@ -1232,7 +1251,7 @@ class _ProState extends State<Pro> {
                                     style: TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
                                       fontSize: 10,
-                                      color: Colors.black,
+                                      color:Color(0xFF5C6C84),
                                     ),
                                   ),
                                 ),
@@ -1290,8 +1309,7 @@ class _ProState extends State<Pro> {
                                                   FontWeight.bold,
                                                   fontFamily:
                                                   'Lexend-VariableFont',
-                                                  color: Color.fromARGB(
-                                                      236, 97, 183, 226),
+                                                  color: const Color(0xFF316F9B),
                                                 ),
                                               ),
                                             ),
@@ -1302,8 +1320,7 @@ class _ProState extends State<Pro> {
                                               height: 20,
                                               width: 40,
                                               decoration: BoxDecoration(
-                                                color: Color.fromARGB(
-                                                    255, 183, 203, 250),
+                                                color: const Color(0xFFC2DAFF),
                                                 borderRadius:
                                                 BorderRadius
                                                     .circular(10),
@@ -1318,7 +1335,7 @@ class _ProState extends State<Pro> {
                                                     fontFamily:
                                                     'Lexend-VariableFont',
                                                     color: Color(
-                                                        0xFC0095F2),
+                                                        0xFF5C6C84),
                                                   ),
                                                 ),
                                               ),
@@ -1386,6 +1403,8 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            blurRadius:2,
                             offset: Offset(0, 2),
                           )
                         ],
@@ -1421,7 +1440,7 @@ class _ProState extends State<Pro> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
+                                  color:Color(0xFF5C6C84),
                                 ),
                               ),
                               Text(
@@ -1447,6 +1466,8 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            blurRadius:2,
                             offset: Offset(0, 2),
                           )
                         ],
@@ -1482,7 +1503,7 @@ class _ProState extends State<Pro> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
+                                  color: Color(0xFF5C6C84),
                                 ),
                               ),
                               Text(
@@ -1532,8 +1553,10 @@ class _ProState extends State<Pro> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
+                                color: Colors.grey.withOpacity(0.8),
+                                blurRadius:2,
                                 offset: Offset(0, 2),
-                              ),
+                              )
                             ],
                           ),
                           child: LineChart(
@@ -1573,10 +1596,10 @@ class _ProState extends State<Pro> {
                                 ),
                               ),
                               minX: 1,
-                              maxX: 31, // Adjust the maximum X value for the number of months
+                              maxX: 30, // Adjust the maximum X value for the number of months
                               minY: 0,
                               maxY:
-                                  100000, // Adjust the maximum Y value as needed
+                                  10000, // Adjust the maximum Y value as needed
                               lineBarsData: [
                                 LineChartBarData(
                                   spots: [
@@ -1626,11 +1649,11 @@ class _ProState extends State<Pro> {
                                   padding: const EdgeInsets.only(
                                       left: 5), // Adjust top padding here
                                   child: Text(
-                                    'Savings',
+                                    'Income',
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
                                       fontSize: 10,
-                                      color: Colors.black,
+                                      color:Color(0xFF5C6C84),
                                     ),
                                   ),
                                 ),
@@ -1659,7 +1682,7 @@ class _ProState extends State<Pro> {
                                     style: TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
                                       fontSize: 10,
-                                      color: Colors.black,
+                                      color: Color(0xFF5C6C84),
                                     ),
                                   ),
                                 ),
@@ -1813,6 +1836,8 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            blurRadius:2,
                             offset: Offset(0, 2),
                           )
                         ],
@@ -1849,7 +1874,7 @@ class _ProState extends State<Pro> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
+                                  color: Color(0xFF5C6C84),
                                 ),
                               ),
                               Text(
@@ -1875,6 +1900,8 @@ class _ProState extends State<Pro> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            blurRadius:2,
                             offset: Offset(0, 2),
                           )
                         ],
@@ -1910,7 +1937,7 @@ class _ProState extends State<Pro> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
+                                  color:Color(0xFF5C6C84),
                                 ),
                               ),
                               Text(
@@ -1960,8 +1987,10 @@ class _ProState extends State<Pro> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
+                                color: Colors.grey.withOpacity(0.8),
+                                blurRadius:2,
                                 offset: Offset(0, 2),
-                              ),
+                              )
                             ],
                           ),
                           child: BarChart(
@@ -1997,7 +2026,7 @@ class _ProState extends State<Pro> {
                               barGroups: [
                                 for(int i=0;i<yearly_savings!.length;i++)
                                 BarChartGroupData(
-                                  x: i+22,
+                                  x:i+DateTime.now().year.toInt()%100,
                                   barRods: [
                                     BarChartRodData(
                                         toY:
@@ -2076,7 +2105,6 @@ class _ProState extends State<Pro> {
                                     style: TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
                                       fontSize: 10,
-                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
@@ -2145,8 +2173,7 @@ class _ProState extends State<Pro> {
                                               height: 20,
                                               width: 40,
                                               decoration: BoxDecoration(
-                                                color: Color.fromARGB(
-                                                    255, 183, 203, 250),
+                                                color: Color(0xFFC2DAFF),
                                                 borderRadius:
                                                     BorderRadius
                                                         .circular(10),
@@ -2161,7 +2188,7 @@ class _ProState extends State<Pro> {
                                                     fontFamily:
                                                         'Lexend-VariableFont',
                                                     color: Color(
-                                                        0xFC0095F2),
+                                                        0xFF5C6C84),
                                                   ),
                                                 ),
                                               ),

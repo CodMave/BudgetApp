@@ -30,7 +30,6 @@ class Check extends StatelessWidget {
     );
   }
 }
-
 class Profile extends StatefulWidget {
   FirebaseAuth auth = FirebaseAuth.instance;
   Profile({
@@ -47,6 +46,7 @@ class Profile extends StatefulWidget {
 class _Profile extends State<Profile> {
   String? selectedCurrency = "USD";
   //private class of the Profile class
+
   List currency = [
     'USD',
     'EUR',
@@ -448,27 +448,33 @@ class _Profile extends State<Profile> {
       appBar: AppBar(
 
         backgroundColor: Colors.grey[100],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Colors.black,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      HomePage()
+
+        title: Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              color: Color(0xFF090950),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HomePage()
+                  ),
+                );
+              },
+            ),
+            SizedBox(width:95),
+            Text(
+              'M E N U',
+              style: TextStyle(
+                fontFamily:'Lexend-VariableFont',
+                color: Color(0xFF090950),
+                fontSize: 20.0,
+                //fontWeight: FontWeight.bold,
               ),
-            );
-          },
-        ),
-        title: Text(
-          'P R O F I L E',
-          style: TextStyle(
-            fontFamily:'Lexend-VariableFont',
-            color: Colors.blue,
-            fontSize: 20.0,
-            //fontWeight: FontWeight.bold,
-          ),
+            ),
+          ],
         ),
         centerTitle: true,
         elevation: 0,
@@ -485,9 +491,9 @@ class _Profile extends State<Profile> {
           ),
           child: GNav(
             backgroundColor: Colors.transparent,
-            color: const Color(0xFF85B6FF),
+            color: const Color(0xFF090950),
             activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.grey.shade400,
+            tabBackgroundColor: Colors.white,
             gap:6,
             onTabChange: (Index) {
               //if the user click on the bottom navigation bar then it will move to the following pages
@@ -495,9 +501,7 @@ class _Profile extends State<Profile> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Controller(
-                        balance: newbalance,
-                      )),
+                      builder: (context) => HomePage()),
                 );
               } else if (Index == 1) {
                 Navigator.push(
@@ -534,7 +538,7 @@ class _Profile extends State<Profile> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.account_balance_wallet_outlined,
+                icon: Icons.format_list_bulleted,
                 //text: 'Savings',
               ),
               GButton(
@@ -561,11 +565,11 @@ class _Profile extends State<Profile> {
                   SizedBox(height:10),
                   Container(
                     margin:EdgeInsets.only(left:20,right:20),
-                    width: double.infinity,
+                    width: 400,
                     height:320,
 
                     decoration:BoxDecoration(
-                        color: Color(0xFF85B6FF),
+                        color: Color(0xFFD5E3FA),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.5),
@@ -618,6 +622,7 @@ class _Profile extends State<Profile> {
                           ),
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
                               width:100,
@@ -641,24 +646,24 @@ class _Profile extends State<Profile> {
                                   style: TextStyle(
                                     fontFamily:'Lexend-VariableFont',
                                     fontSize:17,
-                                    color: Colors.black,
+                                    color: Color(0xFF5C6C84),
                                   ),
                                 ),
                               ),
                             ),
                             Container(
                               //this container display the current user's name as text
-                              width:180,
+                              width:150,
                               height:45,
                               margin:EdgeInsets.only(left:20),
                               decoration: BoxDecoration(
-                                  color:Color(0xFF85B6FF),
+                                  color:Color(0xFFC2DAFF),
                                   boxShadow: [
                                   BoxShadow(
-                                    color: Colors.white.withOpacity(1.0),
-                                    spreadRadius: 2,
-                                    blurRadius:8,
-                                    offset: Offset(0,3),
+                                    color: Colors.white,
+                                    spreadRadius:3,
+                                    blurRadius:3,
+                                    offset: Offset(0,2),
                                   ),
                                   ],
                                   borderRadius: BorderRadius.only(topRight:Radius.circular(20),bottomRight:Radius.circular(20))
@@ -671,8 +676,8 @@ class _Profile extends State<Profile> {
                                         "${snapshot.data}",
                                         style: TextStyle(
                                           fontFamily:'Lexend-VariableFont',
-                                          color: Colors.black,
-                                          fontSize:17,
+                                          color: Color(0xFF090950),
+                                          fontSize:20,
                                         ),
                                       ),
                                     );
@@ -682,6 +687,7 @@ class _Profile extends State<Profile> {
                         ),
                         SizedBox(height:5,),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
                               width:100,
@@ -705,24 +711,24 @@ class _Profile extends State<Profile> {
                                   style: TextStyle(
                                     fontFamily:'Lexend-VariableFont',
                                     fontSize:17,
-                                    color: Colors.black,
+                                    color: Color(0xFF5C6C84),
                                   ),
                                 ),
                               ),
                             ),
                             Container(
                               //this container display the current user's name as text
-                              width:180,
+                              width:150,
                               height:45,
                               margin:EdgeInsets.only(left:20),
                               decoration: BoxDecoration(
-                                  color: Color(0xFF85B6FF),
+                                  color: Color(0xFFC2DAFF),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.white.withOpacity(1.0),
-                                      spreadRadius: 2,
-                                      blurRadius:8,
-                                      offset: Offset(0,3),
+                                      color: Colors.white,
+                                      spreadRadius:3,
+                                      blurRadius:3,
+                                      offset: Offset(0,2),
                                     ),
                                   ],
                                   borderRadius: BorderRadius.only(topRight:Radius.circular(20),bottomRight:Radius.circular(20))
@@ -735,8 +741,8 @@ class _Profile extends State<Profile> {
                                         "${snapshot.data}",
                                         style: TextStyle(
                                           fontFamily:'Lexend-VariableFont',
-                                          color: Colors.black,
-                                          fontSize: 17,
+                                          color:  Color(0xFF090950),
+                                          fontSize:20,
                                         ),
                                       ),
                                     );
@@ -757,6 +763,7 @@ class _Profile extends State<Profile> {
                         margin:EdgeInsets.only(top:10),
                         height:40,
                         width:double.infinity,
+
                         color: Color(0xFFEEEEEE),
                         child:Align(
                           alignment: Alignment.centerLeft,
@@ -766,7 +773,7 @@ class _Profile extends State<Profile> {
                               'Settings',
                               style: TextStyle(
                                 fontFamily:'Lexend-VariableFont',
-                                color: Colors.black,
+                                color:Color(0xFF090950),
                                 fontSize: 17,
                               ),
                             ),
@@ -861,7 +868,7 @@ class _Profile extends State<Profile> {
                               'Version                       1.0.0',
                               style: TextStyle(
                                 fontFamily:'Lexend-VariableFont',
-                                color: Colors.black,
+                                color: Color(0xFF090950),
                                 fontSize: 17,
                               ),
                             ),
@@ -881,7 +888,7 @@ class _Profile extends State<Profile> {
                               'Rate Us',
                               style: TextStyle(
                                 fontFamily:'Lexend-VariableFont',
-                                color: Colors.black,
+                                color:Color(0xFF090950),
                                 fontSize: 17,
                               ),
                             ),

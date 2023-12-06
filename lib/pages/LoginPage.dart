@@ -91,11 +91,11 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
   void userSignIn() async {
-
     if (usernameControll.text.isEmpty || passwordControll.text.isEmpty) {
-      wrongInputlAlert();
+      wrongInputlAlert('Username or password can\'t empty');
       return;
     }
+
     showDialog(
       context: context,
       builder: (context) {
@@ -105,42 +105,37 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
 
-    //sign in
     try {
+      // Sign in
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: usernameControll.text,
         password: passwordControll.text,
       );
+
+      // Sign-in successful
+      if (mounted) {
+        setvalidity();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SplashScreen(),
+          ),
+        );
+      }
     } on FirebaseAuthException catch (ex) {
-
-
-      // wrong mail
-      if (ex.code == 'user-not-found') {
-        wrongInputlAlert();
-        return;
+      // Handle sign-in errors
+      if (ex.code == 'user-not-found' || ex.code == 'wrong-password') {
+        wrongInputlAlert('Invalid username or password');
+      } else {
+        wrongInputlAlert('Invalid username');
       }
-      //wrong password
-      else if (ex.code == 'wrong-password') {
-        wrongInputlAlert();
-        return ;
-      }
-    }
-
-    //loading circle end
-    if (mounted) {
-      setvalidity();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SplashScreen(),
-        ),
-      );
     }
   }
 
+
   //Wrong mail or password
 
-  void wrongInputlAlert() {
+  void wrongInputlAlert(String error) {
     showDialog(
       context: context,
       builder: (context) {
@@ -151,9 +146,9 @@ class _LoginPageState extends State<LoginPage> {
           ),
           backgroundColor: Colors.grey[700],
           title: Text(
-            "Incorrect Creditentials",
+           error,
             style: TextStyle(
-              color: Colors.grey[300],
+              color:  const Color(0xFF090950),
             ),
           ),
         );
@@ -190,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                     height:180,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('lib/images/monkey.png'),
+                        image: AssetImage('lib/images/Logo.png'),
                         fit: BoxFit.cover,
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -285,7 +280,9 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text(
                       "Or Continue With",
-                      style: TextStyle(color: Colors.grey[700]),
+                      style: TextStyle(color: Colors.grey[700]
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   Expanded(
@@ -383,12 +380,7 @@ class _LoginPageState extends State<LoginPage> {
 
 
                 const SizedBox(width: 25),
-                //apple
 
-                MyTitle(
-                  imagePath: 'lib/images/apple.png',
-                  onTap: () => {},
-                ),
               ],
             ),
 

@@ -147,31 +147,41 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
                     }),
               Scaffold(
                 appBar: AppBar(
-
-                  backgroundColor: Colors.white,
-                  title: Text('S C A N',  style: TextStyle(
-
-                    fontFamily:'Lexend-VariableFont',
-                    color:    const Color(0xFF090950),
-                    fontSize: 20.0,
-                    //fontWeight: FontWeight.bold,
-                  ),
-                  ),
-                  leading:  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    color: Colors.black,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  actions: [
-                    Icon(
-                      Icons.document_scanner_outlined,
-                      size: 30,
-                      color: Color(0xFF3AC6D5),
+                  backgroundColor: Colors.grey[100],
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left:23),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      color:const Color(0xFF090950),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomePage(),
+                          ),
+                        );
+                      },
                     ),
-                  ],
+                  ),
+                  title:Padding(
+                    padding: const EdgeInsets.only(left:85.0),
+                    child: Row(
+                      children: [
+
+                        const Text(
+                          'S C A N',
+                          style: TextStyle(
+                            fontFamily: 'Lexend-VariableFont',
+                            color: const Color(0xFF090950),
+                          ),
+                        ),
+                        SizedBox(width:110),
+                        Icon(Icons.document_scanner_outlined, size: 30, color: const Color(0xFF090950),),
+                      ],
+                    ),
+                  ),
                   centerTitle: true,
+                  elevation: 0,
                 ),
                 bottomNavigationBar: Container(
                   decoration: BoxDecoration(
@@ -436,7 +446,7 @@ class _ResultState extends State<Result> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
             ),
-            content: Text('Any floating value not contains in the scanned text Please sacanned agin'),
+            content: Text('Please Scan Valid Receipt'),
             actions: [
               TextButton(
                 child: Text('OK'),
@@ -656,38 +666,42 @@ class _ResultState extends State<Result> {
         return false; // Return true if you want to allow the back button, or false to prevent it.
       },
       child: Scaffold(
-        appBar: AppBar(
-          title:Text('S C A N',  style: TextStyle(
-
-            fontFamily:'Lexend-VariableFont',
-            color:    const Color(0xFF090950),
-            fontSize: 20.0,
-            //fontWeight: FontWeight.bold,
-          ),
-          ),
-
-          actions: [
-            Icon(
-              Icons.document_scanner_outlined,
-              size: 30,
-              color: Color(0xFF3AC6D5),
+        appBar:  AppBar(
+          backgroundColor: Colors.grey[100],
+          leading: Padding(
+            padding: const EdgeInsets.only(left:18),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color:const Color(0xFF090950),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ),
+                );
+              },
             ),
-          ],
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            icon:Icon(Icons.arrow_back,
-              color: Colors.black,
-              size: 40,),
-            onPressed:  () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>HomePage()
-                ),
-              );
-            },
           ),
+          title:Padding(
+            padding: const EdgeInsets.only(left:90.0),
+            child: Row(
+              children: [
+
+                const Text(
+                  'S C A N',
+                  style: TextStyle(
+                    fontFamily: 'Lexend-VariableFont',
+                    color: const Color(0xFF090950),
+                  ),
+                ),
+                SizedBox(width:110),
+                Icon( Icons.document_scanner_outlined, size: 30, color: const Color(0xFF090950),),
+              ],
+            ),
+          ),
+          centerTitle: true,
+          elevation: 0,
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
@@ -711,9 +725,7 @@ class _ResultState extends State<Result> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Controller(
-                          balance: newbalance,
-                        )),
+                        builder: (context) => HomePage()),
                   );
                 } else if (Index == 1) {
                   Navigator.push(
@@ -750,7 +762,7 @@ class _ResultState extends State<Result> {
                   //text: 'Summary',
                 ),
                 GButton(
-                  icon: Icons.account_balance_wallet_outlined,
+                  icon: Icons.format_list_bulleted,
                   //text: 'Savings',
                 ),
                 GButton(
@@ -770,8 +782,17 @@ class _ResultState extends State<Result> {
           child: SingleChildScrollView(
               child:Column(
                 children: [
+                  Text('Payment Recipt',  style: TextStyle(
+
+                    fontFamily:'Lexend-VariableFont',
+                    color:    const Color(0xFF090950),
+                    fontSize:30.0,
+                    //fontWeight: FontWeight.bold,
+                  ),
+                    textAlign: TextAlign.center,
+                  ),
                   Container(
-                    margin:EdgeInsets.only(top:10,left:20,right:20),
+                    margin:EdgeInsets.only(top:10,left:30,right:30),
                     height:350,
                     width:300,
                     decoration: BoxDecoration(
@@ -783,90 +804,79 @@ class _ResultState extends State<Result> {
                         ),
                       ],
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        text==''?
-                        Container(
-                          child:Column(
-                            children: [
-                              Text('Payment Recipt',  style: TextStyle(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
 
-                                fontFamily:'Lexend-VariableFont',
-                                color:    const Color(0xFF090950),
-                                fontSize:30.0,
-                                //fontWeight: FontWeight.bold,
-                              ),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height:10),
-                              Text('Kaluthara BN KT SLTB Nomal CN: KT 23 RT :423/2f1 Ref : 7/1940506856 D : 23-09-01 T :02 :56 :01 ROUTE : 423/2/1 Kaluthara Hor ina Kaluthara Bombuwala (Journy 6.00 KM) Full :48 .00 =48 .00 Total :RS.48.00 Depot Hotline :034 22 70675',  style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontFamily:'Lexend-VariableFont',
-                                color:    const Color(0xFF090950),
-                                fontSize:15.0,
-                                //fontWeight: FontWeight.bold,
-                              ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          )
-                        )
-                            :Container(
-
-                            child: Column(
-
+                          text==''?
+                          Container(
+                            child:Column(
                               children: [
-                                Text('Payment Recipt',  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                SizedBox(height:10),
+                                Text('Scan your recipt here',  style: TextStyle(
+                                  fontWeight: FontWeight.bold,
                                   fontFamily:'Lexend-VariableFont',
                                   color:    const Color(0xFF090950),
-                                  fontSize: 40.0,
+                                  fontSize:15.0,
                                   //fontWeight: FontWeight.bold,
                                 ),
                                   textAlign: TextAlign.center,
                                 ),
-                                SizedBox(height:10),
-                              Text(text,style: TextStyle(
-
-                                fontFamily:'Lexend-VariableFont',
-                                color:    const Color(0xFF090950),
-                                fontSize: 40.0,
-                                //fontWeight: FontWeight.bold,
-                              ),  textAlign: TextAlign.center,),
                               ],
                             )
-                        ),
+                          )
+                              : Container(
 
-                        SizedBox(height:30),
-                        ElevatedButton(
-                          onPressed: () {
-                            SplitingText(text);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Color(0xFF090950),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(
-                                color:  Color(0xFF090950),
-                                width: 2,
-                              ),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 40, vertical: 12),
-                            textStyle: TextStyle(
-                                fontFamily:'Lexend-VariableFont',
-                                fontSize: 20),
-                            elevation: 2,
+                                child: Column(
+
+                                  children: [
+                                    SizedBox(height:10),
+                                  Text(text,style: TextStyle(
+
+                                    fontFamily:'Lexend-VariableFont',
+                                    color:    const Color(0xFF090950),
+                                    fontSize:15.0,
+                                    //fontWeight: FontWeight.bold,
+                                  ),  textAlign: TextAlign.center,),
+                                    SizedBox(height:30),
+
+                                  ],
+                                )
                           ),
-                          child: Text('Update the balance'),
-                        )
-
-                      ],
+                         
+                          
+                        ],
+    
+                      ),
                     ),
                   ),
+                  SizedBox(height:10),
+                  ElevatedButton(
+                    onPressed: () {
+                      SplitingText(text);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.white,
+                      onPrimary: Color(0xFF090950),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          color:  Color(0xFF090950),
+                          width: 2,
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 12),
+                      textStyle: TextStyle(
+                          fontFamily:'Lexend-VariableFont',
+                          fontSize: 20),
+                      elevation: 2,
+                    ),
+                    child: Text('Update the balance'),
+                  ),
                   SizedBox(height:30),
+
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(

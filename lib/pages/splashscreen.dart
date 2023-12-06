@@ -75,14 +75,14 @@ class _SplashScreenState extends State<SplashScreen> {
                   CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF316F9B)),
                   ),
-                  SizedBox(height:200),
+                  SizedBox(height:250),
                   Text(
                     "Powered By MPSMACK.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color:Color(0xFF5C6C84),
                       fontFamily:'Lexend-VariableFont',
-                      fontSize:20,
+                      fontSize:10,
                     ),
                   ),
                 ],

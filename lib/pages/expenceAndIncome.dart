@@ -594,8 +594,8 @@ class _ExpenceState extends State<Expence> {
 
   bool is_income_used = true; // Initialize is_income to true
   bool canToggle = true; // Allow initial toggling
-  Color expenceColor = Colors.red; // Color for "Expence"
-  Color incomeColor = Colors.green; // Color for "Income"
+  Color expenceColor = Color(0xFF090950); // Color for "Expence"
+  Color incomeColor =const Color(0xFFC2DAFF); // Color for "Income"
 
   void newTransaction() {
     selectedCategory = 'Others';
@@ -811,43 +811,106 @@ class _ExpenceState extends State<Expence> {
       appBar: AppBar(
         backgroundColor:
             Colors.grey[100], // Set the background color of the App Bar
-        title: const Text(
-          'T R A N S A C T I O N S',
-          style: TextStyle(
-            fontFamily: 'Lexend-VariableFont',
-            color: const Color(0xFF090950),
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color:const Color(0xFF090950),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ),
+                );
+              },
+            ),
+            const Text(
+              'T R A N S A C T I O N S',
+              style: TextStyle(
+                fontFamily: 'Lexend-VariableFont',
+                color: const Color(0xFF090950),
               ),
-            );
-          },
+            ),
+            Icon(Icons.compare_arrows, size: 40, color: const Color(0xFF090950),),
+          ],
         ),
-        actions: const [
-          Icon(Icons.compare_arrows, size: 40, color: Color(0xFF3AC6D5)),
-        ],
         centerTitle: true, // Center the title
         elevation: 0.0, // Removes the shadow
         automaticallyImplyLeading: false,
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-                bottomLeft: Radius.circular(20))),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 3,
+          ),
+          child: GNav(
+            backgroundColor: Colors.transparent,
+            color: const Color(0xFF090950),
+            activeColor: const Color.fromARGB(255, 31, 96, 192),
+            tabBackgroundColor: Colors.white,
+            gap:6,
+            onTabChange: (Index) {
+              //if the user click on the bottom navigation bar then it will move to the following pages
+              if (Index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomePage()),
+                );
+              } else if (Index == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>Pro()),
+                );
+              } else if (Index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>PlansApp()),
+                );
+              } else if (Index == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Goals()),
+                );
+              } else if (Index ==4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
+                );
+              }
+            },
+            padding: const EdgeInsets.all(15),
+            tabs: const [
+              GButton(
+                icon: Icons.home,
+                //text: 'Home',
+              ),
+              GButton(
+                icon: Icons.align_vertical_bottom_outlined,
+                //text: 'Summary',
+              ),
+              GButton(
+                icon: Icons.format_list_bulleted,
+                //text: 'Savings',
+              ),
+              GButton(
+                icon: Icons.track_changes_rounded,
+                //text: 'Plans',
+              ),
+              GButton(
+                icon: Icons.document_scanner_outlined,
+                //text: 'Scan',
+              ),
+            ],
           ),
         ),
       ),
@@ -899,10 +962,10 @@ class _ExpenceState extends State<Expence> {
                       child: Row(
                         children: [
                           Text(
-                            "BALANCE",
+                            "Balance",
                             style: TextStyle(
                               fontFamily: 'Lexend-VariableFont',
-                              color: Colors.grey[100],
+                              color: Colors.white,
                               fontSize: 45,
                               fontWeight: FontWeight.bold,
                             ),
@@ -911,7 +974,8 @@ class _ExpenceState extends State<Expence> {
                           Icon(
                             Icons.account_balance_wallet_outlined,
                             size: 35,
-                            color: Colors.grey[100],
+                            color:Color(0xFF090950),
+
                           ),
                         ],
                       ),
@@ -935,7 +999,7 @@ class _ExpenceState extends State<Expence> {
                         "$currencySymbol${totalBalance.toStringAsFixed(2)}",
                         style: const TextStyle(
                           fontFamily: 'Lexend-VariableFont',
-                          color: Colors.black,
+                          color:Color(0xFF090950),
                           fontSize: 40,
                         ),
                       ),
@@ -953,7 +1017,7 @@ class _ExpenceState extends State<Expence> {
                     height: 80,
                     width: 400,
                     decoration: BoxDecoration(
-                      color: Colors.blueGrey[100],
+                      color: Color(0xFFF5F5F5),
                       borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(20),
                         bottomRight: Radius.circular(20),
@@ -979,7 +1043,7 @@ class _ExpenceState extends State<Expence> {
                                     'Income',
                                     style: TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: Colors.black,
+                                      color:Color(0xFF5C6C84),
                                       fontSize: 22,
                                     ),
                                   ),
@@ -992,7 +1056,7 @@ class _ExpenceState extends State<Expence> {
                                     currencySymbol,
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: Colors.black,
+                                      color:Color(0xFF090950),
                                       fontSize: 25,
                                     ),
                                   ),
@@ -1000,7 +1064,7 @@ class _ExpenceState extends State<Expence> {
                                     "${lastIncomeTransaction?.transactionAmount.toStringAsFixed(2) ?? '0'}",
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: Colors.black,
+                                      color:Color(0xFF090950),
                                       fontSize: 25,
                                     ),
                                   ),
@@ -1031,7 +1095,7 @@ class _ExpenceState extends State<Expence> {
                                     'Expence',
                                     style: TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: Colors.black,
+                                      color:Color(0xFF5C6C84),
                                       fontSize: 22,
                                     ),
                                   ),
@@ -1044,7 +1108,7 @@ class _ExpenceState extends State<Expence> {
                                     currencySymbol,
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: Colors.black,
+                                      color: const Color(0xFF090950),
                                       fontSize: 25,
                                     ),
                                   ),
@@ -1052,7 +1116,7 @@ class _ExpenceState extends State<Expence> {
                                     "${lastExpenseTransaction?.transactionAmount.toStringAsFixed(2) ?? '0'}",
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
-                                      color: Colors.black,
+                                      color:  const Color(0xFF090950),
                                       fontSize: 25,
                                     ),
                                   ),
@@ -1095,10 +1159,10 @@ class _ExpenceState extends State<Expence> {
               });
             },
             borderRadius: BorderRadius.circular(20),
-            selectedColor: const Color.fromARGB(255, 25, 86, 143),
-            color: Colors.grey.shade600,
+            selectedColor: const  Color(0xFF090950),
+            color: Color(0xFF5C6C84),
             fillColor: Colors.grey[100],
-            selectedBorderColor: const Color.fromARGB(255, 25, 86, 143),
+            selectedBorderColor: const Color(0xFF090950),
             children: const [
               Padding(
                 padding: EdgeInsets.only(left: 50, right: 50),

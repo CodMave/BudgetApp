@@ -135,52 +135,63 @@ class _MyGoalState extends State<MyGoal> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.category!,
-                        style: const TextStyle(
-                          color: Color(0xFF090950),
-                          fontSize: 24,
+                  SizedBox(
+                    width:120,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.category!,
+                          style: const TextStyle(
+                            color: Color(0xFF090950),
+                            fontSize: 24,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        //remaining days
-                        widget.endDate!.isBefore(DateTime.now())
-                            ? '0 days left'
-                            : '${widget.endDate!.difference(DateTime.now()).inDays} days left',
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 4, 34, 59),
-                          fontSize: 18,
+                        const SizedBox(height: 5),
+                        Text(
+                          //remaining days
+                          widget.endDate!.isBefore(DateTime.now())
+                              ? '0 days left'
+                              : '${widget.endDate!.difference(DateTime.now()).inDays} days left',
+                          style: const TextStyle(
+                            color:Color(0xFF5C6C84),
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 15),
+                  const SizedBox(width:5),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         //amount with symbol
-                        "$currencySymbol${widget.amount}",
+                        "$currencySymbol${widget.amount.toStringAsFixed(2)}",
                         style: const TextStyle(
                           color: Color(0xFF316F9B),
                           fontSize: 24,
                         ),
                       ),
                       const SizedBox(height: 5),
-                      Text(
-                        //amount left
+                      (widget.amount - totalSpent)<=0?Text(
+
+                        "You reach target value",
+                        style: const TextStyle(
+                          color:Color(0xFF090950),
+                          fontSize:12,
+                        ),
+                      )
+                          :Text(
+
                         "$currencySymbol${widget.amount - totalSpent}",
                         style: const TextStyle(
                           color: Color(0xFF3AC6D5),
                           fontSize: 18,
                         ),
-                      ),
+                      )
                     ],
                   ),
                   const SizedBox(width: 5),
@@ -220,17 +231,16 @@ class _MyGoalState extends State<MyGoal> {
                             });
 
                             double maxProgress = 1.0;
-                            double progress =
-                                maxProgress - (totalAmount / widget.amount);
+                            double progress = maxProgress - (totalAmount / widget.amount);
                             progress = progress.clamp(0.0, maxProgress);
 
                             Color progressColor;
                             if (progress >= 0.5) {
-                              progressColor = Color(0xFF85B6FF);
+                              progressColor = Color(0xFF090950);
                             } else if (progress >= 0.2) {
-                              progressColor = Color(0xFF85B6FF);
+                              progressColor = Color(0xFF090950);
                             } else {
-                              progressColor = Color(0xFF85B6FF);
+                              progressColor = Color(0xFF090950);
                             }
 
                             Color backgroundColor;

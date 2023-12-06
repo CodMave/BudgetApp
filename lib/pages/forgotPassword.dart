@@ -58,7 +58,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text('C H A N G E P A S S W O R D',
+        title: const Text('\t\t\tC H A N G E\nP A S S W O R D',
             style: TextStyle(
               color: const Color(0xFF090950),
               fontSize: 20,
@@ -82,7 +82,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       height:150,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('lib/images/monkey.png'),
+                          image: AssetImage('lib/images/Logo.png'),
                           fit: BoxFit.cover,
                         ),
                         borderRadius: BorderRadius.circular(20),
@@ -98,7 +98,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   "Enter the Email associated with your account and we will send you a reset link",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.grey[700],
+                    fontFamily:'Lexend-VariableFont',
+                    color: const Color(0xFF090950),
                     fontSize: 18,
                   ),
                 ),

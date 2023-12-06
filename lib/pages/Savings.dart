@@ -667,32 +667,42 @@ Future<int>Balancet()async{
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.grey[100],
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          actions: [
-            Icon(
-              CupertinoIcons.money_dollar_circle,
-              size: 30,
-              color: Color(0xFF3AC6D5),
+           leading: Padding(
+             padding: const EdgeInsets.only(left:18),
+             child: IconButton(
+               icon: const Icon(Icons.arrow_back),
+               color:const Color(0xFF090950),
+               onPressed: () {
+                 Navigator.push(
+                   context,
+                   MaterialPageRoute(
+                     builder: (context) => const HomePage(),
+                   ),
+                 );
+               },
+             ),
+           ),
+           title:Padding(
+             padding: const EdgeInsets.only(left:55.0),
+             child: Row(
+               children: [
 
-            ),
-          ],
-          title: const Text('S A V I N G S',
-              style: TextStyle(
-                color: const Color(0xFF090950),
-                fontSize: 20,
-                fontFamily:'Lexend-VariableFont',
-              )),
+                 const Text(
+                   'S A V I N G S',
+                   style: TextStyle(
+                     fontFamily: 'Lexend-VariableFont',
+                     color: const Color(0xFF090950),
+                   ),
+                 ),
+                 SizedBox(width:80),
+                 Icon(Icons.account_balance_wallet_outlined, size: 30, color: const Color(0xFF090950),),
+               ],
+             ),
+           ),
           centerTitle: true,
-
           elevation: 0,
         ),
-        bottomNavigationBar: Container(
+        bottomNavigationBar:Container(
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.only(
@@ -714,9 +724,7 @@ Future<int>Balancet()async{
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Controller(
-                          balance: newbalance,
-                        )),
+                        builder: (context) => HomePage()),
                   );
                 } else if (Index == 1) {
                   Navigator.push(
@@ -753,7 +761,7 @@ Future<int>Balancet()async{
                   //text: 'Summary',
                 ),
                 GButton(
-                  icon: Icons.account_balance_wallet_outlined,
+                  icon: Icons.format_list_bulleted,
                   //text: 'Savings',
                 ),
                 GButton(
@@ -888,6 +896,45 @@ Future<int>Balancet()async{
                                         width:2.0, // Set the border width
                                       ),
                                     ),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(height:20),
+                                        Text(
+                                          DateFormat('MMM dd').format(DateTime.now()),
+                                          //time and date format
+                                          style: const TextStyle(
+                                            fontFamily:'Lexend-VariableFont',
+                                            fontSize:25,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF090950),
+                                          ),
+                                        ),
+                                        SizedBox(height:5),
+                                        Text(
+                                          '${percent*100}%',
+                                          //time and date format
+                                          style: const TextStyle(
+                                            fontFamily:'Lexend-VariableFont',
+                                            fontSize:30,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF090950),
+                                          ),
+                                        ),
+                                        Text(
+                                          'Remaining',
+                                          //time and date format
+                                          style: const TextStyle(
+                                            fontFamily:'Lexend-VariableFont',
+                                            fontSize:15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF090950),
+                                          ),
+                                        ),
+                                        // Text(
+                                        //   '${this.i}'
+                                        // )
+                                      ],
+                                    ),
                                   ),
                                   radius: 100,
                                   lineWidth: 30,
@@ -923,7 +970,7 @@ Future<int>Balancet()async{
                                       style: const TextStyle(
                                         fontFamily:'Lexend-VariableFont',
                                         fontSize: 10,
-                                        color: Colors.black,
+                                        color: Color(0xFF5C6C84),
                                       ),
                                     ),
                                   ),
@@ -953,7 +1000,7 @@ Future<int>Balancet()async{
                                       style: TextStyle(
                                         fontFamily:'Lexend-VariableFont',
                                         fontSize: 10,
-                                        color: Colors.black,
+                                        color:Color(0xFF5C6C84)
                                       ),
                                     ),
                                   ),
@@ -1055,6 +1102,7 @@ Future<int>Balancet()async{
 
                                                     'Expense',
                                                     style: TextStyle(
+                                                      color: Color(0xFF5C6C84),
                                                       fontFamily:'Lexend-VariableFont',
                                                       fontSize:20,
                                                     ),
@@ -1145,6 +1193,7 @@ Future<int>Balancet()async{
 
                                                     'Income',
                                                     style: TextStyle(
+                                                      color: Color(0xFF5C6C84),
                                                       fontFamily:'Lexend-VariableFont',
                                                       fontSize:20,
 
@@ -1310,7 +1359,7 @@ Future<int>Balancet()async{
                                                         '${MonthList?[index]}',
                                                         style: TextStyle(
                                                           fontFamily: 'Lexend-VariableFont',
-                                                          color: const Color(0xFF090950),
+                                                          color: const Color(0xFF5C6C84),
                                                           fontSize: 15,
                                                         ),
                                                       ),

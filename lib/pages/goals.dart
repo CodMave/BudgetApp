@@ -1,4 +1,6 @@
+import 'package:budgettrack/pages/plans.dart';
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import '../components/bottomNav.dart';
 import '../components/datePicker.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +9,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../components/goalTiles.dart';
+import 'Summery.dart';
+import 'TextScanner.dart';
+import 'homePage.dart';
 
 class Goals extends StatefulWidget {
   final Function()? onTap;
@@ -275,21 +280,7 @@ class _GoalsState extends State<Goals> {
                         ),
                       ),
 
-                      const SizedBox(height: 10),
 
-                      // plan amount title
-
-                      // const Align(
-                      //   alignment: Alignment.centerLeft,
-                      //   child: Text(
-                      //     'Amount',
-                      //     style: TextStyle(
-                      //       color: Colors.black,
-                      //       fontSize: 18,
-                      //       //fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
 
                       const SizedBox(height: 10),
 
@@ -328,23 +319,6 @@ class _GoalsState extends State<Goals> {
                       ),
 
                       const SizedBox(height: 10),
-
-                      //Start Date picker
-
-                      // const Align(
-                      //   alignment: Alignment.centerLeft,
-                      //   child: Text(
-                      //     'Start Date',
-                      //     style: TextStyle(
-                      //       color: Colors.black,
-                      //       fontSize: 18,
-                      //       //fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
-
-                      const SizedBox(height: 10),
-
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Container(
@@ -356,35 +330,32 @@ class _GoalsState extends State<Goals> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: InkWell(
+                            child: TextFormField(
+                              readOnly: true,
                               onTap: () => _selectStartDate(context),
-                              child: DatePick(
-                                selectedDate: endDate,
-                                hintText: 'Select end date',
+                              decoration: InputDecoration(
+                                hintText: 'Select start date',
+                                border: InputBorder.none,
+                                suffixIcon: Icon(Icons.calendar_today),
+                              ),
+                              controller: TextEditingController(
+                                text:startDate != null
+                                    ? DateFormat('MMM dd, yyyy').format(startDate!)
+                                    : '',
                               ),
                             ),
                           ),
                         ),
                       ),
 
+
                       const SizedBox(height: 10),
 
-                      // const Align(
-                      //   alignment: Alignment.centerLeft,
-                      //   child: Text(
-                      //     'End Date',
-                      //     style: TextStyle(
-                      //       color: Colors.black,
-                      //       fontSize: 18,
-                      //       //fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
+
 
                       const SizedBox(height: 10),
 
                       //End Date picker
-
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Container(
@@ -396,16 +367,26 @@ class _GoalsState extends State<Goals> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: InkWell(
+                            child: TextFormField(
+                              readOnly: true,
                               onTap: () => _selectEndDate(context),
-                              child: DatePick(
-                                selectedDate: endDate,
+                              decoration: InputDecoration(
                                 hintText: 'Select end date',
+                                border: InputBorder.none,
+                                suffixIcon: Icon(Icons.calendar_today),
+                              ),
+                              controller: TextEditingController(
+                                text: endDate != null
+                                    ? DateFormat('MMM dd, yyyy').format(endDate!)
+                                    : '',
                               ),
                             ),
                           ),
                         ),
                       ),
+
+
+
 
                       const SizedBox(height: 25),
 
@@ -456,6 +437,51 @@ class _GoalsState extends State<Goals> {
                             ),
                             child: TextButton(
                               onPressed: () async {
+                                if (selectedCategory == null ||
+                                    planAmountController.text.isEmpty ||
+                                    startDate == null ||
+                                    endDate == null) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Error'),
+                                        content: Text('Please fill in all fields.'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                  return;
+                                }
+
+                                // Check if amount is a valid number
+                                if (double.tryParse(planAmountController.text) == null) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Error'),
+                                        content: Text('Please enter a valid number for the amount.'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                  return;
+                                }
                                 String? userId = await getCurrentUser();
 
                                 amount = int.parse(planAmountController.text);
@@ -541,116 +567,133 @@ class _GoalsState extends State<Goals> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
         backgroundColor: Colors.grey[100],
-        title: const Text(
-          'G O A L S',
-          style: TextStyle(
-            color: Colors.blue,
-            fontSize: 20,
+        leading: Padding(
+          padding: const EdgeInsets.only(left:18),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            color:const Color(0xFF090950),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomePage(),
+                ),
+              );
+            },
+          ),
+        ),
+        title:Padding(
+          padding: const EdgeInsets.only(left:75.0),
+          child: Row(
+            children: [
+
+              const Text(
+                'G O A L S',
+                style: TextStyle(
+                  fontFamily: 'Lexend-VariableFont',
+                  color: const Color(0xFF090950),
+                ),
+              ),
+              SizedBox(width:100),
+              Icon(Icons.track_changes_rounded, size: 30, color: const Color(0xFF090950),),
+            ],
           ),
         ),
         centerTitle: true,
-        elevation: 0.0,
+        elevation: 0,
       ),
-      //bottomNavigationBar: BottomNavigation(),
+      bottomNavigationBar:Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20), bottomRight: Radius.circular(20),bottomLeft:Radius.circular(20) )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 3,
+          ),
+          child: GNav(
+            backgroundColor: Colors.transparent,
+            color: const Color(0xFF090950),
+            activeColor: const Color.fromARGB(255, 31, 96, 192),
+            tabBackgroundColor: Colors.white,
+            gap:6,
+            onTabChange: (Index) {
+              //if the user click on the bottom navigation bar then it will move to the following pages
+              if (Index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomePage()),
+                );
+              } else if (Index == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>Pro()),
+                );
+              } else if (Index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>PlansApp()),
+                );
+              } else if (Index == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Goals()),
+                );
+              } else if (Index ==4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TextScanner(newBalance:newbalance)),
+                );
+              }
+            },
+            padding: const EdgeInsets.all(15),
+            tabs: const [
+              GButton(
+                icon: Icons.home,
+                //text: 'Home',
+              ),
+              GButton(
+                icon: Icons.align_vertical_bottom_outlined,
+                //text: 'Summary',
+              ),
+              GButton(
+                icon: Icons.format_list_bulleted,
+                //text: 'Savings',
+              ),
+              GButton(
+                icon: Icons.track_changes_rounded,
+                //text: 'Plans',
+              ),
+              GButton(
+                icon: Icons.document_scanner_outlined,
+                //text: 'Scan',
+              ),
+            ],
+          ),
+        ),
+      ),
       body: Column(
         children: [
           const SizedBox(height: 5),
-          //showing today date
-
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-          //   child: Row(
-          //     children: [
-          //       // Date
-          //       // Column(
-          //       //   crossAxisAlignment: CrossAxisAlignment.start,
-          //       //   children: [
-          //       //     // date
-
-          //       //     const Text(
-          //       //       'Today',
-          //       //       style: TextStyle(
-          //       //         color: Colors.black,
-          //       //         fontSize: 22,
-          //       //         //fontWeight: FontWeight.bold,
-          //       //       ),
-          //       //     ),
-
-          //       //     const SizedBox(height: 5),
-
-          //       //     // Today text
-
-          //       //     Text(
-          //       //       DateFormat.yMMMMd().format(DateTime.now()),
-          //       //       style: TextStyle(
-          //       //         color: Colors.grey[700],
-          //       //         fontSize: 20,
-          //       //         //fontWeight: FontWeight.bold,
-          //       //       ),
-          //       //     ),
-          //       //   ],
-          //       // ),
-
-          //       // Add plan button
-
-          //       //const SizedBox(width: 64),
-
-          //       // GestureDetector(
-          //       //   onTap: () {
-          //       //     addNewPlan();
-          //       //   },
-          //       //   child: Container(
-          //       //     height: 50,
-          //       //     width: 100,
-          //       //     decoration: BoxDecoration(
-          //       //       color: Colors.blue[300],
-          //       //       borderRadius: BorderRadius.circular(10),
-          //       //       boxShadow: [
-          //       //         BoxShadow(
-          //       //           color: Colors.grey.withOpacity(0.8),
-          //       //           blurRadius: 10,
-          //       //           offset: const Offset(0, 5),
-          //       //         ),
-          //       //       ],
-          //       //     ),
-          //       //     child: const Center(
-          //       //       child: Text(
-          //       //         'Add Plan',
-          //       //         style: TextStyle(
-          //       //           color: Colors.black,
-          //       //           fontWeight: FontWeight.bold,
-          //       //           fontSize: 20,
-          //       //         ),
-          //       //       ),
-          //       //     ),
-          //       //   ),
-          //       // ),
-          //     ],
-          //   ),
-          // ),
-
-          //const SizedBox(height: 15),
-
-          // underline
-
-          // Container(
-          //   height: 1,
-          //   width: double.infinity,
-          //   color: Colors.grey[500],
-          // ),
-
-          //const SizedBox(height: 10),
-
-          //user plans tiles
-
+          Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left:25.0,top:10,bottom:10),
+              child: Text(
+                'Running',
+                style: TextStyle(
+                  fontSize: 23,
+                  fontFamily: 'Lexend-VariableFont',
+                  color: const Color(0xFF090950),
+                ),
+              ),
+            ),
+          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: firestore
@@ -703,7 +746,7 @@ class _GoalsState extends State<Goals> {
                             dateKey,
                             style: const TextStyle(
                               fontSize: 18,
-                              color: Colors.black,
+                              color: Color(0xFF5C6C84),
                             ),
                           ),
                         ),
@@ -731,13 +774,15 @@ class _GoalsState extends State<Goals> {
         ],
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom:65),
         child: FloatingActionButton(
           onPressed: () {
             addNewPlan();
           },
-          backgroundColor: Colors.blue[300],
-          child: const Icon(Icons.add),
+          backgroundColor:  Color(0xFF85B6FF),
+          child: const Icon(
+              Icons.add,
+          size: 30,),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
