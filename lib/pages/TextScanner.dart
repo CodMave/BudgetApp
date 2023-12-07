@@ -353,9 +353,22 @@ class _ResultState extends State<Result> {
       words.addAll(lineWords);
     }
     for (word in words) {
-      if (word == 'ROUTE:'||word == 'ROUTE'||word == 'RoUTE'||word == 'ROUTE:') {
+      if (word == 'ROUTE:'||word == 'ROUTE'||word == 'RoUTE'||word == 'route:'||word == 'route') {
         transactiontype='Transport';
         print('Found the Word ROUTE');
+      }
+else if(word=='PHARMACY'||word=='Pharmacy'||word=='pHARMACY'||word=='PHARMACY:'){
+        transactiontype='Health';
+        print('Found the Word PHARMACY');
+      }
+else if(word=='Telecom'||word=='CEB'||word=='TELECOME'||word=='Water'||word=='WATER'||word=='SLT'){
+  transactiontype='Bills';
+      }
+      else if(word=='BANK'||word=='Bank'||word=='Account'||word=='ACCOUNT'||word=='INVOICE'||word=='ID'||word=='Invoice'){
+        transactiontype='Others';
+      }
+      else if(word=='Foods'||word=='FOODS'||word=='Bulk'||word=='kg'||word=='KEELS'||word=='SATHOSA'||word=='-Bulk-'||word=='eats'||word=='GROSS'){
+        transactiontype='Foods';
       }
     }
     print(transactiontype);
@@ -365,8 +378,8 @@ class _ResultState extends State<Result> {
             "Rs.")) { //in here we check the word start with Rs.
 
 
-          RegExp regex = RegExp(
-              r'Rs\.(\d+\.\d+)'); //in we check the value if it is as the order of XXX.XX then we get it as integer value
+          RegExp regex = RegExp(r'Rs\.(\d+\.\d+)');
+           //in we check the value if it is as the order of XXX.XX then we get it as integer value
           Match? match = regex.firstMatch(
               word); //if the word is match then we get the value
 
@@ -379,6 +392,7 @@ class _ResultState extends State<Result> {
           }
         }
       }
+      if(word.startsWith("Rs."))
       print( transactiontype);
       double paresdevalue=double.parse(extractedValue);
       try {
@@ -409,6 +423,279 @@ class _ResultState extends State<Result> {
         );
       }
 
+    }
+    if (transactiontype == 'Health') {
+      bool foundNetTotal = false;
+      String highestValue = '0';
+
+      // Regular expression to match values in the format "X,XXX.XX"
+      RegExp regex = RegExp(r'(\d{1,3},\d+\.\d+)');
+
+      for (int i = 0; i < words.length - 1; i++) {
+        String word = words[i];
+
+        if (word.toUpperCase() == 'NET' && words[i + 1].toUpperCase() == 'TOTAL'||word.toUpperCase()=='TOTAL'||word.toUpperCase()=='Total') {
+          // Check for the keyword "NET TOTAL" (case-insensitive)
+          foundNetTotal = true;
+        }
+
+        if (foundNetTotal) {
+          double parsedHighestValue = double.parse(highestValue.replaceAll(',', ''));
+          double justLessThanHighestValue = 0;
+          // Extract the value using the regular expression
+          Match? match = regex.firstMatch(word);
+
+          if (match != null) {
+             extractedValue = match.group(1)!;
+
+             extractedValue = extractedValue.replaceAll(',', '');
+             double parsedValue = double.parse(extractedValue);
+
+             if (parsedValue < parsedHighestValue && parsedValue > justLessThanHighestValue) {
+               justLessThanHighestValue = parsedValue;
+             }
+          }
+        }
+      }
+
+      if (foundNetTotal) {
+        print('Highest NET TOTAL value: $highestValue');
+
+        double parsedValue = double.parse(highestValue.replaceAll(',', ''));
+        try {
+          addtransaction(transactiontype, parsedValue.toInt());
+        } catch (e) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Color(0xFFC2DAFF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                content: Text('$e'),
+                actions: [
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        print('NET TOTAL value not found');
+      }
+    }
+    if (transactiontype == 'Foods') {
+      bool foundNetTotal = false;
+      String highestValue = '0';
+
+      // Regular expression to match values in the format "X,XXX.XX"
+      RegExp regex = RegExp(r'(\d{1,3},\d+\.\d+)');
+
+      for (int i = 0; i < words.length - 1; i++) {
+        String word = words[i];
+
+        if (word.toUpperCase() == 'NET' && words[i + 1].toUpperCase() == 'TOTAL'||word.toUpperCase()=='TOTAL'||word.toUpperCase()=='Total') {
+          // Check for the keyword "NET TOTAL" (case-insensitive)
+          foundNetTotal = true;
+        }
+
+        if (foundNetTotal) {
+          double parsedHighestValue = double.parse(highestValue.replaceAll(',', ''));
+          double justLessThanHighestValue = 0;
+          // Extract the value using the regular expression
+          Match? match = regex.firstMatch(word);
+
+          if (match != null) {
+            extractedValue = match.group(1)!;
+
+            extractedValue = extractedValue.replaceAll(',', '');
+            double parsedValue = double.parse(extractedValue);
+
+            if (parsedValue < parsedHighestValue && parsedValue > justLessThanHighestValue) {
+              justLessThanHighestValue = parsedValue;
+            }
+          }
+        }
+      }
+
+      if (foundNetTotal) {
+        print('Highest NET TOTAL value: $highestValue');
+
+        double parsedValue = double.parse(highestValue);
+        print('double value is $parsedValue');
+        try {
+          addtransaction(transactiontype, parsedValue.toInt());
+        } catch (e) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Color(0xFFC2DAFF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                content: Text('$e'),
+                actions: [
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        print('Invalid or empty value in NET TOTAL');
+      }
+    } else {
+      print('NET TOTAL value not found');
+    }
+
+    if (transactiontype == 'Bills') {
+      bool foundNetTotal = false;
+      String highestValue = '0';
+
+      // Regular expression to match values in the format "X,XXX.XX"
+      RegExp regex = RegExp(r'(\d{1,3},\d+\.\d+)');
+
+      for (int i = 0; i < words.length - 1; i++) {
+        String word = words[i];
+
+        if (word.toUpperCase() == 'NET' && words[i + 1].toUpperCase() == 'TOTAL'||word.toUpperCase()=='TOTAL'||word.toUpperCase()=='Total') {
+          // Check for the keyword "NET TOTAL" (case-insensitive)
+          foundNetTotal = true;
+        }
+
+        if (foundNetTotal) {
+          double parsedHighestValue = double.parse(highestValue.replaceAll(',', ''));
+          double justLessThanHighestValue = 0;
+          // Extract the value using the regular expression
+          Match? match = regex.firstMatch(word);
+
+          if (match != null) {
+            extractedValue = match.group(1)!;
+
+            extractedValue = extractedValue.replaceAll(',', '');
+            double parsedValue = double.parse(extractedValue);
+
+            if (parsedValue < parsedHighestValue && parsedValue > justLessThanHighestValue) {
+              justLessThanHighestValue = parsedValue;
+            }
+          }
+        }
+      }
+
+      if (foundNetTotal) {
+        print('Highest NET TOTAL value: $highestValue');
+
+        double parsedValue = double.parse(highestValue);
+        print('double value is $parsedValue');
+        try {
+          addtransaction(transactiontype, parsedValue.toInt());
+        } catch (e) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Color(0xFFC2DAFF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                content: Text('$e'),
+                actions: [
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        print('Invalid or empty value in NET TOTAL');
+      }
+    } else {
+      print('NET TOTAL value not found');
+    }
+    if (transactiontype == 'Others') {
+      bool foundNetTotal = false;
+      String highestValue = '0';
+
+      // Regular expression to match values in the format "X,XXX.XX"
+      RegExp regex = RegExp(r'(\d{3,3},\d+\.\d+)');
+
+
+      for (int i = 0; i < words.length - 1; i++) {
+        String word = words[i];
+
+        if ((word.toUpperCase() == 'NET' && words[i + 1].toUpperCase() == 'TOTAL')||word.toUpperCase()=='TOTAL'||word.toUpperCase()=='Total'||word.toUpperCase()=='AMOUNT :'||word.toUpperCase()=='AMOUNT') {
+          // Check for the keyword "NET TOTAL" (case-insensitive)
+          foundNetTotal = true;
+        }
+
+        if (foundNetTotal) {
+          // Extract the value using the regular expression
+          Match? match = regex.firstMatch(word);
+
+          if (match != null) {
+         extractedValue = match.group(1)!;
+
+            // Replace commas with an empty string before parsing
+            extractedValue = extractedValue.replaceAll(',', '');
+
+            // Replace comma with a period before parsing
+            double parsedValue = double.parse(extractedValue);
+
+            if (parsedValue > double.parse(highestValue.replaceAll(',', ''))) {
+              highestValue = extractedValue;
+            }
+          }
+        }
+      }
+
+      if (foundNetTotal) {
+        print('Highest NET TOTAL value: $highestValue');
+
+        double parsedValue = double.parse(highestValue.replaceAll(',', ''));
+        try {
+          addtransaction(transactiontype, parsedValue.toInt());
+        } catch (e) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Color(0xFFC2DAFF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                content: Text('$e'),
+                actions: [
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        print('NET TOTAL value not found');
+      }
     }
     try {
       final parsedValue = double.parse(extractedValue).toInt();
@@ -461,6 +748,7 @@ class _ResultState extends State<Result> {
     }
 
   }
+
   Future<int> getTotalBalance(String userId) async {
     int totalIncome = await calculateTotalIncome(userId);
     int totalExpence = await getTotalExpence(userId);

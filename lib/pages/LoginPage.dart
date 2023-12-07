@@ -23,7 +23,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
+String email='';
   //text editing
   final usernameControll = TextEditingController();
   String mtoken='';
@@ -43,7 +43,48 @@ class _LoginPageState extends State<LoginPage> {
   ];
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
+  void userinfo()async{
+    final mail=await getUserName();
+    setState(() {
+      email=mail;
+    });
+  }
+  static Future<String> getUserName() async {
+    //get the username of the current user and display it as text
+    User? user = _auth.currentUser;
+    String email = user!.email!;
+    if (user != null) {
+      //the query check wither the authentication email match with the email which is taken at the user details
+      QuerySnapshot qs = await FirebaseFirestore.instance
+          .collection('userDetails')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
 
+      if (qs.docs.isNotEmpty) {
+        // Loop through the documents to find the one with the matching email
+        for (QueryDocumentSnapshot doc in qs.docs) {
+          if (doc.get('email') == email) {
+            // Get the 'username' field from the matching document
+            String username = doc.get('username');
+            print(username);
+            return username; //return the user name
+          }
+        }
+      }
+      // Handle the case when no matching documents are found for the current user
+      print('No matching document found for the current user.');
+      return ''; // Return an empty string or null based on your requirements
+    } else {
+      // Handle the case when the user is not authenticated
+      print('User not authenticated.');
+      return ''; // Return an empty string or null based on your requirements
+    }
+  }
+  void initstate(){
+    super.initState();
+    userinfo();
+  }
   void setvalidity()async{
     User? user = _auth.currentUser;
     String username = user!.uid;
@@ -113,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       // Sign-in successful
-      if (mounted) {
+      if (email!=null&&mounted) {
         setvalidity();
         Navigator.pushReplacement(
           context,
