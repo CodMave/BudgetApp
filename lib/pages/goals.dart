@@ -789,6 +789,9 @@ void asung()async{
             addNewPlan();
           },
           backgroundColor:  Color(0xFF85B6FF),
+          shape:RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0), // Adjust the value as needed
+          ) ,
           child: const Icon(
               Icons.add,
           size: 30,),

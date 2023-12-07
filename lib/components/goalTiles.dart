@@ -180,38 +180,41 @@ void staterecon()async{
                       ),
                     ),
                     const SizedBox(width:5),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          //amount with symbol
-                          "$currencySymbol${widget.amount.toStringAsFixed(2)}",
-                          style: const TextStyle(
-                            color: Color(0xFF316F9B),
-                            fontSize: 20,
+                    SizedBox(
+                      width: 140,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            //amount with symbol
+                            "$currencySymbol${widget.amount.toStringAsFixed(2)}",
+                            style: const TextStyle(
+                              color: Color(0xFF316F9B),
+                              fontSize: 20,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        (widget.amount - totalSpent)<=0?Text(
+                          const SizedBox(height: 5),
+                          (widget.amount - totalSpent)<=0?Text(
 
-                          "You reach target value",
-                          style: const TextStyle(
-                            color:Color(0xFF090950),
-                            fontSize:12,
-                          ),
-                        )
-                            :Text(
+                            "You reach target value",
+                            style: const TextStyle(
+                              color:Color(0xFF090950),
+                              fontSize:12,
+                            ),
+                          )
+                              :Text(
 
-                          "$currencySymbol${widget.amount - totalSpent}",
-                          style: const TextStyle(
-                            fontFamily:
-                            'Lexend-VariableFont',
-                            color: Color(0xFF3AC6D5),
-                            fontSize:16,
-                          ),
-                        )
-                      ],
+                            "$currencySymbol${widget.amount - totalSpent}",
+                            style: const TextStyle(
+                              fontFamily:
+                              'Lexend-VariableFont',
+                              color: Color(0xFF3AC6D5),
+                              fontSize:16,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left:20.0),
