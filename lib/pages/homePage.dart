@@ -893,7 +893,7 @@ class _ControllerState extends State<Controller> {
                       letterSpacing: 5.0,
                       fontFamily:'Lexend-VariableFont',
                       color: Color(0xFF090950),
-                      fontSize:18,
+                      fontSize:14,
                     ),
                   ),
                       FutureBuilder<String>(
@@ -907,7 +907,7 @@ class _ControllerState extends State<Controller> {
                                 letterSpacing: 5.0,
                                 fontFamily:'Lexend-VariableFont',
                                 color:Color(0xFF090950),
-                                fontSize:28,
+                                fontSize:18,
                                 fontWeight: FontWeight.bold,
 
                               ),
@@ -921,7 +921,7 @@ class _ControllerState extends State<Controller> {
               Icon(
                   Icons.waving_hand,
                   size:20,
-                  color: Color(0xFF3AC6D5)
+                  color: Color(0xFF090950)
               ),
 
 
