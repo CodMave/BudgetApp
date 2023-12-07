@@ -98,6 +98,15 @@ flutter:
     - lib/images/monkey.png
     - lib/images/Logo.png
     - lib/images/mastercard NEW.png
+    - lib/images/image1.png
+    - lib/images/image2.png
+    - lib/images/image3.png
+    - lib/images/image4.png
+    - lib/images/image5.png
+    - lib/images/image6.png
+    - lib/images/image7.png
+    - lib/images/image8.png
+    - lib/images/image9.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
