@@ -121,6 +121,7 @@ void staterecon()async{
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
       child: Container(
+        width:400,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           boxShadow: const [
@@ -134,6 +135,7 @@ void staterecon()async{
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Container(
+            width:400,
             color: Color(0xFFEEEEEE),
             height: 100,
             child: SingleChildScrollView(
@@ -145,33 +147,36 @@ void staterecon()async{
                   children: [
                     SizedBox(
                       width:120,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.category!,
-                            style: const TextStyle(
-                              fontFamily:
-                              'Lexend-VariableFont',
-                              color: Color(0xFF090950),
-                              fontSize: 24,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.category!,
+                              style: const TextStyle(
+                                fontFamily:
+                                'Lexend-VariableFont',
+                                color: Color(0xFF090950),
+                                fontSize:20,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            //remaining days
-                            widget.endDate!.isBefore(DateTime.now())
-                                ? '0 days left'
-                                : '${widget.endDate!.difference(DateTime.now()).inDays} days left',
-                            style: const TextStyle(
-                              fontFamily:
-                              'Lexend-VariableFont',
-                              color:Color(0xFF5C6C84),
-                              fontSize: 18,
+
+                            Text(
+                              //remaining days
+                              widget.endDate!.isBefore(DateTime.now())
+                                  ? '0 days left'
+                                  : '${widget.endDate!.difference(DateTime.now()).inDays} days left',
+                              style: const TextStyle(
+                                fontFamily:
+                                'Lexend-VariableFont',
+                                color:Color(0xFF5C6C84),
+                                fontSize:16,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(width:5),
@@ -184,7 +189,7 @@ void staterecon()async{
                           "$currencySymbol${widget.amount.toStringAsFixed(2)}",
                           style: const TextStyle(
                             color: Color(0xFF316F9B),
-                            fontSize: 24,
+                            fontSize: 20,
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -203,7 +208,7 @@ void staterecon()async{
                             fontFamily:
                             'Lexend-VariableFont',
                             color: Color(0xFF3AC6D5),
-                            fontSize: 18,
+                            fontSize:16,
                           ),
                         )
                       ],

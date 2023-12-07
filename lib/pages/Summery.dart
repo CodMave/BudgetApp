@@ -1606,7 +1606,7 @@ class _ProState extends State<Pro> {
                               maxX: 30, // Adjust the maximum X value for the number of months
                               minY: 0,
                               maxY:
-                                  10000, // Adjust the maximum Y value as needed
+                                  500000, // Adjust the maximum Y value as needed
                               lineBarsData: [
                                 LineChartBarData(
                                   spots: [

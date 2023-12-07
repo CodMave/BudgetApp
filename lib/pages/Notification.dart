@@ -248,28 +248,40 @@ class _HolderState extends State<Holder> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Colors.black,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>HomePage(
+        leading: Padding(
+          padding: const EdgeInsets.only(left:25),
+          child: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: const Color(0xFF03045E),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>HomePage(
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
         title: const Text('N O T I F I C A T I O N S',
             style: TextStyle(
-              color: Colors.blue,
+              color: const Color(0xFF03045E),
               fontSize: 20,
             )),
+        actions: [
+          Padding(
+              padding:EdgeInsets.only(right:30),
+          child:Icon(
+            color:const Color(0xFF03045E),
+        Icons.notifications_none,
+            size:30,
+    ),)
+        ],
         centerTitle: true,
         elevation: 0,
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar:Container(
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: const BorderRadius.only(
@@ -281,9 +293,9 @@ class _HolderState extends State<Holder> {
           ),
           child: GNav(
             backgroundColor: Colors.transparent,
-            color: const Color(0xFF85B6FF),
+            color: const Color(0xFF090950),
             activeColor: const Color.fromARGB(255, 31, 96, 192),
-            tabBackgroundColor: Colors.grey.shade400,
+            tabBackgroundColor: Colors.white,
             gap:6,
             onTabChange: (Index) {
               //if the user click on the bottom navigation bar then it will move to the following pages
@@ -291,9 +303,7 @@ class _HolderState extends State<Holder> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Controller(
-                        balance: newbalance,
-                      )),
+                      builder: (context) => HomePage()),
                 );
               } else if (Index == 1) {
                 Navigator.push(
@@ -330,7 +340,7 @@ class _HolderState extends State<Holder> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.account_balance_wallet_outlined,
+                icon: Icons.assignment,
                 //text: 'Savings',
               ),
               GButton(
@@ -363,7 +373,7 @@ class _HolderState extends State<Holder> {
                           return Dismissible(
                             key: UniqueKey(),
                             background: Container(
-                              color: Colors.blue,
+                              color: const Color(0xFF03045E),
                             ),
                             onDismissed: (direction) {
                               if (direction == DismissDirection.startToEnd) {
@@ -379,46 +389,140 @@ class _HolderState extends State<Holder> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
+                                  margin:EdgeInsets.only(left:20,right:20,top:20,bottom:20),
                                   decoration: BoxDecoration(
-                                    color: Color(0xffADE8F4),
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(10),
-                                    ),
+                                    color:Color(0xFFEEEEEE),
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 3,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
                                   ),
-                                  padding: EdgeInsets.all(10),
-                                  margin: EdgeInsets.all(20),
-                                  child: Column(
+                                  child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        messages[index], // Use messages[index]
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Color(0xff181EAA),
-                                          fontWeight: FontWeight.bold,
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white,
+                                        ),
+                                        margin: EdgeInsets.all(10),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.mark_email_read_sharp,
+                                            color: const Color(0xFF3AC6D5),
+                                            size: 24,
+                                          ),
                                         ),
                                       ),
-                                      SizedBox(height: 5),
-                                      Align(
-                                        alignment: Alignment.bottomRight,
+                                      Expanded(
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              DateFormat('dd/MM/yyyy   h:mm a')
-                                                  .format(time[index]),
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.bold,
+                                        Text(
+                                                messages[index], // Use messages[index]
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color:const Color(0xFF03045E),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                              SizedBox(height: 5),
+                                            // Padding(
+                                            //   padding: const EdgeInsets.all(8.0),
+                                            //   child: RichText(
+                                            //     text: TextSpan(
+                                            //       style: TextStyle(
+                                            //         fontSize: 16,
+                                            //         color: const Color(0xFF03045E),
+                                            //       ),
+                                            //       children: <TextSpan>[
+                                            //         TextSpan(
+                                            //           text: 'You have to pay your monthly ',
+                                            //         ),
+                                            //         TextSpan(
+                                            //           text: 'Water bill ',
+                                            //           style: TextStyle(fontWeight: FontWeight.bold),
+                                            //         ),
+                                            //         TextSpan(
+                                            //           text: 'Rs.1500.00 ',
+                                            //           style: TextStyle(fontWeight: FontWeight.bold),
+                                            //         ),
+                                            //         TextSpan(
+                                            //           text: 'on or before ',
+                                            //         ),
+                                            //         TextSpan(
+                                            //           text: '23rd of September',
+                                            //           style: TextStyle(fontWeight: FontWeight.bold),
+                                            //         ),
+                                            //       ],
+                                            //     ),
+                                            //   ),
+                                            // ),
+                                            Text(
+                                                            DateFormat('dd/MM/yyyy   h:mm a')
+                                                                .format(time[index]),
+                                                            style: TextStyle(
+                                                              fontFamily: 'Lexend-VariableFont',
+                                                              fontSize: 16,
+                                                              color: const Color(0xFF5C6C84),
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
+
                                         ),
+                                  ],
+                                      ),
                                       ),
                                     ],
                                   ),
                                 ),
+                                // Container(
+                                //   decoration: BoxDecoration(
+                                //     color: Color(0xffADE8F4),
+                                //     borderRadius: BorderRadius.all(
+                                //       Radius.circular(10),
+                                //     ),
+                                //   ),
+                                //   padding: EdgeInsets.all(10),
+                                //   margin: EdgeInsets.all(20),
+                                //   child: Column(
+                                //     crossAxisAlignment: CrossAxisAlignment.start,
+                                //     children: [
+                                //       Text(
+                                //         messages[index], // Use messages[index]
+                                //         style: TextStyle(
+                                //           fontSize: 16,
+                                //           color: Color(0xff181EAA),
+                                //           fontWeight: FontWeight.bold,
+                                //         ),
+                                //       ),
+                                //       SizedBox(height: 5),
+                                //       Align(
+                                //         alignment: Alignment.bottomRight,
+                                //         child: Column(
+                                //           crossAxisAlignment: CrossAxisAlignment.start,
+                                //           children: [
+                                //             Text(
+                                //               DateFormat('dd/MM/yyyy   h:mm a')
+                                //                   .format(time[index]),
+                                //               style: TextStyle(
+                                //                 fontSize: 16,
+                                //                 color: Colors.grey,
+                                //                 fontWeight: FontWeight.bold,
+                                //               ),
+                                //             ),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
                               ],
                             ),
                           );

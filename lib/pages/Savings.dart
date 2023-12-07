@@ -766,7 +766,7 @@ Future<int>Balancet()async{
                   //text: 'Summary',
                 ),
                 GButton(
-                  icon: Icons.format_list_bulleted,
+                  icon: Icons.assignment,
                   //text: 'Savings',
                 ),
                 GButton(
@@ -916,7 +916,7 @@ Future<int>Balancet()async{
                                         ),
                                         SizedBox(height:5),
                                         Text(
-                                          '${percent*100}%',
+                                          '${ double.parse(percent.toStringAsFixed(2))*100}%',
                                           //time and date format
                                           style: const TextStyle(
                                             fontFamily:'Lexend-VariableFont',
@@ -1121,48 +1121,52 @@ Future<int>Balancet()async{
                                         Expanded(
                                           child: Align(
                                             alignment:Alignment.topLeft,
-                                            child: Row(
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets.only(top:5.0,left:30.0),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        '$currencySymbol',//curency of income
-                                                        style: TextStyle(
-                                                            fontFamily:'Lexend-VariableFont',
-                                                            fontSize:20,
-                                                            fontWeight: FontWeight.bold,
-                                                            color:const Color(0xFF090950)
+                                            child: SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: Row(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(top:5.0,left:30.0),
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          '$currencySymbol',//curency of income
+                                                          style: TextStyle(
+                                                              fontFamily:'Lexend-VariableFont',
+                                                              fontSize:20,
+                                                              fontWeight: FontWeight.bold,
+                                                              color:const Color(0xFF090950)
+                                                          ),
                                                         ),
-                                                      ),
-                                                      FutureBuilder<int>(
-                                                        future: gettheexpensefromDB(selectedyear!,month),
-                                                        builder: (context, snapshot) {
-                                                          if (snapshot.connectionState == ConnectionState.waiting) {
-                                                            // While the future is still loading, you can show a loading indicator or placeholder
-                                                            return CircularProgressIndicator();
-                                                          } else if (snapshot.hasError) {
-                                                            // If there's an error, you can handle it here
-                                                            return Text('Error: ${snapshot.error}');
-                                                          } else {
-                                                            // If the future has completed successfully, display the data
-                                                            return Text(
-                                                              snapshot.data!.toStringAsFixed(2),
-                                                              style: TextStyle(
-                                                                fontFamily: 'Lexend-VariableFont',
-                                                                fontSize: 20,
-                                                                color: const Color(0xFF090950),
-                                                              ),
-                                                            );
-                                                          }
-                                                        },
-                                                      ),
 
-                                                    ],
+                                                        FutureBuilder<int>(
+                                                          future: gettheexpensefromDB(selectedyear!,month),
+                                                          builder: (context, snapshot) {
+                                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                                              // While the future is still loading, you can show a loading indicator or placeholder
+                                                              return CircularProgressIndicator();
+                                                            } else if (snapshot.hasError) {
+                                                              // If there's an error, you can handle it here
+                                                              return Text('Error: ${snapshot.error}');
+                                                            } else {
+                                                              // If the future has completed successfully, display the data
+                                                              return Text(
+                                                                snapshot.data!.toStringAsFixed(2),
+                                                                style: TextStyle(
+                                                                  fontFamily: 'Lexend-VariableFont',
+                                                                  fontSize: 20,
+                                                                  color: const Color(0xFF090950),
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
+                                                        ),
+
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
 
                                           ),

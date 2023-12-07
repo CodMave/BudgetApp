@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:budgettrack/components/button.dart';
+import 'package:budgettrack/pages/DemoPage.dart';
 import 'package:budgettrack/pages/LoginPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -133,7 +134,7 @@ class _EmailVerification extends State<EmailVerification> {
   @override
   Widget build(BuildContext context) {
     if (isEmailVerified) {
-      return LoginPage(onTap: onTap);
+      return MyApp1();
     }
     else {
       return Scaffold(

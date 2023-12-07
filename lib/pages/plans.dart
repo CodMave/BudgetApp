@@ -146,6 +146,7 @@ void addnewplan(){
               children: [
                 // Input field for Category
                 TextField(
+                  maxLength: 15,
 
                   decoration: InputDecoration(
                     labelText: "Enter Your Category",
@@ -158,12 +159,13 @@ void addnewplan(){
                 ),
                 SizedBox(height: 10),
                 // Calendar widget for selecting Date
+                // Calendar widget for selecting Date
                 InkWell(
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
                       context: context,
                       initialDate: selectedDate,
-                      firstDate: DateTime(2000),
+                      firstDate: DateTime.now(), // Set the first selectable date to the current date
                       lastDate: DateTime(2101),
                     );
 
@@ -183,6 +185,7 @@ void addnewplan(){
                     ],
                   ),
                 ),
+
                 SizedBox(height: 10),
                 // Input field for Amount
                 TextField(
