@@ -833,9 +833,14 @@ class _ExpenceState extends State<Expence> {
                 color: const Color(0xFF090950),
               ),
             ),
-            Icon(Icons.compare_arrows, size: 40, color: const Color(0xFF090950),),
           ],
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right:30),
+            child: Icon(Icons.compare_arrows, size: 30, color: const Color(0xFF090950),),
+          ),
+        ],
         centerTitle: true, // Center the title
         elevation: 0.0, // Removes the shadow
         automaticallyImplyLeading: false,
@@ -899,7 +904,7 @@ class _ExpenceState extends State<Expence> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.format_list_bulleted,
+                icon: Icons.assignment,
                 //text: 'Savings',
               ),
               GButton(

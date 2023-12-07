@@ -745,6 +745,8 @@ class _GoalsState extends State<Goals> {
                           child: Text(
                             dateKey,
                             style: const TextStyle(
+                              fontFamily:
+                              'Lexend-VariableFont',
                               fontSize: 18,
                               color: Color(0xFF5C6C84),
                             ),

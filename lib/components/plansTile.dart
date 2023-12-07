@@ -41,14 +41,17 @@ class PlanTile extends StatelessWidget {
               Text(
                 firstText,
                 style: const TextStyle(
+                  fontFamily:'Lexend-VariableFont',
                   color: Colors.black,
                   fontSize: 14,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
+
                 secondText,
                 style: const TextStyle(
+                  fontFamily:'Lexend-VariableFont',
                   color: Colors.black,
                   fontSize: 18,
                 ),

@@ -753,7 +753,7 @@ class _ProState extends State<Pro> {
           ),
         ),
         title:Padding(
-          padding: const EdgeInsets.only(left:65.0),
+          padding: const EdgeInsets.only(left:50.0),
           child: Row(
             children: [
 
@@ -764,11 +764,15 @@ class _ProState extends State<Pro> {
                   color: const Color(0xFF090950),
                 ),
               ),
-              SizedBox(width:70),
-              Icon(Icons.align_vertical_bottom_outlined,size: 30, color: const Color(0xFF090950),),
             ],
           ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right:30),
+            child: Icon(Icons.align_vertical_bottom_outlined, size: 30, color: const Color(0xFF090950),),
+          ),
+        ],
         centerTitle: true,
         elevation: 0,
       ),
@@ -1021,7 +1025,7 @@ class _ProState extends State<Pro> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
+                                  color: Color(0xFF5C6C84),
                                 ),
                               ),
                               Text(
@@ -1029,7 +1033,7 @@ class _ProState extends State<Pro> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF3AC6D5),
+                                  color: const Color(0xFF090950),
                                 ),
                               ),
                             ],
@@ -1086,7 +1090,7 @@ class _ProState extends State<Pro> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
+                                  color: Color(0xFF5C6C84),
                                 ),
                               ),
                               Text(
@@ -1274,73 +1278,76 @@ class _ProState extends State<Pro> {
                                   return Column(
                                     children: [
                                       ListTile(
-                                        title:Row(
+                                        title:SingleChildScrollView(
+                                          scrollDirection:Axis.horizontal,
+                                          child: Row(
 
-                                          children: [
-                                            SizedBox(
-                                              width:130,
-                                              child: Align(
-                                                alignment:
-                                                    Alignment.center,
-                                                child: Text(
-                                                  items![index],
-                                                  style: TextStyle(
-                                                    fontFamily:
-                                                        'Lexend-VariableFont',
-                                                    color: const Color(
-                                                        0xFF090950),
-                                                    fontSize: 15,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                            children: [
+                                              SizedBox(
+                                                width:130,
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.center,
+                                                  child: Text(
+                                                    items![index],
+                                                    style: TextStyle(
+                                                      fontFamily:
+                                                          'Lexend-VariableFont',
+                                                      color: const Color(
+                                                          0xFF090950),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            SizedBox(
-                                              width:120,
-                                              child: Text(
-                                                '$currencySymbol ${uniqueexpenses![index].toStringAsFixed(2)}',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight:
-                                                  FontWeight.bold,
-                                                  fontFamily:
-                                                  'Lexend-VariableFont',
-                                                  color: const Color(0xFF316F9B),
-                                                ),
+                                              SizedBox(
+                                                width: 20,
                                               ),
-                                            ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            Container(
-                                              height: 20,
-                                              width: 40,
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFFC2DAFF),
-                                                borderRadius:
-                                                BorderRadius
-                                                    .circular(10),
-                                              ),
-                                              child: Center(
+                                              SizedBox(
+                                                width:120,
                                                 child: Text(
-                                                  '${((uniqueexpenses![index] / weekexpense) * 100).toInt()}%',
+                                                  '$currencySymbol ${uniqueexpenses![index].toStringAsFixed(2)}',
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight:
                                                     FontWeight.bold,
                                                     fontFamily:
                                                     'Lexend-VariableFont',
-                                                    color: Color(
-                                                        0xFF5C6C84),
+                                                    color: const Color(0xFF316F9B),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                              Container(
+                                                height: 20,
+                                                width: 40,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFFC2DAFF),
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    '${((uniqueexpenses![index] / weekexpense) * 100).toInt()}%',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                      FontWeight.bold,
+                                                      fontFamily:
+                                                      'Lexend-VariableFont',
+                                                      color: Color(
+                                                          0xFF5C6C84),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       if (index < items!.length - 1)
@@ -1705,75 +1712,75 @@ class _ProState extends State<Pro> {
                                   return Column(
                                     children: [
                                       ListTile(
-                                        title: Row(
-                                          children: [
-                                            SizedBox(
-                                              width:130,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                        left: 5.0),
-                                                child: Align(
-                                                  alignment:
-                                                      Alignment.center,
-                                                  child: Text(
-                                                    itemsformonth![index],
-                                                    style: TextStyle(
-                                                      fontFamily:
-                                                          'Lexend-VariableFont',
-                                                      color: const Color(
-                                                          0xFF090950),
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                        title: SingleChildScrollView(
+                                          scrollDirection:Axis.horizontal,
+                                          child: Row(
+                                            children: [
+                                              SizedBox(
+                                                width:130,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 5.0),
+                                                  child: Align(
+                                                    alignment:
+                                                        Alignment.center,
+                                                    child: Text(
+                                                      itemsformonth![index],
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                            'Lexend-VariableFont',
+                                                        color: const Color(
+                                                            0xFF090950),
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            SizedBox(width:20),
-                                            SizedBox(
-                                              width:100,
-                                              child: Text(
-                                                '$currencySymbol ${uniqueexpensesformonth![index]}',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                  fontFamily:
-                                                      'Lexend-VariableFont',
-                                                  color: Color.fromARGB(
-                                                      236, 97, 183, 226),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width:20),
-                                            Container(
-                                              height: 20,
-                                              width: 40,
-                                              decoration: BoxDecoration(
-                                                color: Color.fromARGB(
-                                                    255, 183, 203, 250),
-                                                borderRadius:
-                                                    BorderRadius
-                                                        .circular(10),
-                                              ),
-                                              child: Center(
+                                              SizedBox(width:20),
+                                              SizedBox(
+                                                width:100,
                                                 child: Text(
-                                                  '${((uniqueexpensesformonth![index] / totalexpenseformonth) * 100).toInt()}%',
+                                                  '$currencySymbol ${uniqueexpensesformonth![index].toStringAsFixed(2)}',
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight:
                                                         FontWeight.bold,
                                                     fontFamily:
                                                         'Lexend-VariableFont',
-                                                    color: Color(
-                                                        0xFC0095F2),
+                                                    color: Color(0xFF316F9B),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                              SizedBox(width:40),
+                                              Container(
+                                                height: 20,
+                                                width: 40,
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xFFC2DAFF),
+                                                  borderRadius:
+                                                      BorderRadius
+                                                          .circular(10),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    '${((uniqueexpensesformonth![index] / totalexpenseformonth) * 100).toInt()}%',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily:
+                                                          'Lexend-VariableFont',
+                                                      color: Color(0xFF5C6C84),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       if (index < itemsformonth!.length - 1)
@@ -2127,73 +2134,75 @@ class _ProState extends State<Pro> {
                                   return Column(
                                     children: [
                                       ListTile(
-                                        title: Row(
-                                          children: [
-                                            SizedBox(
-                                              width:130,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                        left: 5.0),
-                                                child: Align(
-                                                  alignment:
-                                                      Alignment.center,
-                                                  child: Text(
-                                                    itemsforyear![index],
-                                                    style: TextStyle(
-                                                      fontFamily:
-                                                          'Lexend-VariableFont',
-                                                      color: const Color(
-                                                          0xFF090950),
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                        title: SingleChildScrollView(
+                                          scrollDirection:Axis.horizontal,
+                                          child: Row(
+                                            children: [
+                                              SizedBox(
+                                                width:130,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 5.0),
+                                                  child: Align(
+                                                    alignment:
+                                                        Alignment.center,
+                                                    child: Text(
+                                                      itemsforyear![index],
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                            'Lexend-VariableFont',
+                                                        color: const Color(
+                                                            0xFF090950),
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            SizedBox(
-                                              width:100,
-                                              child: Text(
-                                                '$currencySymbol ${uniqueexpensesforyear![index]}',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                  fontFamily:
-                                                      'Lexend-VariableFont',
-                                                  color: Color.fromARGB(
-                                                      236, 97, 183, 226),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width:20),
-                                            Container(
-                                              height: 20,
-                                              width: 40,
-                                              decoration: BoxDecoration(
-                                                color: Color(0xFFC2DAFF),
-                                                borderRadius:
-                                                    BorderRadius
-                                                        .circular(10),
-                                              ),
-                                              child: Center(
+                                              SizedBox(
+                                                width:110,
                                                 child: Text(
-                                                  '${((uniqueexpensesforyear![index] / this.yearly_expense![2023 % 100 - (currentDate.year.toInt() % 100)]) * 100).toInt()}%',
+                                                  '$currencySymbol ${uniqueexpensesforyear![index].toStringAsFixed(2)}',
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight:
                                                         FontWeight.bold,
                                                     fontFamily:
                                                         'Lexend-VariableFont',
-                                                    color: Color(
-                                                        0xFF5C6C84),
+                                                    color: Color(0xFF316F9B)
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                              SizedBox(width:40),
+                                              Container(
+                                                height: 20,
+                                                width: 40,
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xFFC2DAFF),
+                                                  borderRadius:
+                                                      BorderRadius
+                                                          .circular(10),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    '${((uniqueexpensesforyear![index] / this.yearly_expense![2023 % 100 - (currentDate.year.toInt() % 100)]) * 100).toInt()}%',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily:
+                                                          'Lexend-VariableFont',
+                                                      color: Color(
+                                                          0xFF5C6C84),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       if (index < itemsforyear!.length - 1)

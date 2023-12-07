@@ -102,12 +102,14 @@ class _MyGoalState extends State<MyGoal> {
       totalSpent = totalAmount.toInt();
     });
   }
-
+void staterecon()async{
+    currencySymbol=await getCurrncySymbol();
+}
   @override
   void initState() {
     super.initState();
     getTotalSpent();
-    getCurrncySymbol();
+    staterecon();
   }
 
   @override
@@ -130,151 +132,162 @@ class _MyGoalState extends State<MyGoal> {
           child: Container(
             color: Color(0xFFEEEEEE),
             height: 100,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SizedBox(
-                    width:120,
-                    child: Column(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      width:120,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.category!,
+                            style: const TextStyle(
+                              fontFamily:
+                              'Lexend-VariableFont',
+                              color: Color(0xFF090950),
+                              fontSize: 24,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            //remaining days
+                            widget.endDate!.isBefore(DateTime.now())
+                                ? '0 days left'
+                                : '${widget.endDate!.difference(DateTime.now()).inDays} days left',
+                            style: const TextStyle(
+                              fontFamily:
+                              'Lexend-VariableFont',
+                              color:Color(0xFF5C6C84),
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width:5),
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.category!,
+                          //amount with symbol
+                          "$currencySymbol${widget.amount.toStringAsFixed(2)}",
                           style: const TextStyle(
-                            color: Color(0xFF090950),
+                            color: Color(0xFF316F9B),
                             fontSize: 24,
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
-                          //remaining days
-                          widget.endDate!.isBefore(DateTime.now())
-                              ? '0 days left'
-                              : '${widget.endDate!.difference(DateTime.now()).inDays} days left',
+                        (widget.amount - totalSpent)<=0?Text(
+
+                          "You reach target value",
                           style: const TextStyle(
-                            color:Color(0xFF5C6C84),
+                            color:Color(0xFF090950),
+                            fontSize:12,
+                          ),
+                        )
+                            :Text(
+
+                          "$currencySymbol${widget.amount - totalSpent}",
+                          style: const TextStyle(
+                            fontFamily:
+                            'Lexend-VariableFont',
+                            color: Color(0xFF3AC6D5),
                             fontSize: 18,
                           ),
-                        ),
+                        )
                       ],
                     ),
-                  ),
-                  const SizedBox(width:5),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        //amount with symbol
-                        "$currencySymbol${widget.amount.toStringAsFixed(2)}",
-                        style: const TextStyle(
-                          color: Color(0xFF316F9B),
-                          fontSize: 24,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      (widget.amount - totalSpent)<=0?Text(
+                    Padding(
+                      padding: const EdgeInsets.only(left:20.0),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('userDetails')
+                                .doc(widget.userId)
+                                .collection('expenceID')
+                                .where('transactionName',
+                                    isEqualTo: widget.category)
+                                .where('timestamp',
+                                    isGreaterThanOrEqualTo: widget.startDate)
+                                .where('timestamp',
+                                    isLessThanOrEqualTo: widget.endDate)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              }
 
-                        "You reach target value",
-                        style: const TextStyle(
-                          color:Color(0xFF090950),
-                          fontSize:12,
-                        ),
-                      )
-                          :Text(
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              }
 
-                        "$currencySymbol${widget.amount - totalSpent}",
-                        style: const TextStyle(
-                          color: Color(0xFF3AC6D5),
-                          fontSize: 18,
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('userDetails')
-                              .doc(widget.userId)
-                              .collection('expenceID')
-                              .where('transactionName',
-                                  isEqualTo: widget.category)
-                              .where('timestamp',
-                                  isGreaterThanOrEqualTo: widget.startDate)
-                              .where('timestamp',
-                                  isLessThanOrEqualTo: widget.endDate)
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            }
+                              double totalAmount = 0;
+                              snapshot.data!.docs.forEach((expenseDoc) {
+                                int transactionAmount =
+                                    expenseDoc['transactionAmount'];
+                                totalAmount += transactionAmount.toDouble();
+                              });
 
-                            if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            }
+                              double maxProgress = 1.0;
+                              double progress = maxProgress - (totalAmount / widget.amount);
+                              progress = progress.clamp(0.0, maxProgress);
 
-                            double totalAmount = 0;
-                            snapshot.data!.docs.forEach((expenseDoc) {
-                              int transactionAmount =
-                                  expenseDoc['transactionAmount'];
-                              totalAmount += transactionAmount.toDouble();
-                            });
+                              Color progressColor;
+                              if (progress >= 0.5) {
+                                progressColor = Color(0xFF090950);
+                              } else if (progress >= 0.2) {
+                                progressColor = Color(0xFF090950);
+                              } else {
+                                progressColor = Color(0xFF090950);
+                              }
 
-                            double maxProgress = 1.0;
-                            double progress = maxProgress - (totalAmount / widget.amount);
-                            progress = progress.clamp(0.0, maxProgress);
+                              Color backgroundColor;
+                              if (progress >= 0.5) {
+                                backgroundColor = Colors.white54;
+                              } else if (progress >= 0.2) {
+                                backgroundColor = Colors.white54;
+                              } else {
+                                backgroundColor = Colors.white54;
+                              }
 
-                            Color progressColor;
-                            if (progress >= 0.5) {
-                              progressColor = Color(0xFF090950);
-                            } else if (progress >= 0.2) {
-                              progressColor = Color(0xFF090950);
-                            } else {
-                              progressColor = Color(0xFF090950);
-                            }
-
-                            Color backgroundColor;
-                            if (progress >= 0.5) {
-                              backgroundColor = Colors.white54;
-                            } else if (progress >= 0.2) {
-                              backgroundColor = Colors.white54;
-                            } else {
-                              backgroundColor = Colors.white54;
-                            }
-
-                            return CircularPercentIndicator(
-                              animation: true,
-                              animationDuration: 1000,
-                              radius: 30,
-                              lineWidth: 6,
-                              percent: progress,
-                              progressColor: progressColor,
-                              backgroundColor: backgroundColor,
-                              circularStrokeCap: CircularStrokeCap.round,
-                              center: Text(
-                                "${(progress * 100).toInt()}%",
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
+                              return CircularPercentIndicator(
+                                animation: true,
+                                animationDuration: 1000,
+                                radius: 30,
+                                lineWidth: 6,
+                                percent: progress,
+                                progressColor: progressColor,
+                                backgroundColor: backgroundColor,
+                                circularStrokeCap: CircularStrokeCap.round,
+                                center: Text(
+                                  "${(progress * 100).toInt()}%",
+                                  style: const TextStyle(
+                                    fontFamily:
+                                    'Lexend-VariableFont',
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

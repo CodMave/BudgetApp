@@ -841,21 +841,25 @@ class _ControllerState extends State<Controller> {
           color: Color(0xFF090950),
           size: 30,
         ),
+        leading: Padding(
+          padding: EdgeInsets.only(left:20),
+          child: IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        Check()), //if the user click on the menu icon then move
+              );
+            },
+            icon: const Icon(Icons.menu),
+          ),
+        ),
         titleSpacing:20.0,
         centerTitle: true,
         title: Row(
             children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            Check()), //if the user click on the menu icon then move
-                  );
-                },
-                icon: const Icon(Icons.menu),
-              ),
+
               Container(
                 width:40,
                 height:40,
@@ -876,39 +880,41 @@ class _ControllerState extends State<Controller> {
                   radius:40,
                  backgroundImage:  AssetImage('lib/images/Profile.png')),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left:30,right:20),
-                child: Column(
-                  children: [
-                Text(
-                "Welcome!",
-                  textAlign: TextAlign.center,
-                  //print the user name who are currently using with
-                  style: TextStyle(
-                    letterSpacing: 5.0,
-                    fontFamily:'Lexend-VariableFont',
-                    color: Color(0xFF090950),
-                    fontSize:18,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left:5,),
+                  child: Column(
+                    children: [
+                  Text(
+                  "Welcome!",
+                    textAlign: TextAlign.center,
+                    //print the user name who are currently using with
+                    style: TextStyle(
+                      letterSpacing: 5.0,
+                      fontFamily:'Lexend-VariableFont',
+                      color: Color(0xFF090950),
+                      fontSize:18,
+                    ),
                   ),
-                ),
-                    FutureBuilder<String>(
-                        future: getUserName(),
-                        builder: (context, snapshot) {
-                          return Text(
-                            "${snapshot.data}",
-                            textAlign: TextAlign.center,
-                            //print the user name who are currently using with
-                            style: TextStyle(
-                              letterSpacing: 5.0,
-                              fontFamily:'Lexend-VariableFont',
-                              color:Color(0xFF090950),
-                              fontSize:28,
-                              fontWeight: FontWeight.bold,
+                      FutureBuilder<String>(
+                          future: getUserName(),
+                          builder: (context, snapshot) {
+                            return Text(
+                              "${snapshot.data}",
+                              textAlign: TextAlign.center,
+                              //print the user name who are currently using with
+                              style: TextStyle(
+                                letterSpacing: 5.0,
+                                fontFamily:'Lexend-VariableFont',
+                                color:Color(0xFF090950),
+                                fontSize:28,
+                                fontWeight: FontWeight.bold,
 
-                            ),
-                          );
-                        }),
-                  ],
+                              ),
+                            );
+                          }),
+                    ],
+                  ),
                 ),
               ),
 
@@ -917,72 +923,76 @@ class _ControllerState extends State<Controller> {
                   size:20,
                   color: Color(0xFF3AC6D5)
               ),
-              SizedBox(width:28),
-              Expanded(
-                child: FutureBuilder<int>(
-                  future: getcountfromdb(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      // While the future is still loading, you can show a loading indicator or placeholder
-                      return CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.transparent),
-                      );
-                    } else if (snapshot.hasError) {
-                      // If there's an error, you can handle it here
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      // If the future has completed successfully, display the data
-                      return snapshot.data==0 ? IconButton(
-                        //if the count value is 0 then badge won't show otherwise it dissplays the unseen notification count
-                        onPressed: () {
-                          Navigator.push(
-                            context,
 
-                            MaterialPageRoute(
-                                builder: (context) => Holder(
-                                  totalBalance: newbalance,
-                                )), //create a constructor to the Holder class to display the notification list
-                          );
-                        },
-                        icon: Icon(
-                          Icons.notifications_outlined,
-                          size: 40,
-                        ),
 
-                      )
-                          : badges.Badge(
-                        badgeContent: Text('${snapshot.data}'),
-                        position: badges.BadgePosition.topEnd(top:2, end: 0),
-                        badgeAnimation: badges.BadgeAnimation.slide(),
-                        badgeStyle: badges.BadgeStyle(
-                          shape: badges.BadgeShape.circle,
-                          padding: EdgeInsets.all(8.0),
-                          badgeColor: Colors.red,
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Holder(
-                                    totalBalance: newbalance,
-                                  )),
-                            );
-                          },
-                          icon: Icon(
-                            Icons.notifications_outlined,
-                            size: 40,
-                          ),
-
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
             ],
 
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right:30),
+            child: FutureBuilder<int>(
+              future: getcountfromdb(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // While the future is still loading, you can show a loading indicator or placeholder
+                  return CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.transparent),
+                  );
+                } else if (snapshot.hasError) {
+                  // If there's an error, you can handle it here
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  // If the future has completed successfully, display the data
+                  return snapshot.data==0 ? IconButton(
+                    //if the count value is 0 then badge won't show otherwise it dissplays the unseen notification count
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+
+                        MaterialPageRoute(
+                            builder: (context) => Holder(
+                              totalBalance: newbalance,
+                            )), //create a constructor to the Holder class to display the notification list
+                      );
+                    },
+                    icon: Icon(
+                      Icons.notifications_outlined,
+                      size: 40,
+                    ),
+
+                  )
+                      : badges.Badge(
+                    badgeContent: Text('${snapshot.data}'),
+                    position: badges.BadgePosition.topEnd(top:2, end: 0),
+                    badgeAnimation: badges.BadgeAnimation.slide(),
+                    badgeStyle: badges.BadgeStyle(
+                      shape: badges.BadgeShape.circle,
+                      padding: EdgeInsets.all(8.0),
+                      badgeColor: Colors.red,
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Holder(
+                                totalBalance: newbalance,
+                              )),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.notifications_outlined,
+                        size: 40,
+                      ),
+
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
       ),
 
       //bottom navigation bar
@@ -1045,7 +1055,7 @@ class _ControllerState extends State<Controller> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.format_list_bulleted,
+                icon: Icons.assignment,
                 //text: 'Savings',
               ),
               GButton(
@@ -1208,31 +1218,29 @@ class _ControllerState extends State<Controller> {
                           ),
                         ),
                       ),
-                      Align(
-                        alignment:Alignment.bottomLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top:130,left:5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '${currency}${newbalance}',
-                                style: TextStyle(
-                                  fontFamily:'Lexend-VariableFont',
-                                  fontSize: 40,
-                                  color: Colors.white,
-                                ),
+                      Padding(
+                        padding: const EdgeInsets.only(top:125,left:5),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${currency}${newbalance}',
+                              style: TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                fontSize: 40,
+                                color: Colors.white,
                               ),
-                              Text(
-                                '${DateFormat('dd/MM').format(DateTime.now())}',
-                                style:TextStyle(
-                                  fontFamily:'Lexend-VariableFont',
-                                  fontSize:20,
-                                  color:Color(0xFF090950),
-                                ),
+                            ),
+                            Text(
+                              '${DateFormat('dd/MM').format(DateTime.now())}',
+                              style:TextStyle(
+                                fontFamily:'Lexend-VariableFont',
+                                fontSize:20,
+                                color:Color(0xFF090950),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
 

@@ -302,7 +302,7 @@ void addnewplan(){
           ),
         ),
         title:Padding(
-          padding: const EdgeInsets.only(left:90.0),
+          padding: const EdgeInsets.only(left:70.0),
           child: Row(
             children: [
 
@@ -313,11 +313,16 @@ void addnewplan(){
                   color: const Color(0xFF090950),
                 ),
               ),
-              SizedBox(width:95),
-              Icon(Icons.format_list_bulleted, size: 30, color: const Color(0xFF090950),),
+
             ],
           ),
         ),
+        actions: [
+        Padding(
+          padding: const EdgeInsets.only(right:30),
+          child: Icon(Icons.assignment, size: 30, color: const Color(0xFF090950),),
+        ),
+        ],
         centerTitle: true,
         elevation: 0,
       ),
@@ -382,7 +387,7 @@ void addnewplan(){
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.account_balance_wallet_outlined,
+                icon: Icons.assignment,
                 //text: 'Savings',
               ),
               GButton(
@@ -475,72 +480,74 @@ void addnewplan(){
                               )
                             ],
                           ),
-                          child: Row(
-                            children: [
-                              SizedBox(width:80,
-                                child: Padding(
-                                  padding:
-                                  const EdgeInsets.only(
-                                      left: 5.0),
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Container(
-                                      width:55,
-                                  height:55,
-                                  decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color:Colors.white,
-                                        ),
-                                      child: Center(
-                                        child: Text(
-                                          this.plandate[index],
-                                          style: TextStyle(
-                                            fontFamily:
-                                            'Lexend-VariableFont',
-                                            color:const Color(0xFF3AC6D5),
-                                            fontWeight: FontWeight.w400,
-                                            fontSize:18,
+                          child: SingleChildScrollView(
+                            scrollDirection:Axis.horizontal,
+                            child: Row(
+                              children: [
+                                SizedBox(width:80,
+                                  child: Padding(
+                                    padding:
+                                    const EdgeInsets.only(
+                                        left: 5.0),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Container(
+                                        width:55,
+                                    height:55,
+                                    decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color:Colors.white,
                                           ),
-                                          textAlign: TextAlign.center,
+                                        child: Center(
+                                          child: Text(
+                                            this.plandate[index],
+                                            style: TextStyle(
+                                              fontFamily:
+                                              'Lexend-VariableFont',
+                                              color:const Color(0xFF3AC6D5),
+                                              fontWeight: FontWeight.w400,
+                                              fontSize:18,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                width:130,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top:13.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${upcomingPlans[index]}',  // '$currencySymbol ${![index]}',
-                                        style: TextStyle(
-                                          fontSize:18,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Lexend-VariableFont',
-                                          color: const Color(0xFF090950),
+                                SizedBox(
+                                  width:130,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top:13.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${upcomingPlans[index]}',  // '$currencySymbol ${![index]}',
+                                          style: TextStyle(
+                                            fontSize:18,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Lexend-VariableFont',
+                                            color: const Color(0xFF090950),
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        ' ${_calculateDaysRemaining(unformated[index]) } days Remaininig ',  // '$currencySymbol ${![index]}',
-                                        style: TextStyle(
-                                          fontSize:12,
-                                          fontFamily:
-                                          'Lexend-VariableFont',
-                                          color:const Color(0xFF5C6C84),
+                                        Text(
+                                          ' ${_calculateDaysRemaining(unformated[index]) } days Remaininig ',  // '$currencySymbol ${![index]}',
+                                          style: TextStyle(
+                                            fontSize:12,
+                                            fontFamily:
+                                            'Lexend-VariableFont',
+                                            color:const Color(0xFF5C6C84),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width:20),
-                              Center(
-                                child: Text(
-                                '$currencySymbol${this.valuein[index]}',
+                                SizedBox(width:20),
+                                Center(
+                                  child: Text(
+                                  '$currencySymbol${this.valuein[index]}',
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight:
@@ -551,8 +558,9 @@ void addnewplan(){
                                         0xFF316F9B),
                                   ),
                                 ),
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -561,15 +569,14 @@ void addnewplan(){
                 },
               ),
             ),
-            Align(
-             alignment: Alignment.bottomRight,
-              child: PlusButton(
-                function: addnewplan,
-              ),
-            ),
+
           ],
         ),
       ),
+      floatingActionButton: PlusButton(
+        function: addnewplan,
+      ),
+
     );
   }
 }

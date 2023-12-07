@@ -2,16 +2,32 @@ import 'dart:async';
 
 import 'package:budgettrack/components/button.dart';
 import 'package:budgettrack/pages/LoginPage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'homePage.dart';
 
 class EmailVerification extends StatefulWidget {
-  const EmailVerification({Key? key}) : super(key: key);
+  late final name;
+  late final username;
+  late final password;
+  late final currency;
+   EmailVerification(String name, String username, String password, String currency, {Key? key}) : super(key: key){
+    this.name=name;
+    this.username=username;
+    this.password=password;
+    this.currency=currency;
+  }
 
   @override
-  State<EmailVerification> createState() => _EmailVerification();
+  State<EmailVerification> createState() => _EmailVerification(
+      username:username,
+      password:password,
+      name:name,
+      currency:currency,
+
+  );
 }
 
 class _EmailVerification extends State<EmailVerification> {
@@ -20,7 +36,11 @@ class _EmailVerification extends State<EmailVerification> {
   bool canResendEmail = false;
   bool _mounted=true;
   Timer? timer;
-
+  final username;
+  final password;
+  final name;
+  final currency;
+  _EmailVerification({required this.username,required this.password, required this.name, required this.currency,});
   @override
   void initState() {
     super.initState();
@@ -51,19 +71,44 @@ class _EmailVerification extends State<EmailVerification> {
     _mounted = false;
     super.dispose();
   }
-
-  Future checkIsEmailVerified() async {
-    // Check if there is a current user
+  Future<void> checkIsEmailVerified() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      // Reload the user to get the latest email verification status
       await user.reload();
-
       setState(() {
         isEmailVerified = user.emailVerified;
       });
+
+      if (isEmailVerified) {
+        try {
+          // Check if a document with the same username or email already exists
+          QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+              .collection('userDetails')
+              .where('username', isEqualTo: name)
+              .where('email', isEqualTo: username)
+              .get();
+
+          if (querySnapshot.docs.isEmpty) {
+            // No existing document found, so add a new one
+            await FirebaseFirestore.instance.collection('userDetails').add({
+              'username': name,
+              'email': username,
+              'password': password,
+              'currency': currency,
+            });
+          } else {
+            // Document with the same username or email already exists
+            print('Error: User with the same username or email already exists.');
+          }
+        } catch (e) {
+          // Handle other errors
+          print('Error: $e');
+        }
+      }
     }
   }
+
+
 
 
   Future sendVerificationEmail() async {

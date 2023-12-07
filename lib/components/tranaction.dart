@@ -42,65 +42,69 @@ class MyTransaction extends StatelessWidget {
             height: 70,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Name
-                  Row(
-                    children: [
-                      Container(
-                        height: 45,
-                        width: 45,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.blueGrey.shade100,
-                            width: 1,
-                          ),
-                        ),
-                        child: Container(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Name
+                    Row(
+                      children: [
+                        Container(
+                          height: 45,
+                          width: 45,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color:Color(0xFFFFFFFF),
+                            border: Border.all(
+                              color: Colors.blueGrey.shade100,
+                              width: 1,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.add_card_rounded,
-                            color: transactionType == "Expence"
-                                ?   const Color(0xFF090950)
-                                : Color(0xFF3AC6D5),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:Color(0xFFFFFFFF),
+                            ),
+                            child: Icon(
+                              Icons.add_card_rounded,
+                              color: transactionType == "Expence"
+                                  ?   const Color(0xFF090950)
+                                  : Color(0xFF3AC6D5),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            transactionName,
-                            style: const TextStyle(
-                              fontFamily:'Lexend-VariableFont',
-                              color: Color(0xFF090950),
-                              fontSize: 20,
-                            ),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width:140,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                transactionName,
+                                style: const TextStyle(
+                                  fontFamily:'Lexend-VariableFont',
+                                  color: Color(0xFF090950),
+                                  fontSize: 20,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                formattedTime,
+                                style: const TextStyle(
+                                  fontFamily:'Lexend-VariableFont',
+                                  color: Color(0xFF5C6C84),
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            formattedTime,
-                            style: const TextStyle(
-                              fontFamily:'Lexend-VariableFont',
-                              color: Color(0xFF5C6C84),
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
 
-                  // Amount
-                  Flexible(
-                    child: Text(
+                    // Amount
+                    Text(
                       transactionType == "Expence"
                           ? "-$currencySymbol${transactionAmount.toStringAsFixed(2)}"
                           : "+$currencySymbol${transactionAmount.toStringAsFixed(2)}",
@@ -112,8 +116,8 @@ class MyTransaction extends StatelessWidget {
                         fontSize: 25,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

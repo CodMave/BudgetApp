@@ -695,11 +695,16 @@ class _ResultState extends State<Result> {
                     color: const Color(0xFF090950),
                   ),
                 ),
-                SizedBox(width:110),
-                Icon( Icons.document_scanner_outlined, size: 30, color: const Color(0xFF090950),),
+
               ],
             ),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right:30),
+              child: Icon( Icons.document_scanner_outlined, size: 30, color: const Color(0xFF090950),),
+            ),
+          ],
           centerTitle: true,
           elevation: 0,
         ),
@@ -762,7 +767,7 @@ class _ResultState extends State<Result> {
                   //text: 'Summary',
                 ),
                 GButton(
-                  icon: Icons.format_list_bulleted,
+                  icon: Icons.assignment,
                   //text: 'Savings',
                 ),
                 GButton(

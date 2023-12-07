@@ -60,36 +60,25 @@ class _RegisterPage extends State<RegisterPage> {
           email: emailControll.text,
           password: passwordControll.text,
         );
-
-        //save user details in firestore
-        saveUserDetails(
-          usernameControll.text.trim(),
-          emailControll.text.trim(),
-          passwordControll.text.trim(),
-          selectedCurrency!,
-        );
-
-        //loading circle end
-        Navigator.pop(context);
-
-        //navigate to email verification page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => EmailVerification(),
+            builder: (context) => EmailVerification(
+              usernameControll.text.trim(),
+              emailControll.text.trim(),
+              passwordControll.text.trim(),
+              selectedCurrency!,
+            ),
           ),
         );
       } else {
-        //loading circle end
-        Navigator.pop(context);
+
 
         // error
         wrongInputlAlert("Passwords don't match");
       }
     } on FirebaseAuthException catch (ex) {
-      //loading circle end
-      Navigator.pop(context);
-
+      //loading circle en
       // wrong mail
       wrongInputlAlert(ex.code);
     }
@@ -121,15 +110,7 @@ class _RegisterPage extends State<RegisterPage> {
 
   //save user details in firestore [database : userDetails]
 
-  Future saveUserDetails(
-      String name, String email, String password, String currency) async {
-    await FirebaseFirestore.instance.collection('userDetails').add({
-      'username': name,
-      'email': email,
-      'password': password,
-      'currency': currency,
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +128,7 @@ class _RegisterPage extends State<RegisterPage> {
                     height:180,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('lib/images/monkey.png'),
+                        image: AssetImage('lib/images/Logo.png'),
                         fit: BoxFit.cover,
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -208,6 +189,8 @@ class _RegisterPage extends State<RegisterPage> {
             ),
 
             const SizedBox(height: 15),
+
+            //currency selection
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),

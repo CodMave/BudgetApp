@@ -538,7 +538,7 @@ class _Profile extends State<Profile> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.format_list_bulleted,
+                icon: Icons.assignment,
                 //text: 'Savings',
               ),
               GButton(
@@ -661,8 +661,8 @@ class _Profile extends State<Profile> {
                                   boxShadow: [
                                   BoxShadow(
                                     color: Colors.white,
-                                    spreadRadius:3,
-                                    blurRadius:3,
+                                    spreadRadius:1,
+                                    blurRadius:1,
                                     offset: Offset(0,2),
                                   ),
                                   ],
@@ -726,8 +726,8 @@ class _Profile extends State<Profile> {
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.white,
-                                      spreadRadius:3,
-                                      blurRadius:3,
+                                      spreadRadius:1,
+                                      blurRadius:1,
                                       offset: Offset(0,2),
                                     ),
                                   ],
