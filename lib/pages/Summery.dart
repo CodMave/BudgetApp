@@ -835,7 +835,7 @@ class _ProState extends State<Pro> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.format_list_bulleted,
+                icon: Icons.assignment,
                 //text: 'Savings',
               ),
               GButton(

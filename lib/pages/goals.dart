@@ -165,10 +165,17 @@ class _GoalsState extends State<Goals> {
       currencySymbol = 'C\$';
     }
   }
+void asung()async{
+ final currency=await getUserSelectedCurrency();
+  setState(() {
+    currencySymbol=currency;
+  });
 
+}
   @override
   void initState() {
     super.initState();
+    asung();
     String? userId = auth.currentUser?.uid;
 
     _plansStream = firestore
@@ -189,7 +196,7 @@ class _GoalsState extends State<Goals> {
       }
     });
 
-    getUserSelectedCurrency();
+
   }
 
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
@@ -662,7 +669,7 @@ class _GoalsState extends State<Goals> {
                 //text: 'Summary',
               ),
               GButton(
-                icon: Icons.format_list_bulleted,
+                icon: Icons.assignment,
                 //text: 'Savings',
               ),
               GButton(

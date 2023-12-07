@@ -103,7 +103,11 @@ class _MyGoalState extends State<MyGoal> {
     });
   }
 void staterecon()async{
-    currencySymbol=await getCurrncySymbol();
+    final currency=await getCurrncySymbol();
+    setState(() {
+      currencySymbol=currency;
+    });
+
 }
   @override
   void initState() {

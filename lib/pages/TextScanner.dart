@@ -244,7 +244,7 @@ class _TextScannerState extends State<TextScanner>with WidgetsBindingObserver {
                           //text: 'Summary',
                         ),
                         GButton(
-                          icon: Icons.account_balance_wallet_outlined,
+                          icon: Icons.assignment,
                           //text: 'Savings',
                         ),
                         GButton(
