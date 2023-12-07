@@ -595,7 +595,7 @@ class _ExpenceState extends State<Expence> {
   bool is_income_used = true; // Initialize is_income to true
   bool canToggle = true; // Allow initial toggling
   Color expenceColor = Color(0xFF090950); // Color for "Expence"
-  Color incomeColor =const Color(0xFFC2DAFF); // Color for "Income"
+  Color incomeColor =const Color(0xFF090950); // Color for "Income"
 
   void newTransaction() {
     selectedCategory = 'Others';
@@ -606,7 +606,7 @@ class _ExpenceState extends State<Expence> {
         return StatefulBuilder(
           builder: (BuildContext context, setState) {
             return AlertDialog(
-              title: const Text("N E W   T R A N S A C T I O N"),
+              title:Text("N E W   T R A N S A C T I O N", style: TextStyle(fontSize: 18),),
               content: SingleChildScrollView(
                 child: Form(
                   key: formKey,

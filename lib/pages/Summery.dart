@@ -2079,7 +2079,7 @@ class _ProState extends State<Pro> {
                                   padding: const EdgeInsets.only(
                                       left: 5), // Adjust top padding here
                                   child: Text(
-                                    'Savings',
+                                    'Income',
                                     style: const TextStyle(
                                       fontFamily: 'Lexend-VariableFont',
                                       fontSize: 10,
