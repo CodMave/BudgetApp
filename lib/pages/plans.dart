@@ -45,6 +45,7 @@ int index=0;
    super.initState();
    fetchinfo();
    getDocIds();
+   delete();
  }
 
   int _calculateDaysRemaining(DateTime dateString) {
@@ -101,6 +102,7 @@ int index=0;
           .collection('userDetails')
           .doc(username)
           .collection('Plans')
+          .orderBy('Date',descending:true)
           .get();
 
       List<String> fetchedMessages = [];
@@ -128,6 +130,29 @@ int index=0;
       print('Getting the messages failed: $ex');
     }
   }
+  Future<void> delete() async {
+    try {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      User? user = _auth.currentUser;
+      username = user!.uid;
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final cgr= await firestore.collection('userDetails').doc(username).collection('Plans').orderBy('Date',descending:false).get();
+      final CollectionReference plans = firestore.collection('userDetails').doc(username).collection('Plans');
+
+        for (int i = 0; i < unformated.length; i++) {
+           if (_calculateDaysRemaining(unformated[i]) < 0) {
+           await plans.doc(cgr.docs[i].id).delete();
+            print('Deleted document with ID: ${cgr.docs[i].id}');
+          } else {
+            //print('Document not deleted - Days remaining is not negative.');
+          }
+
+        }
+    } catch (e) {
+      print('Error deleting notification: $e');
+    }
+  }
+
   Future<List<String>?> getMessage(DateTime date) async {
     try {
 
@@ -137,12 +162,7 @@ int index=0;
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
       List<String> planname = []; // Initialize the array
-      List<int> planvalue = [];
-      final expenceSnapshot = await firestore
-          .collection('userDetails')
-          .doc(username)
-          .collection('Plans')
-          .get();
+      final expenceSnapshot = await firestore.collection('userDetails').doc(username).collection('Plans').get();
 
       expenceSnapshot.docs.forEach((incomeDoc) {
         final timestamp = incomeDoc.get('Date') as Timestamp;
@@ -152,6 +172,7 @@ int index=0;
           if (timestampDate.isAtSameMomentAs(date)) {
             planname.insert(0,incomeDoc.get('Message') );
           }
+
 
       });
       return planname;
@@ -769,127 +790,132 @@ void addnewplan(){
             Container(
               height:400,
               width:400,
-              child: ListView.builder(
-                itemCount: this. upcomingPlans?.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      ListTile(
-                        title: Container(
-                          height:65,
-                          width: 330,
-                          margin: EdgeInsets.only(top:15, left: 20, right: 20),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF5F5F5),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.8),
-                                spreadRadius:2,
-                                blurRadius:3,
-                                offset: Offset(0,2),
-                              )
-                            ],
-                          ),
-                          child: SingleChildScrollView(
-                            scrollDirection:Axis.horizontal,
-                            child: Row(
-                              children: [
-                                SizedBox(width:80,
-                                  child: Padding(
-                                    padding:
-                                    const EdgeInsets.only(
-                                        left: 5.0),
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Container(
-                                        width:55,
-                                    height:55,
-                                    decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color:Colors.white,
-                                          ),
-                                        child: Center(
-                                          child: Text(
-                                            this.plandate[index],
-                                            style: TextStyle(
-                                              fontFamily:
-                                              'Lexend-VariableFont',
-                                              color:const Color(0xFF3AC6D5),
-                                              fontWeight: FontWeight.w400,
-                                              fontSize:18,
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await fetchinfo();
+                },
+                child: ListView.builder(
+                  itemCount: this. upcomingPlans?.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        ListTile(
+                          title: Container(
+                            height:65,
+                            width: 330,
+                            margin: EdgeInsets.only(top:15, left: 20, right: 20),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFF5F5F5),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.8),
+                                  spreadRadius:2,
+                                  blurRadius:3,
+                                  offset: Offset(0,2),
+                                )
+                              ],
+                            ),
+                            child: SingleChildScrollView(
+                              scrollDirection:Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  SizedBox(width:80,
+                                    child: Padding(
+                                      padding:
+                                      const EdgeInsets.only(
+                                          left: 5.0),
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Container(
+                                          width:55,
+                                      height:55,
+                                      decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color:Colors.white,
                                             ),
-                                            textAlign: TextAlign.center,
+                                          child: Center(
+                                            child: Text(
+                                              this.plandate[index],
+                                              style: TextStyle(
+                                                fontFamily:
+                                                'Lexend-VariableFont',
+                                                color:const Color(0xFF3AC6D5),
+                                                fontWeight: FontWeight.w400,
+                                                fontSize:18,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  width:130,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top:13.0),
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.vertical,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${upcomingPlans[index]}',  // '$currencySymbol ${![index]}',
-                                            style: TextStyle(
-                                              fontSize:18,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Lexend-VariableFont',
-                                              color: const Color(0xFF090950),
+                                  SizedBox(
+                                    width:130,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top:13.0),
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.vertical,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${upcomingPlans[index]}',  // '$currencySymbol ${![index]}',
+                                              style: TextStyle(
+                                                fontSize:18,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Lexend-VariableFont',
+                                                color: const Color(0xFF090950),
+                                              ),
                                             ),
-                                          ),
-                                          _calculateDaysRemaining(unformated[index])<0?Text(
-                                            ' Plan has out dated  ',  // '$currencySymbol ${![index]}',
-                                            style: TextStyle(
-                                              fontSize:12,
-                                              fontFamily:
-                                              'Lexend-VariableFont',
-                                              color:const Color(0xFF5C6C84),
+                                            _calculateDaysRemaining(unformated[index])<0?Text(
+                                              ' Plan has out dated  ',  // '$currencySymbol ${![index]}',
+                                              style: TextStyle(
+                                                fontSize:12,
+                                                fontFamily:
+                                                'Lexend-VariableFont',
+                                                color:const Color(0xFF5C6C84),
+                                              ),
+                                            )
+                                                :Text(
+                                              ' ${_calculateDaysRemaining(unformated[index]) } days Remaininig ',  // '$currencySymbol ${![index]}',
+                                              style: TextStyle(
+                                                fontSize:12,
+                                                fontFamily:
+                                                'Lexend-VariableFont',
+                                                color:const Color(0xFF5C6C84),
+                                              ),
                                             ),
-                                          )
-                                              :Text(
-                                            ' ${_calculateDaysRemaining(unformated[index]) } days Remaininig ',  // '$currencySymbol ${![index]}',
-                                            style: TextStyle(
-                                              fontSize:12,
-                                              fontFamily:
-                                              'Lexend-VariableFont',
-                                              color:const Color(0xFF5C6C84),
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(width:20),
-                                Center(
-                                  child: Text(
-                                  '$currencySymbol${this.valuein[index].toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight:
-                                    FontWeight.bold,
-                                    fontFamily:
-                                    'Lexend-VariableFont',
-                                    color: Color(
-                                        0xFF316F9B),
+                                  SizedBox(width:20),
+                                  Center(
+                                    child: Text(
+                                    '$currencySymbol${this.valuein[index].toStringAsFixed(2)}',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight:
+                                      FontWeight.bold,
+                                      fontFamily:
+                                      'Lexend-VariableFont',
+                                      color: Color(
+                                          0xFF316F9B),
+                                    ),
                                   ),
-                                ),
-                                ),
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                },
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
 
