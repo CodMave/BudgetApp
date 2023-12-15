@@ -48,7 +48,6 @@ class PlanTile extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-
                 secondText,
                 style: const TextStyle(
                   fontFamily:'Lexend-VariableFont',

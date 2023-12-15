@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../components/goalTiles.dart';
+import '../components/plusButton.dart';
 import 'Summery.dart';
 import 'TextScanner.dart';
 import 'homePage.dart';
@@ -782,19 +783,9 @@ void asung()async{
           ),
         ],
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom:65),
-        child: FloatingActionButton(
-          onPressed: () {
-            addNewPlan();
-          },
-          backgroundColor:  Color(0xFF85B6FF),
-          child: const Icon(
-              Icons.add,
-          size: 30,),
-        ),
+      floatingActionButton: PlusButton(
+        function: addNewPlan,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 }

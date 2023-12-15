@@ -143,7 +143,7 @@ class _EmailVerification extends State<EmailVerification> {
           elevation: 1,
           automaticallyImplyLeading: false,
         ),
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Colors.white,
         body: Center(
           child: SingleChildScrollView(
             child: Column(
